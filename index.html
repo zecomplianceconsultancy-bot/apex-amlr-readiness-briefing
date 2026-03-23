@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMLR Readiness — Apex Compliance Consultancy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,300;1,9..144,400;1,9..144,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f6fa;--bg2:#ffffff;--bg3:#eceef5;
+  --nav:#0f1b2d;
+  --blue:#1a65d6;--blue2:#2b7de9;--blue-l:rgba(26,101,214,.06);
+  --red:#d63031;--green:#059669;--amber:#d97706;
+  --gold:#c9a84c;--gold3:#a07c2e;
+  --text:#1a1e2e;--text2:#3d4a64;--muted:#6a7590;--dim:#9aa3b8;
+  --card:#ffffff;--card-h:rgba(255,255,255,.98);
+  --brd:rgba(26,101,214,.1);--brd2:rgba(26,101,214,.22);
+  --sh:0 2px 12px rgba(20,30,60,.05);--sh2:0 8px 32px rgba(20,30,60,.08);
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+body.dark{
+  --bg:#0a1628;--bg2:#0f1f38;--bg3:#162a48;
+  --blue:#4d9aff;--blue2:#6db3ff;--blue-l:rgba(77,154,255,.08);
+  --text:#e8ecf2;--text2:#a8b8d0;--muted:#6a80a0;--dim:#3a506e;
+  --card:rgba(15,31,56,.9);--card-h:rgba(15,31,56,.98);
+  --brd:rgba(201,168,76,.15);--brd2:rgba(201,168,76,.3);
+  --sh:0 2px 12px rgba(0,0,0,.2);--sh2:0 8px 32px rgba(0,0,0,.3);
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;transition:background .4s,color .3s}
+h1,h2,h3,.serif{font-family:'Fraunces',serif}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ═══ FLOATING LABELS ═══ */
+.float-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.fl{position:absolute;font-family:'DM Sans',sans-serif;font-weight:700;letter-spacing:.06em;color:rgba(26,101,214,.055);transition:color .4s;white-space:nowrap}
+body.dark .fl{color:rgba(201,168,76,.04)}
+@keyframes drift1{0%,100%{transform:translate(0,0)}20%{transform:translate(18px,-12px)}40%{transform:translate(-8px,20px)}60%{transform:translate(14px,8px)}80%{transform:translate(-12px,-6px)}}
+@keyframes drift2{0%,100%{transform:translate(0,0)}20%{transform:translate(-14px,16px)}40%{transform:translate(20px,-8px)}60%{transform:translate(-10px,-14px)}80%{transform:translate(16px,10px)}}
+@keyframes drift3{0%,100%{transform:translate(0,0)}20%{transform:translate(10px,14px)}40%{transform:translate(-16px,-10px)}60%{transform:translate(18px,-6px)}80%{transform:translate(-6px,18px)}}
+nav{position:fixed;z-index:9000}
+#hero{position:relative;z-index:1}
+section,.alt,#approach-band,#about,footer{position:relative;z-index:1}
+
+/* ═══ PROGRESS ═══ */
+#prog{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue2));z-index:10000;width:0}
+
+/* ═══ NAV ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:9000;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:52px;background:var(--nav);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
+.n-brand{display:flex;align-items:center;gap:10px}
+.n-mark{width:26px;height:26px;border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:.75rem;font-weight:700;color:var(--gold);border-radius:4px}
+.n-name{font-size:.78rem;font-weight:600;color:#fff;letter-spacing:.02em}
+.n-links{display:flex;gap:4px;align-items:center}
+.n-link{padding:6px 12px;font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);text-decoration:none;transition:all .25s;border-radius:4px}
+.n-link:hover,.n-link.on{color:#fff;background:rgba(255,255,255,.08)}
+.n-right{display:flex;align-items:center;gap:10px}
+.n-theme{padding:6px 14px;font-size:.58rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);background:transparent;border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:all .25s;font-family:'DM Sans',sans-serif;border-radius:4px}
+.n-theme:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+
+/* ═══ HERO ═══ */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:100px 80px 60px}
+#heroCanvas{position:absolute;inset:0;z-index:0}
+.hero-content{position:relative;z-index:2;max-width:760px}
+.hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:16px;opacity:0;animation:rise .7s .15s both}
+body.dark .hero-eyebrow{color:var(--blue2)}
+.hero-h1{font-family:'Fraunces',serif;font-size:clamp(2.6rem,5.5vw,4.5rem);font-weight:300;line-height:1.05;margin-bottom:24px;opacity:0;animation:rise .8s .3s both}
+.hero-h1 em{font-style:italic;font-weight:500;color:var(--blue)}
+body.dark .hero-h1 em{color:var(--blue2)}
+.hero-h1 strong{font-weight:600}
+.hero-sub{font-size:.94rem;color:var(--text2);line-height:1.85;max-width:640px;margin-bottom:40px;opacity:0;animation:rise .7s .5s both}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:rise .7s .65s both}
+.btn-p{padding:13px 30px;background:var(--blue);color:#fff;border:none;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.btn-p:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,101,214,.2)}
+.btn-s{padding:13px 30px;background:transparent;color:var(--blue);border:1.5px solid var(--brd2);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all .3s;text-decoration:none}
+.btn-s:hover{background:var(--blue-l);border-color:var(--blue)}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ STAT STRIP ═══ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0 80px;position:relative;z-index:2;margin-top:auto;opacity:0;animation:rise .7s .8s both}
+.stat{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:20px 22px;transition:all .3s;border-top:3px solid transparent}
+.stat:nth-child(1){border-top-color:var(--blue)}
+.stat:nth-child(2){border-top-color:var(--red)}
+.stat:nth-child(3){border-top-color:var(--green)}
+.stat:nth-child(4){border-top-color:var(--amber)}
+.stat:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.stat-val{font-family:'Fraunces',serif;font-size:1.55rem;font-weight:600;color:var(--text);line-height:1}
+.stat-lab{font-size:.56rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+
+/* ═══ SECTION ═══ */
+section{padding:100px 80px}
+.sec-inner{max-width:1060px;margin:0 auto}
+.sec-num{font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:500;color:var(--blue);letter-spacing:.08em;margin-bottom:6px}
+.sec-h{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:500;line-height:1.12;margin-bottom:10px;color:var(--text)}
+.sec-h em{font-style:italic;color:var(--blue)}
+body.dark .sec-h em{color:var(--blue2)}
+.sec-p{font-size:.9rem;color:var(--text2);line-height:1.8;max-width:640px;margin-bottom:48px}
+.sec-p strong{color:var(--text);font-weight:600}
+.rv{opacity:0;transform:translateY(20px);transition:all .6s var(--ease)}.rv.in{opacity:1;transform:none}
+.alt{background:var(--bg3)}
+body.dark .alt{background:var(--bg2)}
+
+/* ═══ CHANGE CARDS ═══ */
+.intro-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.intro-card{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:28px 26px;position:relative;overflow:hidden;transition:all .3s}
+.intro-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.intro-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.intro-card:nth-child(1)::before{background:var(--blue)}
+.intro-card:nth-child(2)::before{background:var(--red)}
+.intro-card:nth-child(3)::before{background:var(--green)}
+.intro-card:nth-child(4)::before{background:var(--amber)}
+.ic-num{font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:var(--dim);margin-bottom:10px}
+.ic-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.25}
+.ic-body{font-size:.82rem;color:var(--text2);line-height:1.65}
+
+/* ═══ MANDATE BOX ═══ */
+.mandate{background:var(--card);border:1px solid var(--brd);border-left:4px solid var(--blue);border-radius:0 8px 8px 0;padding:28px 32px;margin:40px 0}
+.mandate h3{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;color:var(--text);margin-bottom:8px}
+.mandate p{font-size:.86rem;color:var(--text2);line-height:1.75}
+.mandate strong{color:var(--text)}
+
+/* ═══ ENFORCEMENT ═══ */
+.enf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.enf{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:24px 22px;border-left:3px solid var(--red);transition:all .3s}
+.enf:hover{box-shadow:var(--sh)}
+.enf-inst{font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:2px}
+.enf-fine{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--red);margin-bottom:6px}
+.enf-body{font-size:.78rem;color:var(--text2);line-height:1.6}
+
+/* ═══ TIMELINE ═══ */
+.tl{position:relative;padding-left:52px;margin-top:8px}
+.tl::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--blue),var(--green),var(--amber),var(--red));border-radius:1px}
+.tl-item{position:relative;margin-bottom:28px}
+.tl-dot{position:absolute;left:-46px;top:4px;width:12px;height:12px;border-radius:50%;border:2.5px solid var(--blue);background:var(--bg);transition:all .3s}
+.tl-dot.hot{background:var(--blue);border-color:var(--blue);box-shadow:0 0 0 4px rgba(26,101,214,.12)}
+.tl-dot.red{border-color:var(--red)}.tl-dot.red.hot{background:var(--red);box-shadow:0 0 0 4px rgba(214,48,49,.12)}
+.tl-dot.green{border-color:var(--green)}.tl-dot.amber{border-color:var(--amber)}
+body.dark .tl-dot{background:var(--bg)}
+.tl-date{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:500;color:var(--blue);letter-spacing:.06em;margin-bottom:3px}
+.tl-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.tl-body{font-size:.8rem;color:var(--text2);line-height:1.65;max-width:580px}
+.tl-tag{display:inline-block;padding:2px 8px;font-size:.54rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;margin-top:6px;margin-right:4px}
+.tl-tag.c{background:rgba(26,101,214,.06);color:var(--blue);border:1px solid rgba(26,101,214,.15)}
+.tl-tag.r{background:rgba(214,48,49,.05);color:var(--red);border:1px solid rgba(214,48,49,.12)}
+.tl-tag.a{background:rgba(217,119,6,.05);color:var(--amber);border:1px solid rgba(217,119,6,.12)}
+
+/* ═══ DOMAIN CARDS ═══ */
+.dom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dom{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:20px 18px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.dom:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--brd2)}
+.dom::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0}
+.dom.crit::before{background:var(--red)}
+.dom.rev::before{background:var(--amber)}
+.dom-num{font-family:'IBM Plex Mono',monospace;font-size:.54rem;color:var(--dim);margin-bottom:6px}
+.dom-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.25}
+.dom-sev{font-size:.5rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;display:inline-block}
+.dom-sev.c{background:rgba(214,48,49,.06);color:var(--red);border:1px solid rgba(214,48,49,.12)}
+.dom-sev.r{background:rgba(217,119,6,.05);color:var(--amber);border:1px solid rgba(217,119,6,.12)}
+.dom-exp{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--brd);font-size:.78rem;color:var(--text2);line-height:1.65}
+.dom-exp strong{color:var(--text)}
+.dom.open .dom-exp{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.dom-arrow{font-size:.6rem;color:var(--dim);margin-top:8px}
+.dom:hover .dom-arrow{color:var(--blue)}
+
+/* ═══ READINESS CHECKLIST ═══ */
+.cl-wrap{position:relative;max-width:1060px;margin:0 auto}
+.cl-list{display:flex;flex-direction:column;gap:0}
+.cl-item{display:grid;grid-template-columns:42px 1fr auto;gap:16px;align-items:start;padding:18px 20px;border-bottom:1px solid var(--brd);transition:all .3s}
+.cl-item:hover{background:var(--blue-l)}
+.cl-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;margin-top:2px}
+.cl-icon.pass{background:rgba(5,150,105,.08);color:var(--green);border:1.5px solid rgba(5,150,105,.2)}
+.cl-icon.fail{background:rgba(214,48,49,.06);color:var(--red);border:1.5px solid rgba(214,48,49,.15)}
+.cl-icon.warn{background:rgba(217,119,6,.06);color:var(--amber);border:1.5px solid rgba(217,119,6,.15)}
+.cl-title{font-size:.82rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:3px}
+.cl-desc{font-size:.74rem;color:var(--text2);line-height:1.55}
+.cl-ref{font-family:'IBM Plex Mono',monospace;font-size:.52rem;font-weight:500;color:var(--dim);letter-spacing:.04em;white-space:nowrap;margin-top:4px}
+/* Fade & blur for gated items */
+.cl-item.gated{filter:blur(2.5px);opacity:.45;pointer-events:none;user-select:none}
+.cl-item.semi{filter:blur(1px);opacity:.6;pointer-events:none;user-select:none}
+/* Overlay gate */
+.cl-gate{position:absolute;bottom:0;left:0;right:0;height:340px;background:linear-gradient(to bottom,transparent 0%,var(--bg) 55%,var(--bg) 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12px;z-index:3}
+.alt .cl-gate{background:linear-gradient(to bottom,transparent 0%,var(--bg3) 55%,var(--bg3) 100%)}
+body.dark .alt .cl-gate{background:linear-gradient(to bottom,transparent 0%,var(--bg2) 55%,var(--bg2) 100%)}
+.cl-gate-inner{text-align:center;padding:24px 32px}
+.cl-gate-lock{width:36px;height:36px;border-radius:50%;background:var(--card);border:1.5px solid var(--brd2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.cl-gate-lock svg{width:16px;height:16px;fill:var(--blue)}
+body.dark .cl-gate-lock svg{fill:var(--gold)}
+.cl-gate-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.cl-gate-sub{font-size:.76rem;color:var(--text2);line-height:1.6;max-width:440px;margin:0 auto}
+.cl-gate-sub strong{color:var(--text)}
+.cl-count{font-family:'IBM Plex Mono',monospace;font-size:.56rem;font-weight:500;color:var(--muted);letter-spacing:.06em;margin-top:12px}
+
+/* ═══ APPROACH ═══ */
+#approach-band{background:var(--nav);color:#fff;padding:90px 80px;position:relative;overflow:hidden}
+.app-inner{max-width:1060px;margin:0 auto}
+.app-label{font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:500;color:var(--gold);letter-spacing:.14em;margin-bottom:8px}
+.app-h{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.3rem);font-weight:400;color:#fff;line-height:1.15;margin-bottom:10px}
+.app-h em{color:var(--gold);font-style:italic;font-weight:500}
+.app-sub{font-size:.88rem;color:rgba(255,255,255,.5);line-height:1.8;max-width:620px;margin-bottom:48px}
+.app-sub strong{color:rgba(255,255,255,.85)}
+.phase-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+.phase{position:relative;padding:24px 20px;border:1px solid rgba(201,168,76,.12);border-radius:8px;background:rgba(255,255,255,.02);transition:all .3s}
+.phase:hover{background:rgba(255,255,255,.05);border-color:rgba(201,168,76,.25)}
+.phase::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:8px 8px 0 0}
+.phase:nth-child(1)::before{background:var(--blue)}
+.phase:nth-child(2)::before{background:var(--gold)}
+.phase:nth-child(3)::before{background:var(--green)}
+.phase:nth-child(4)::before{background:var(--amber)}
+.ph-num{font-family:'Fraunces',serif;font-size:2rem;font-weight:300;color:rgba(201,168,76,.2);line-height:1;margin-bottom:8px}
+.ph-name{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.ph-desc{font-size:.76rem;color:rgba(255,255,255,.45);line-height:1.6}
+.ph-desc strong{color:rgba(255,255,255,.75)}
+.scope-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.scope-item{padding:20px 18px;border:1px solid rgba(201,168,76,.1);border-radius:8px;background:rgba(255,255,255,.015)}
+.scope-item:hover{border-color:rgba(201,168,76,.2);background:rgba(255,255,255,.03)}
+.si-title{font-size:.78rem;font-weight:700;color:#fff;margin-bottom:4px}
+.si-desc{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.55}
+.app-note{margin-top:40px;padding:24px 28px;border:1px solid rgba(201,168,76,.15);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;background:rgba(201,168,76,.03)}
+.app-note h3{font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);font-weight:600;margin-bottom:6px}
+.app-note p{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.7}
+.app-note strong{color:rgba(255,255,255,.7)}
+
+/* ═══ DIAGNOSTIC ═══ */
+.disc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.disc{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:22px 20px;transition:all .3s;position:relative}
+.disc:hover{box-shadow:var(--sh);border-color:var(--brd2)}
+.disc-num{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:300;color:var(--dim);opacity:.25;position:absolute;top:12px;right:16px}
+.disc-cat{font-size:.52rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.disc-cat::before{content:'';width:12px;height:2px;border-radius:1px}
+.disc-cat.blue{color:var(--blue)}.disc-cat.blue::before{background:var(--blue)}
+.disc-cat.red{color:var(--red)}.disc-cat.red::before{background:var(--red)}
+.disc-cat.amber{color:var(--amber)}.disc-cat.amber::before{background:var(--amber)}
+.disc-cat.green{color:var(--green)}.disc-cat.green::before{background:var(--green)}
+.disc-q{font-size:.82rem;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:6px}
+.disc-why{font-size:.74rem;color:var(--text2);line-height:1.6}
+
+/* ═══ ABOUT ═══ */
+#about{background:var(--bg3);padding:60px 80px;border-top:1px solid var(--brd)}
+body.dark #about{background:var(--bg2)}
+.about-inner{max-width:1060px;margin:0 auto;display:flex;gap:40px;align-items:start}
+.about-left{flex:1}
+.about-label{font-size:.56rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.about-h{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:500;color:var(--text);margin-bottom:12px;line-height:1.2}
+.about-h em{color:var(--blue);font-style:italic}
+body.dark .about-h em{color:var(--gold)}
+.about-bio{font-size:.82rem;color:var(--text2);line-height:1.7;margin-bottom:16px}
+.about-bio strong{color:var(--text)}
+.about-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.ab{font-size:.52rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--brd);color:var(--muted);border-radius:4px}
+.about-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.about-link{font-size:.7rem;font-weight:600;color:var(--blue);text-decoration:none;letter-spacing:.02em}
+body.dark .about-link{color:var(--gold)}
+.about-link:hover{text-decoration:underline}
+.about-loc{font-size:.65rem;color:var(--dim)}
+.about-right{display:flex;gap:10px;flex-shrink:0}
+.about-stat{text-align:center;padding:14px 18px;border:1px solid var(--brd);border-radius:8px;background:var(--card)}
+.about-stat-v{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:600;color:var(--blue)}
+body.dark .about-stat-v{color:var(--gold)}
+.about-stat-l{font-size:.5rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+
+/* ═══ FOOTER ═══ */
+footer{padding:22px 80px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.foot-brand{font-family:'Fraunces',serif;font-size:.82rem;font-weight:500;color:var(--muted)}
+.foot-copy{font-size:.6rem;color:var(--dim)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:960px){
+  nav{padding:0 20px}.n-links{display:none}
+  #hero{padding:90px 24px 40px}section{padding:64px 24px}
+  .stats{grid-template-columns:1fr 1fr;padding:0 24px;gap:10px}
+  .intro-grid,.disc-grid,.enf-grid,.scope-grid{grid-template-columns:1fr}
+  .dom-grid{grid-template-columns:1fr 1fr}
+  .phase-row{grid-template-columns:1fr 1fr}
+  #approach-band .scope-grid{grid-template-columns:1fr}
+  .about-inner{flex-direction:column}
+  .about-right{flex-direction:row;flex-wrap:wrap}
+  #approach-band,#about{padding:48px 24px}footer{padding:20px 24px}
+}
+@media(max-width:600px){.dom-grid,.phase-row{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="float-bg" id="floatBg"></div>
+<div id="prog"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="n-brand"><div class="n-mark">A</div><span class="n-name">Apex Compliance Consultancy</span></div>
+  <div class="n-links">
+    <a class="n-link on" href="#changing">What's Changing</a>
+    <a class="n-link" href="#record">Why It Matters</a>
+    <a class="n-link" href="#timeline">Timeline</a>
+    <a class="n-link" href="#domains">12 Domains</a>
+    <a class="n-link" href="#checklist">Checklist</a>
+    <a class="n-link" href="#approach-band">Approach</a>
+    <a class="n-link" href="#diagnostic">Diagnostic</a>
+    <a class="n-link" href="https://zecomplianceconsultancy-bot.github.io/cv/" target="_blank" style="border-left:1px solid rgba(255,255,255,.08);margin-left:4px;padding-left:16px">Profile ↗</a>
+  </div>
+  <div class="n-right"><button class="n-theme" onclick="toggleTheme()" id="themeBtn">Dark Mode</button></div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">EU Regulation 2024/1624 · Effective 10 July 2027</div>
+    <h1 class="hero-h1">Are You Ready for<br>the <em>Next Frontier?</em></h1>
+    <p class="hero-sub">AMLR. AMLA. 80+ binding technical standards. A new EU Authority with direct supervisory power. And a hard deadline that treats every institution the same — whether you are a systemically important bank, an asset manager with cross-border mandates, or a 50-person payment service provider. Most Dutch financial institutions began their gap assessments in summer 2025. <strong>The question is no longer whether to act — it is whether you are keeping pace.</strong></p>
+    <div class="hero-ctas">
+      <a href="#changing" class="btn-p">What's Changing ↓</a>
+      <a href="#domains" class="btn-s">12 Supervisory Domains</a>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-val">10 Jul 2027</div><div class="stat-lab">Hard Deadline</div></div>
+    <div class="stat"><div class="stat-val">5,000</div><div class="stat-lab">Institutions Sampled by AMLA — Now</div></div>
+    <div class="stat"><div class="stat-val">12</div><div class="stat-lab">Supervisory Domains</div></div>
+    <div class="stat"><div class="stat-val">80+</div><div class="stat-lab">Binding AMLA Standards</div></div>
+  </div>
+</section>
+
+<!-- ═══ 01 — WHAT'S CHANGING ═══ -->
+<section id="changing">
+  <div class="sec-inner">
+    <div class="rv"><div class="sec-num">01 — What's Changing</div><h2 class="sec-h">This Is Not <em>a Policy Update.</em> This Is a New Regime.</h2>
+    <p class="sec-p">AMLR does not amend the existing framework — it replaces it. Institutions that approach it as a document revision exercise will discover at examination that supervisors are not assessing whether a document exists. <strong>They are assessing whether there is an evidenced, operational, tested programme behind it.</strong></p></div>
+    <div class="intro-grid">
+      <div class="intro-card rv"><div class="ic-num">01</div><div class="ic-title">Direct Applicability — No Local Buffer</div><div class="ic-body">WWFT was a Dutch implementation with local interpretation. AMLR applies directly across 27 Member States. Same obligations. Same examination standard. Same enforcement ceiling. National flexibility and interpretation margins are gone.</div></div>
+      <div class="intro-card rv"><div class="ic-num">02</div><div class="ic-title">AMLA — Already Collecting Your Data</div><div class="ic-body">The EU Anti-Money Laundering Authority is not a future concept — it is operational and already executing. As of March 2026, AMLA has launched a data collection exercise across approximately 5,000 sampled institutions, with a submission deadline of 22 April 2026. This data feeds directly into AMLA's risk assessment and selection methodology for determining which institutions it will supervise directly from 2027. Credit institutions, payment institutions, investment firms, and asset management companies managing UCITS or AIFs are all within scope. National supervisors face pressure to demonstrate rigour. That pressure is already flowing to you.</div></div>
+      <div class="intro-card rv"><div class="ic-num">03</div><div class="ic-title">Expanded & Sharper Obligations</div><div class="ic-body">CDD threshold lowered to €10,000. Harmonised UBO at 25%. Mandatory five-day SAR response window. Enhanced compliance officer requirements. New outsourcing rules. Crypto-asset providers and crowdfunding platforms now obliged entities.</div></div>
+      <div class="intro-card rv"><div class="ic-num">04</div><div class="ic-title">Enforcement Ceiling: €10M or 10% Turnover</div><div class="ic-body">AMLD6 raises maximum pecuniary sanctions to €10 million or 10% of total annual turnover for serious, repeated, or systematic breaches. Combined with the Dutch track record, the financial exposure of incomplete implementation has never been higher.</div></div>
+    </div>
+    <div class="mandate rv">
+      <h3>The Central Question</h3>
+      <p>Not "do we have a policy?" — but <strong>"can we demonstrate, to a supervisor we may not have dealt with before, against a standard we have not yet been examined against, that our AML/CFT framework is operational, tested, and embedded across all three lines of defence?"</strong> The distance between these two questions is the distance between compliance and enforcement.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 02 — WHY IT MATTERS ═══ -->
+<section class="alt" id="record">
+  <div class="sec-inner">
+    <div class="rv"><div class="sec-num">02 — Why It Matters</div><h2 class="sec-h">The Dutch Market <em>Has Already Answered This Question</em></h2>
+    <p class="sec-p">The enforcement record is not instructive because these institutions were careless. It is instructive because the pattern is identical in every case. Compliance identified the gaps. Audit confirmed them. <strong>Management did not convert them into a governed programme.</strong></p></div>
+    <div class="enf-grid">
+      <div class="enf rv"><div class="enf-inst">ING Bank N.V. — 2018</div><div class="enf-fine">€ 775 million</div><div class="enf-body">CDD and TM deficiencies known internally for years. Compliance flagged. Audit confirmed. Management did not convert findings into a governed remediation programme. The multi-year enforced remediation and leadership disruption cost a multiple of the fine.</div></div>
+      <div class="enf rv"><div class="enf-inst">ABN AMRO — 2021</div><div class="enf-fine">€ 480 million</div><div class="enf-body">Persistent CDD failures. DNB escalation preceded enforcement by years — the institution had notice and did not respond at programme level. Reputational damage extended well beyond the fine amount.</div></div>
+      <div class="enf rv" style="border-left-color:var(--amber)"><div class="enf-inst">The Pattern</div><div class="enf-fine" style="color:var(--amber)">Consistent</div><div class="enf-body">Internal identification → Audit confirmation → Insufficient programme response → Supervisory escalation → Enforcement → Compulsory remediation at a multiple of what proactive investment would have cost. Every case. Without exception.</div></div>
+      <div class="enf rv" style="border-left-color:var(--green)"><div class="enf-inst">Institutions That Got It Right</div><div class="enf-fine" style="color:var(--green)">Proactive</div><div class="enf-body">FMO. Rabobank post-transformation. Comparable European DFIs and banks. All treated major regulatory transitions as Board-level programmes with dedicated ownership — not as policy updates delegated to existing staff.</div></div>
+    </div>
+    <div class="mandate rv" style="border-left-color:var(--red)">
+      <h3>The Uncomfortable Arithmetic</h3>
+      <p>A structured AMLR implementation programme costs a fraction of post-enforcement remediation. But the difference is not only financial. It is the difference between presenting your framework to a supervisor on your terms — with confidence, with evidence, with a programme owner who can walk them through it — <strong>versus having it examined under enforcement conditions where the dynamic is fundamentally adversarial.</strong></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 03 — TIMELINE ═══ -->
+<section id="timeline">
+  <div class="sec-inner">
+    <div class="rv"><div class="sec-num">03 — Regulatory Calendar</div><h2 class="sec-h">The Window <em>Is Narrowing</em></h2>
+    <p class="sec-p">AMLR is not a single deadline. It is a rolling programme of binding technical standards through 2027. Each milestone below directly affects your compliance framework — and each one institutions fail to track becomes implementation debt they may not discover until examination.</p></div>
+    <div class="tl">
+      <div class="tl-item rv"><div class="tl-dot" style="border-color:var(--muted)"></div><div class="tl-date">Summer 2025</div><div class="tl-title">Industry GAP Assessment Wave</div><div class="tl-body">The majority of Dutch financial institutions — banks, PSPs, asset managers, and payment institutions — initiated their AMLR gap assessments during this period. Institutions that have not yet commenced a structured gap analysis are now operating behind the market baseline.</div><span class="tl-tag a">Market Benchmark</span></div>
+      <div class="tl-item rv"><div class="tl-dot hot"></div><div class="tl-date">Q1–Q2 2026 — Now</div><div class="tl-title">Implementation & Remediation Window</div><div class="tl-body">Institutions that completed their gap assessment in 2025 are now in active remediation and framework redesign. 15+ months remain before application — sufficient for a governed programme, but the window is closing. Institutions that have not yet started their gap assessment are not just behind schedule — they are behind the industry.</div><span class="tl-tag c">Current Window</span></div>
+      <div class="tl-item rv"><div class="tl-dot hot" style="background:var(--red);border-color:var(--red);box-shadow:0 0 0 4px rgba(214,48,49,.15)"></div><div class="tl-date">March–April 2026 — LIVE</div><div class="tl-title">AMLA Data Collection & Selection Exercise</div><div class="tl-body">AMLA is currently collecting structured AML/CFT risk data from ~5,000 sampled institutions across the EU — including credit institutions, payment institutions, investment firms, and asset management companies. Submission deadline: 22 April 2026. This data feeds directly into the risk-assessment and selection methodology AMLA will use to determine which institutions it supervises directly from 2027. The reporting requires granular datapoints on customer base composition, PEP exposure, complex structures, geographic risk, transaction volumes, and the quality of AML/CFT controls. Institutions that cannot produce this data accurately and on time are signalling exactly the kind of data-quality weakness that elevates supervisory attention.</div><span class="tl-tag r">Live — Deadline 22 Apr</span></div>
+      <div class="tl-item rv"><div class="tl-dot amber"></div><div class="tl-date">Q2–Q3 2026</div><div class="tl-title">CDD/EDD & PEP Classification RTS</div><div class="tl-body">Binding technical standards on customer due diligence, enhanced due diligence, high-risk third countries, and PEP/SOE classification. For institutions with complex counterparty profiles, these standards fundamentally redefine what "adequate CDD" means.</div><span class="tl-tag a">Framework Impact</span></div>
+      <div class="tl-item rv"><div class="tl-dot green"></div><div class="tl-date">Q4 2026</div><div class="tl-title">Transaction Monitoring & Screening ITS</div><div class="tl-body">Implementing standards on TM calibration, sanctions screening, and effectiveness testing. Institutions relying on generic vendor configurations will need documented, institution-specific calibration evidence.</div><span class="tl-tag c">Technical</span></div>
+      <div class="tl-item rv"><div class="tl-dot amber"></div><div class="tl-date">Q1–Q2 2027</div><div class="tl-title">Final RTS Wave & AMLA Guidelines</div><div class="tl-body">Last publications before the application date. Institutions not yet in implementation face a compressed, high-risk sprint. There is no mechanism to request additional time.</div><span class="tl-tag r">Final Window</span></div>
+      <div class="tl-item rv"><div class="tl-dot red hot"></div><div class="tl-date">10 July 2027</div><div class="tl-title">AMLR Takes Direct Effect</div><div class="tl-body">WWFT superseded. Full compliance required. Supervisory examination can commence immediately. The framework your institution presents at this point defines the supervisory relationship for years.</div><span class="tl-tag r">Hard Deadline</span></div>
+    </div>
+    <div class="mandate rv" style="margin-top:40px;border-left-color:var(--red)">
+      <h3>What the AMLA Data Collection Means in Practice</h3>
+      <p>AMLA's 2026 exercise covers every category of obliged entity eligible for direct supervision — credit institutions, payment institutions, e-money institutions, investment firms, and asset management companies managing UCITS or AIFs. The reporting template requires granular data on customer composition, PEP-connected beneficial owners, legal entities with complex structures, cross-border geographic exposure, and the quality of AML/CFT governance and controls — reported at solo entity level, not consolidated group level. For banks with extensive correspondent networks, PSPs processing high-volume cross-border transactions, or asset managers with collective investment vehicles spanning multiple jurisdictions, <strong>the data extraction challenge alone tests whether the AML/CFT framework can produce what AMLA is asking for.</strong> Institutions that struggle with the data collection are demonstrating — in real time, to their national supervisor — exactly the kind of framework weakness that elevates the risk profile AMLA uses for its 2027 selection decisions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 04 — 12 SUPERVISORY DOMAINS ═══ -->
+<section class="alt" id="domains">
+  <div class="sec-inner">
+    <div class="rv"><div class="sec-num">04 — The Examination Map</div><h2 class="sec-h">12 Domains <em>Supervisors Will Assess</em></h2>
+    <p class="sec-p">Each domain below is a supervisory examination area under AMLR. Supervisors assess whether these connect into a coherent, operational whole — not whether individual documents exist. <strong>Based on Dutch enforcement patterns and supervisory practice, 7 domains consistently present the highest remediation burden when gaps are found.</strong></p></div>
+    <div class="dom-grid" id="domGrid">
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">01</div><div class="dom-title">Governance & Target Operating Model</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">Named AMLR programme owner with <strong>dedicated mandate — not shared</strong>. Documented TOM showing how AML/CFT operates across all three lines. RACI for every process. <em>Most institutions have policies. Far fewer have a TOM. The difference is what separates a document collection from a framework.</em></div></div>
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">02</div><div class="dom-title">SIRA / BWRA & Risk Appetite</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">BWRA with <strong>documented scoring methodology and weighting rationale</strong>. Risk Appetite Statement quantifying tolerance. Customer Risk Assessment designed for your profiles — not inherited. AMLA's 2026 data collection exercise requires institutions to report granular risk datapoints — customer composition, PEP exposure, complex structure prevalence, geographic distribution — that directly test whether the institution's own risk assessment methodology can produce consistent, auditable numbers. <em>Supervisors ask: "Show me how you arrived at this score." If your BWRA cannot reproduce the data AMLA is now requesting, the methodology gap is already visible.</em></div></div>
+      <div class="dom rev rv" onclick="togDom(this)"><div class="dom-num">03</div><div class="dom-title">KYC Policy & Procedure Suite</div><span class="dom-sev r">Significant</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">L1/L2/L3 transposed to AMLR. Procedures reflecting <strong>what staff actually do</strong>, not what was documented three years ago. Deviation processes with rationale. Four-eyes evidenced in workflow. <em>Policy updated but procedure unchanged is the gap profile supervisors identify most frequently.</em></div></div>
+      <div class="dom rev rv" onclick="togDom(this)"><div class="dom-num">04</div><div class="dom-title">CDD / EDD Framework</div><span class="dom-sev r">Significant</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">AMLR materially changes CDD triggers, EDD requirements, and UBO verification. For institutions with cross-border exposure, multi-layered fund structures, pooled investment vehicles, or institutional mandates where the ultimate beneficial owner sits several layers removed from the direct counterparty, the gap between current practice and AMLR requirements is typically substantial. <em>The most common examination finding: "Your CDD is adequate for direct, transparent counterparties and inadequate for the complex, multi-jurisdictional structures that constitute the majority of your portfolio."</em></div></div>
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">05</div><div class="dom-title">Transaction Monitoring</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp"><strong>Consistently the domain where the largest gap exists between belief and evidence.</strong> Documented scenario library. Threshold calibration with rationale. Scenario injection testing. Independent model validation. Most institutions have TM. Very few can demonstrate it is calibrated for their profiles rather than vendor defaults. <em>The question is not whether your TM works. It is whether you can prove it.</em></div></div>
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">06</div><div class="dom-title">UTR / FIU-NL Reporting</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">Quality, consistency, and <strong>rationale behind filing decisions</strong>. Defensive filing attracts criticism. Not filing when indicators were present attracts enforcement. <em>Institutions formalising TM for the first time face legacy exposure from historical non-filing periods — a material risk most do not assess until it is too late.</em></div></div>
+      <div class="dom rev rv" onclick="togDom(this)"><div class="dom-num">07</div><div class="dom-title">PEP & Adverse Media</div><span class="dom-sev r">Significant</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">Tiered PEP risk assessment. Adverse media with source hierarchy, language coverage, and relevance criteria. <strong>Proportionate ongoing monitoring at documented frequency and depth.</strong> Supervisors ask: "What triggers enhanced monitoring? How often? Who decides? Where is it documented?"</div></div>
+      <div class="dom rev rv" onclick="togDom(this)"><div class="dom-num">08</div><div class="dom-title">Sanctions & Screening</div><span class="dom-sev r">Significant</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">AMLR is not a sanctions regulation per se — the EU sanctions framework operates under separate legal instruments (Council Regulations under CFSP). However, AMLR <strong>embeds screening obligations directly into the CDD and ongoing monitoring architecture</strong>, requiring institutions to demonstrate that sanctions screening is integrated into their AML/CFT framework rather than operating as a standalone function. For institutions managing pooled investment vehicles, multi-jurisdictional fund structures, or portfolios with underlying investors across multiple regulatory perimeters, the screening challenge is structurally different from retail banking — <strong>beneficial ownership chains through nominee structures, sub-funds, and institutional mandates create screening complexity that standard tools routinely miss</strong>. EU, UN, OFAC, UK list screening. Retroactive screening on list updates. Fuzzy logic calibration with documented match-score thresholds and validated methodology. <em>The current geopolitical environment has elevated sanctions screening from a periodic compliance check to a priority examination area — supervisors now expect documented evidence of how screening is calibrated for the institution's specific counterparty and investor profile.</em></div></div>
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">09</div><div class="dom-title">Training & Competency</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp"><strong>Competency testing — understanding, not attendance.</strong> Role-specific for institutional complexity. Board awareness of personal liability. <em>An institution with excellent policies and untrained staff presents the same risk profile as one with no policies at all.</em></div></div>
+      <div class="dom rev rv" onclick="togDom(this)"><div class="dom-num">10</div><div class="dom-title">Exit & De-Risking</div><span class="dom-sev r">Significant</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">Exit procedure with defined triggers and governance approval. UTR assessment at exit. <strong>Anti-blanket de-risking obligations.</strong> Supervisors now sanction disproportionate de-risking — the compliance challenge runs both ways.</div></div>
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">11</div><div class="dom-title">QA & Effectiveness Testing</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp">Most institutions test individual controls. Supervisors assess whether <strong>the framework as a whole is effective</strong>. Statistical sampling. Analyst benchmarking. Root-cause analysis. <em>If you cannot produce this evidence today, the question is whether the timeline to build it fits within the window remaining.</em></div></div>
+      <div class="dom crit rv" onclick="togDom(this)"><div class="dom-num">12</div><div class="dom-title">Regulatory Watch & RTS Integration</div><span class="dom-sev c">High Enforcement Risk</span><div class="dom-arrow">Expand ↓</div><div class="dom-exp"><strong>80+ binding standards in consultation through 2027.</strong> Impact assessment per publication. Documented response decisions. Board reporting on the regulatory pipeline. Without a structured tracking function, institutions discover the cumulative effect of these standards too late to respond proportionately.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ READINESS CHECKLIST ═══ -->
+<section id="checklist">
+  <div class="sec-inner">
+    <div class="rv"><div class="sec-num">05 — Supervisory Readiness Checklist</div><h2 class="sec-h">42-Point <em>AMLR Examination Readiness</em> Assessment</h2>
+    <p class="sec-p">A structured assessment framework covering every evidence item supervisors have requested in Dutch AML examinations. Institutions that can demonstrate documented evidence against each item present a fundamentally different supervisory profile than those that cannot.</p></div>
+    <div class="cl-wrap">
+      <div class="cl-list">
+        <!-- VISIBLE: First 8 items — fully readable -->
+        <div class="cl-item rv">
+          <div class="cl-icon warn">01</div>
+          <div><div class="cl-title">Named AMLR Programme Owner with Dedicated Board Mandate</div><div class="cl-desc">A single, named individual with explicit Board mandate for AMLR implementation — not a committee, not a shared responsibility. Terms of reference documented. Reporting line to Board or ExCo confirmed and minuted.</div></div>
+          <div class="cl-ref">AMLR Art. 9<br>Governance</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon fail">02</div>
+          <div><div class="cl-title">Target Operating Model — Three Lines of Defence</div><div class="cl-desc">Documented TOM showing how AML/CFT operates across the institution. RACI matrix for every compliance process. Committee governance with terms of reference. Escalation framework with trigger criteria. Not produced for a review — maintained as a live document.</div></div>
+          <div class="cl-ref">AMLR Art. 9-11<br>Governance</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon fail">03</div>
+          <div><div class="cl-title">Article-by-Article WWFT → AMLR Gap Register</div><div class="cl-desc">Every obligation in AMLR mapped against current WWFT framework. Each gap risk-rated (Critical / High / Medium), assigned to an owner, with remediation timeline and status tracking. Producible at examination — not a summary document.</div></div>
+          <div class="cl-ref">Full Regulation<br>Programme Mgmt</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon warn">04</div>
+          <div><div class="cl-title">BWRA with Documented Scoring Methodology</div><div class="cl-desc">Business-Wide Risk Assessment transposed from SIRA to AMLR-mandated BWRA. Documented scoring methodology with weighting rationale a supervisor can follow step by step. Risk taxonomy classifying every inherent risk, control, and residual risk.</div></div>
+          <div class="cl-ref">AMLR Art. 8<br>Risk Assessment</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon fail">05</div>
+          <div><div class="cl-title">Risk Appetite Statement — Quantified Tolerance</div><div class="cl-desc">Board-approved Risk Appetite Statement that quantifies acceptable residual AML/CFT risk. Not a qualitative declaration — a defined tolerance framework with escalation triggers when thresholds approach or breach.</div></div>
+          <div class="cl-ref">AMLR Art. 8<br>Risk Appetite</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon warn">06</div>
+          <div><div class="cl-title">CDD/EDD Trigger Matrix — AMLR-Aligned</div><div class="cl-desc">Redesigned CDD trigger matrix reflecting AMLR's expanded requirements — including the lowered €10,000 threshold, harmonised UBO at 25%, new high-risk third-country treatment. EDD triggers that account for complex counterparty profiles, not only standard retail risk indicators.</div></div>
+          <div class="cl-ref">AMLR Art. 20-35<br>CDD/EDD</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon pass">07</div>
+          <div><div class="cl-title">KYC Policy Suite — L1/L2/L3 Transposed to AMLR</div><div class="cl-desc">Level 1 Policy, Level 2 Standards, Level 3 Procedures — each reflecting AMLR obligations, not WWFT with updated article references. Deviation processes with documented rationale. Four-eyes evidenced in workflow, not assumed.</div></div>
+          <div class="cl-ref">AMLR Art. 20-28<br>KYC Policy</div>
+        </div>
+        <div class="cl-item rv">
+          <div class="cl-icon fail">08</div>
+          <div><div class="cl-title">TM Scenario Library with Typology Mapping</div><div class="cl-desc">Documented scenario library mapped to institutional risk typologies. Each scenario with rationale for inclusion, threshold calibration with evidenced basis for every parameter, and documented review date. Not inherited from vendor defaults.</div></div>
+          <div class="cl-ref">AMLR Art. 36<br>TM Framework</div>
+        </div>
+
+        <!-- VISIBLE: Item 09 — AMLA data readiness -->
+        <div class="cl-item rv">
+          <div class="cl-icon fail">09</div>
+          <div><div class="cl-title">AMLA Data Collection Readiness — Solo Entity Reporting</div><div class="cl-desc">Ability to extract and report granular AML/CFT risk datapoints at solo entity level: total customer base, natural persons vs legal entities, PEP-connected beneficial owners, legal entities with complex structures, customers with cross-border non-EEA exposure, geographic distribution, and AML/CFT governance metrics — in the structured format AMLA requires. Institutions managing collective investment vehicles must aggregate across all managed UCITS/AIFs.</div></div>
+          <div class="cl-ref">AMLAR Art. 12(7)<br>Data Collection</div>
+        </div>
+
+        <!-- SEMI-GATED: Items 10-11 — slightly blurred -->
+        <div class="cl-item semi">
+          <div class="cl-icon warn">10</div>
+          <div><div class="cl-title">TM Effectiveness Testing — Scenario Injection Results</div><div class="cl-desc">Periodic scenario injection testing with documented results. Detection rate analysis. False positive/negative assessment. Independent model validation where applicable. Annual review evidence against evolving risk landscape.</div></div>
+          <div class="cl-ref">AMLR Art. 36<br>TM Testing</div>
+        </div>
+        <div class="cl-item semi">
+          <div class="cl-icon fail">11</div>
+          <div><div class="cl-title">UTR Filing Decision Framework — Documented Rationale</div><div class="cl-desc">Structured decision framework distinguishing genuine Wwft-threshold filings from defensive volume-driven filing. Non-filing rationale documented per case. Legacy exposure assessment for institutions formalising TM reporting for the first time.</div></div>
+          <div class="cl-ref">Wwft Art. 16<br>UTR / FIU-NL</div>
+        </div>
+
+        <!-- FULLY GATED: Items 11-16 — heavy blur -->
+        <div class="cl-item gated">
+          <div class="cl-icon warn">12</div>
+          <div><div class="cl-title">PEP Classification — Tiered Risk with Documented Criteria</div><div class="cl-desc">Tiered PEP risk assessment framework with classification criteria for domestic, foreign, and international organisation PEPs. Documented ongoing monitoring frequency per tier.</div></div>
+          <div class="cl-ref">AMLR Art. 35<br>PEP</div>
+        </div>
+        <div class="cl-item gated">
+          <div class="cl-icon fail">14</div>
+          <div><div class="cl-title">Sanctions Screening Calibrated to Counterparty Profile</div><div class="cl-desc">EU, UN, OFAC, UK list screening integrated into CDD architecture. Fuzzy logic threshold documented. Retroactive screening on list updates. Validation testing results.</div></div>
+          <div class="cl-ref">EU Sanctions Reg.<br>Screening</div>
+        </div>
+        <div class="cl-item gated">
+          <div class="cl-icon fail">14</div>
+          <div><div class="cl-title">Competency-Tested Training — Assessment Scores Per Role</div><div class="cl-desc">Role-specific training programme with competency assessment results. Board awareness module covering personal liability. Supervisory-auditable records.</div></div>
+          <div class="cl-ref">AMLR Art. 9<br>Training</div>
+        </div>
+        <div class="cl-item gated">
+          <div class="cl-icon warn">15</div>
+          <div><div class="cl-title">QA Framework — Statistical Sampling & Root-Cause Analysis</div><div class="cl-desc">Full framework effectiveness testing. Statistical QA sampling basis documented. Analyst benchmarking across case handlers. Root-cause analysis.</div></div>
+          <div class="cl-ref">AMLR Art. 9<br>QA / Testing</div>
+        </div>
+        <div class="cl-item gated">
+          <div class="cl-icon fail">17</div>
+          <div><div class="cl-title">Regulatory Watch — RTS/ITS Impact Register</div><div class="cl-desc">Structured tracking per AMLA/EBA publication with impact assessment, response decision, and Board reporting.</div></div>
+          <div class="cl-ref">AMLA Reg.<br>RTS Watch</div>
+        </div>
+        <div class="cl-item gated">
+          <div class="cl-icon fail">17</div>
+          <div><div class="cl-title">Exit Procedure with Anti-De-Risking Safeguards</div><div class="cl-desc">Defined exit triggers, governance approval, UTR assessment at exit, documented anti-blanket de-risking process.</div></div>
+          <div class="cl-ref">AMLR Art. 20<br>Exit</div>
+        </div>
+      </div>
+
+      <!-- GATE OVERLAY -->
+      <div class="cl-gate">
+        <div class="cl-gate-inner">
+          <div class="cl-gate-lock"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/></svg></div>
+          <div class="cl-gate-title">25 additional assessment items</div>
+          <div class="cl-gate-sub">The full 42-point checklist covers UBO verification protocols, adverse media source hierarchies, outsourcing governance, compliance officer independence requirements, Board reporting templates, and 20 further examination evidence items. <strong>Available as part of a diagnostic engagement.</strong></div>
+          <div class="cl-count">Showing 9 of 42 items</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 06 — APPROACH ═══ -->
+<div id="approach-band">
+  <div class="app-inner">
+    <div class="app-label">06 — Approach & Methodology</div>
+    <h2 class="app-h">How AMLR Implementation <em>Actually Gets Done</em></h2>
+    <p class="app-sub">This is not a theoretical framework. It is a methodology refined across 17 years and 8 institutional engagements — from Rabobank's AML function build (inception to 125+ FTEs) through ING, FMO, LeasePlan, Ayvens, and Société Générale Group. <strong>Every phase below has been executed in a live supervisory environment. Every deliverable has been examined.</strong></p>
+
+    <!-- PHASES -->
+    <div class="phase-row">
+      <div class="phase"><div class="ph-num">01</div><div class="ph-name">Diagnose</div><div class="ph-desc"><strong>Weeks 1–4.</strong> Article-by-article WWFT→AMLR gap analysis. Risk-rated remediation register. Supervisory readiness scoring across all 12 domains. Board briefing with prioritised exposure map and recommended sequencing. <em>This phase alone tells you exactly where you stand — and what the supervisor will find.</em></div></div>
+      <div class="phase"><div class="ph-num">02</div><div class="ph-name">Architect</div><div class="ph-desc"><strong>Weeks 4–12.</strong> Target Operating Model design. BWRA methodology with scoring rationale. KYC policy transposition. CDD/EDD trigger redesign. TM scenario library calibration. Risk taxonomy and control mapping. <em>Every document designed to withstand supervisory cross-examination — not just pass internal review.</em></div></div>
+      <div class="phase"><div class="ph-num">03</div><div class="ph-name">Embed</div><div class="ph-desc"><strong>Weeks 12–20.</strong> Procedure deployment with hands-on analyst training. TM threshold calibration and scenario injection testing. RTS integration as standards publish. QA framework with statistical sampling. Board reporting cadence. <em>The framework becomes operational — not documented, operational.</em></div></div>
+      <div class="phase"><div class="ph-num">04</div><div class="ph-name">Evidence</div><div class="ph-desc"><strong>Ongoing.</strong> Effectiveness testing cycle. Regulatory watch and impact assessment per publication. Recalibration triggers. Supervisory preparation pack. <em>Building the evidence base that a supervisor will request — before they request it.</em></div></div>
+    </div>
+
+    <!-- WHAT MAKES THIS DIFFERENT -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:40px">
+      <div style="padding:22px 20px;border:1px solid rgba(201,168,76,.12);border-radius:8px;background:rgba(255,255,255,.02)">
+        <div style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:300;color:rgba(201,168,76,.25);margin-bottom:6px">100%</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Senior-Authored</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.55">Every deliverable written by someone who has sat in the room when the supervisor asks the difficult question. No graduate analysts. No handoff to juniors after the pitch.</div>
+      </div>
+      <div style="padding:22px 20px;border:1px solid rgba(201,168,76,.12);border-radius:8px;background:rgba(255,255,255,.02)">
+        <div style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:300;color:rgba(201,168,76,.25);margin-bottom:6px">8</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Institutional Track Record</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.55">Rabobank, ING, FMO, LeasePlan, Ayvens, Ayvens Bank, Société Générale Group, KPN. Not project-based fly-ins — embedded, multi-year engagements where frameworks were built, tested, and examined.</div>
+      </div>
+      <div style="padding:22px 20px;border:1px solid rgba(201,168,76,.12);border-radius:8px;background:rgba(255,255,255,.02)">
+        <div style="font-family:'Fraunces',serif;font-size:1.8rem;font-weight:300;color:rgba(201,168,76,.25);margin-bottom:6px">DNB</div>
+        <div style="font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Supervisory Practice</div>
+        <div style="font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.55">Frameworks designed against Dutch supervisory examination methodology — not generic international compliance standards. The difference is knowing what DNB and AFM actually look for, not what the regulation says they should.</div>
+      </div>
+    </div>
+
+    <!-- SCOPE -->
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(201,168,76,.45);margin-bottom:14px">Engagement Scope — Tailored Per Institution</div>
+    <div class="scope-grid">
+      <div class="scope-item"><div class="si-title">End-to-End KYC Framework Enhancement</div><div class="si-desc">CDD/EDD triggers, UBO verification, PEP/SOE classification, four-eyes workflow, escalation paths — redesigned for AMLR from first principles, not patched from WWFT.</div></div>
+      <div class="scope-item"><div class="si-title">SIRA/BWRA & Risk Governance</div><div class="si-desc">Scoring methodology with documented weighting rationale, risk taxonomy, inherent→controls→residual mapping, Risk Appetite Statement, recalibration framework.</div></div>
+      <div class="scope-item"><div class="si-title">Transaction Monitoring Review</div><div class="si-desc">Scenario assessment against institution-specific typologies, threshold calibration, scenario injection testing, effectiveness evidence, alert triage taxonomy, tuning log.</div></div>
+      <div class="scope-item"><div class="si-title">Regulatory Watch & RTS Integration</div><div class="si-desc">Impact assessment per AMLA/EBA publication. Documented response decisions with rationale. Policy revision integration. Board reporting on the regulatory pipeline.</div></div>
+      <div class="scope-item"><div class="si-title">Competency-Based Training Programme</div><div class="si-desc">Role-specific with assessment scoring — not attendance tracking. Board awareness of personal liability. Analyst workshops. E-learning modules. Supervisory-auditable records.</div></div>
+      <div class="scope-item"><div class="si-title">Programme Oversight & Board Reporting</div><div class="si-desc">Dedicated programme governance. Milestone tracking, stakeholder coordination, regulatory calendar, structured Board-level implementation reporting.</div></div>
+    </div>
+
+    <div class="app-note">
+      <h3>How Engagements Begin</h3>
+      <p>Not with a proposal — with a <strong>diagnostic conversation</strong>. A focused, confidential assessment of where the institution stands against the 12 supervisory domains, what the priority gaps are, and what a realistic implementation timeline looks like given the regulatory calendar. That conversation takes 60–90 minutes and produces a clear picture of exposure. Everything that follows — if anything follows — is scoped from it. <strong>Tightly defined. Governed. Accountable. No open-ended retainers.</strong></p>
+    </div>
+
+    <!-- CURRENT ACTIVITY -->
+    <div style="margin-top:32px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="padding:26px 24px;border:1px solid rgba(201,168,76,.18);border-radius:8px;background:rgba(201,168,76,.03)">
+        <div style="font-size:.54rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Current Engagement Activity — Q1/Q2 2026</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.7">
+          AMLR implementation advisory proposals are currently under consideration by multiple Dutch financial institutions — including a state-owned development finance institution, a bank within a major European banking group, and an asset manager with cross-border UCITS/AIF mandates. Active engagements and proposals in progress cover the full scope of AMLR readiness: gap analysis, KYC framework redesign, transaction monitoring review, BWRA methodology, regulatory watch programmes, and competency-based training — each scoped to the institution's specific risk profile and supervisory context.
+        </div>
+      </div>
+      <div style="padding:26px 24px;border:1px solid rgba(201,168,76,.18);border-radius:8px;background:rgba(201,168,76,.03)">
+        <div style="font-size:.54rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">How I Can Help — Concrete Options</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.55);line-height:1.7">
+          <strong style="color:rgba(255,255,255,.8)">Diagnostic Assessment</strong> — a focused 60–90 minute readiness review against the 12 supervisory domains, producing a prioritised exposure map.<br><br>
+          <strong style="color:rgba(255,255,255,.8)">AMLR Gap Analysis & Remediation Programme</strong> — full article-by-article WWFT→AMLR mapping through to implementation, Board reporting, and supervisory preparation.<br><br>
+          <strong style="color:rgba(255,255,255,.8)">Targeted Advisory</strong> — scoped engagement on a specific domain: TM calibration, BWRA redesign, KYC transposition, training programme, or AMLA data collection support.<br><br>
+          <strong style="color:rgba(255,255,255,.8)">Part-Time Embedded Programme Oversight</strong> — dedicated ongoing programme governance alongside your BAU operation through to July 2027.
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:18px 24px;border:1px solid rgba(201,168,76,.1);border-radius:8px;background:rgba(255,255,255,.015);text-align:center">
+      <div style="font-size:.76rem;color:rgba(255,255,255,.5);line-height:1.6">Capacity is limited — I work with a small number of institutions at any time to ensure senior-level attention throughout. <strong style="color:rgba(255,255,255,.7)">Current availability: Q2 2026 onward.</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 06 — DIAGNOSTIC ═══ -->
+<section id="diagnostic">
+  <div class="sec-inner">
+    <div class="rv"><div class="sec-num">07 — Self-Assessment</div><h2 class="sec-h">Six Questions <em>That Determine Your Exposure</em></h2>
+    <p class="sec-p">These are derived from actual supervisory examination frameworks. The confidence or hesitation with which your institution can answer them is itself a diagnostic.</p></div>
+    <div class="disc-grid">
+      <div class="disc rv"><div class="disc-num">01</div><div class="disc-cat blue">Programme Ownership</div><div class="disc-q">Who owns your AMLR implementation — and do they have a dedicated mandate, or is it one of several responsibilities?</div><div class="disc-why">Distributed ownership is the most consistent root cause in Dutch AML enforcement. AMLR requires a programme — and a programme requires an owner.</div></div>
+      <div class="disc rv"><div class="disc-num">02</div><div class="disc-cat red">Framework Evidence</div><div class="disc-q">If your supervisor requested your Target Operating Model today — could you produce one? Would it reflect how your institution actually operates?</div><div class="disc-why">A TOM produced for a previous review and not maintained is worse than no TOM at all — it demonstrates awareness of the requirement and failure to sustain it.</div></div>
+      <div class="disc rv"><div class="disc-num">03</div><div class="disc-cat amber">TM Calibration</div><div class="disc-q">Can you demonstrate that your transaction monitoring is calibrated for your actual transaction profiles — with documented rationale for every threshold?</div><div class="disc-why">The gap between "we have TM" and "we can evidence TM effectiveness" is where the largest remediation items consistently land.</div></div>
+      <div class="disc rv"><div class="disc-num">04</div><div class="disc-cat green">Staff Competency</div><div class="disc-q">If a supervisor interviewed your CDD analysts about AMLR's specific requirements — would they pass?</div><div class="disc-why">Policy without operational understanding is a document, not a control. Supervisors increasingly test this directly. Attendance records do not answer the question.</div></div>
+      <div class="disc rv"><div class="disc-num">05</div><div class="disc-cat blue">Regulatory Tracking & Data Readiness</div><div class="disc-q">Is someone monitoring each AMLA/EBA publication, assessing relevance, and documenting the response decision? And could your institution produce the structured AML/CFT risk data AMLA is now requesting from sampled entities?</div><div class="disc-why">80+ standards expected, plus active data collection exercises. Institutions not tracking these are building against an incomplete specification — and those that cannot produce their own risk data on demand are signalling the gap AMLA is designed to find.</div></div>
+      <div class="disc rv"><div class="disc-num">06</div><div class="disc-cat red">The Real Question</div><div class="disc-q">If AFM or DNB requested a readiness review next month — not in July 2027, but next month — what would you present?</div><div class="disc-why">Supervisors do not always announce examinations in advance. The answer is the single most accurate measure of your actual exposure.</div></div>
+    </div>
+    <div class="mandate rv" style="margin-top:32px;border-left-color:var(--red)">
+      <h3>How to Read Your Answers</h3>
+      <p>If all six answers came with documented evidence and immediate confidence — your institution is in a minority. <strong>If two or more prompted hesitation, the need to check with a colleague, or the quiet recognition that the honest answer is "I'm not sure" — that is your supervisory exposure.</strong> Most Dutch financial institutions completed their AMLR gap assessment in summer 2025 and are now in active remediation. The institutions that paid €775 million and €480 million could have answered these questions too. They answered them the same way.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<div id="about">
+  <div class="about-inner">
+    <div class="about-left">
+      <div class="about-label">About This Briefing</div>
+      <h2 class="about-h">Prepared by <em>Zack ElMoussaoui</em></h2>
+      <p class="about-bio">Senior Financial Economic Crime & Compliance Consultant. 17+ years across <strong>Rabobank</strong> (7 years, built compliance from inception to 125+ FTEs), <strong>ING, FMO, LeasePlan, Ayvens, Société Générale Group</strong>, and <strong>KPN</strong>. The analysis in this briefing draws on direct experience with Dutch supervisory examination processes, enforcement remediation, and AMLR gap assessments.</p>
+      <div class="about-badges">
+        <span class="ab">Rabobank</span><span class="ab">ING</span><span class="ab">FMO</span><span class="ab">LeasePlan</span><span class="ab">Ayvens</span><span class="ab">Société Générale</span><span class="ab">KPN</span>
+      </div>
+      <div class="about-links">
+        <a href="mailto:info@compliancedevelopmentconsultancy.com" class="about-link">info@compliancedevelopmentconsultancy.com</a>
+        <span class="about-loc">The Hague, Netherlands</span>
+      </div>
+      <a href="https://zecomplianceconsultancy-bot.github.io/cv/" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:9px 20px;border:1px solid var(--brd2);color:var(--blue);font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border-radius:5px;transition:all .3s">Full Profile & CV <span style="font-size:.72rem">↗</span></a>
+    </div>
+    <div class="about-right">
+      <div class="about-stat"><div class="about-stat-v">17+</div><div class="about-stat-l">Years</div></div>
+      <div class="about-stat"><div class="about-stat-v">8</div><div class="about-stat-l">Institutions</div></div>
+      <div class="about-stat"><div class="about-stat-v">30+</div><div class="about-stat-l">Frameworks</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="foot-brand">Apex Compliance Consultancy</div>
+  <div class="foot-copy">© 2026 ZE Compliance Development & Consultancy (KVK: pending). All rights reserved.</div>
+</footer>
+<div style="padding:28px 80px 40px;border-top:1px solid var(--brd);font-size:.56rem;color:var(--dim);line-height:1.85;max-width:1060px;margin:0 auto">
+  <p style="margin-bottom:8px"><strong style="color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.5rem">Legal Notice & Disclaimer</strong></p>
+  <p>This briefing is published by ZE Compliance Development & Consultancy, trading as Apex Compliance Consultancy, for general informational purposes only. It does not constitute legal, regulatory, tax, or professional compliance advice and should not be relied upon as a substitute for advice from a qualified legal or compliance professional familiar with your institution's specific circumstances, risk profile, and regulatory obligations.</p>
+  <p style="margin-top:6px">The regulatory analysis, supervisory domain assessments, enforcement severity classifications, and readiness checklist items contained herein reflect the professional opinion of the author based on publicly available regulatory texts, published enforcement decisions, and professional experience. They do not represent the official position of any supervisory authority, including but not limited to De Nederlandsche Bank (DNB), Autoriteit Financiële Markten (AFM), the European Banking Authority (EBA), or the EU Anti-Money Laundering Authority (AMLA). Supervisory examination priorities and methodologies are subject to change without notice.</p>
+  <p style="margin-top:6px">References to specific institutions (ING Bank N.V., ABN AMRO Bank N.V., FMO, Rabobank, and others) are based on publicly available enforcement decisions and regulatory disclosures. No confidential or non-public information has been used. Past enforcement outcomes are not indicative of future supervisory action against any institution.</p>
+  <p style="margin-top:6px">The 42-point readiness checklist and supervisory domain severity ratings are proprietary assessment frameworks developed by the author. They are provided as illustrative tools and do not represent a guarantee of supervisory outcome, regulatory compliance, or examination readiness. No representation or warranty, express or implied, is made as to the accuracy, completeness, or timeliness of any information in this briefing.</p>
+  <p style="margin-top:6px">All intellectual property in this briefing — including text, structure, design, assessment frameworks, and proprietary methodologies — is owned by ZE Compliance Development & Consultancy. Reproduction, redistribution, or derivative use without prior written consent is prohibited.</p>
+  <p style="margin-top:6px">ZE Compliance Development & Consultancy accepts no liability for any loss or damage arising from reliance on this briefing. Use of this briefing does not create a client-consultant relationship. Any engagement for advisory services is subject to a separate written agreement.</p>
+  <p style="margin-top:10px;color:var(--muted);font-size:.52rem">ZE Compliance Development & Consultancy · The Hague, Netherlands · info@compliancedevelopmentconsultancy.com</p>
+</div>
+
+<script>
+// ═══ SCROLL PROGRESS ═══
+window.addEventListener('scroll',()=>{const h=document.documentElement.scrollHeight-window.innerHeight;document.getElementById('prog').style.width=(window.scrollY/h*100)+'%'});
+
+// ═══ THEME ═══
+let isDark=false;
+function toggleTheme(){isDark=!isDark;document.body.classList.toggle('dark',isDark);document.getElementById('themeBtn').textContent=isDark?'Light Mode':'Dark Mode'}
+
+// ═══ SCROLL REVEAL ═══
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+// ═══ NAV ACTIVE ═══
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'})})});
+const secs=document.querySelectorAll('section[id],div[id]');
+const navs=document.querySelectorAll('.n-link');
+window.addEventListener('scroll',()=>{let c='';secs.forEach(s=>{if(window.scrollY>=s.offsetTop-200)c=s.id});navs.forEach(a=>{a.classList.toggle('on',a.getAttribute('href')==='#'+c)})});
+
+// ═══ DOMAIN TOGGLE ═══
+function togDom(el){const was=el.classList.contains('open');document.querySelectorAll('.dom.open').forEach(d=>d.classList.remove('open'));if(!was)el.classList.add('open')}
+
+// ═══ FULL-PAGE FLOATING LABELS ═══
+(function(){
+  const LABELS=[
+    {t:'AML',x:5,y:8,s:26,d:1},{t:'Sanctions',x:78,y:4,s:20,d:2},{t:'SIRA',x:14,y:24,s:18,d:3},
+    {t:'EBA',x:70,y:16,s:22,d:1},{t:'Wwft',x:42,y:10,s:19,d:2},{t:'OFAC',x:88,y:28,s:16,d:3},
+    {t:'Sw77',x:26,y:40,s:15,d:1},{t:'AFM',x:62,y:35,s:24,d:2},{t:'UBO',x:6,y:52,s:18,d:3},
+    {t:'AMLR',x:48,y:46,s:28,d:1},{t:'DNB',x:76,y:50,s:20,d:2},{t:'FATF',x:20,y:60,s:16,d:3},
+    {t:'CDD',x:56,y:62,s:20,d:1},{t:'EDD',x:33,y:70,s:15,d:2},{t:'PEP',x:84,y:65,s:22,d:3},
+    {t:'SOE',x:12,y:76,s:14,d:1},{t:'KYC',x:66,y:73,s:24,d:2},{t:'TOM',x:40,y:80,s:17,d:3},
+    {t:'RTS',x:4,y:86,s:18,d:1},{t:'AMLA',x:54,y:84,s:21,d:2},{t:'ITS',x:76,y:86,s:14,d:3},
+    {t:'BWRA',x:28,y:90,s:19,d:1},{t:'FIU',x:60,y:91,s:15,d:2},{t:'UTR',x:90,y:76,s:16,d:3},
+    {t:'3LoD',x:36,y:16,s:14,d:1},{t:'TM',x:92,y:42,s:18,d:2},{t:'QA',x:2,y:40,s:15,d:3},
+    {t:'CFT',x:80,y:58,s:14,d:3},{t:'CRA',x:23,y:50,s:13,d:1},{t:'RAS',x:50,y:26,s:16,d:2},
+  ];
+  const c=document.getElementById('floatBg');
+  LABELS.forEach(l=>{const el=document.createElement('div');el.className='fl';el.textContent=l.t;el.style.cssText=`left:${l.x}%;top:${l.y}%;font-size:${l.s}px;animation:drift${l.d} ${22+Math.random()*14}s ease-in-out infinite;animation-delay:${-Math.random()*25}s`;c.appendChild(el)});
+})();
+
+// ═══ HERO CANVAS — SPIDERWEB ═══
+(function(){
+  const cv=document.getElementById('heroCanvas');if(!cv)return;
+  const ctx=cv.getContext('2d');let W,H;
+  function resize(){W=cv.width=cv.parentElement.offsetWidth;H=cv.parentElement.offsetHeight;cv.height=H}
+  resize();window.addEventListener('resize',resize);
+  const N=60;
+  const nodes=Array.from({length:N},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5,p:Math.random()*Math.PI*2}));
+  let px=W/2,py=H/2;
+  document.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){px=e.clientX-r.left;py=e.clientY-r.top}});
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const dk=document.body.classList.contains('dark');
+    const nc=dk?[201,168,76]:[26,101,214];
+    nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.p+=.012;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;const dx=px-n.x,dy=py-n.y,d=Math.hypot(dx,dy);if(d<220){n.vx+=dx*.0001;n.vy+=dy*.0001}});
+    for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<150){const al=(1-d/150)*(dk?.3:.1);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${al})`;ctx.lineWidth=d<60?.6:.35;ctx.stroke();if(d<55){const mx=(a.x+b.x)/2,my=(a.y+b.y)/2;ctx.beginPath();ctx.arc(mx,my,.7,0,Math.PI*2);ctx.fillStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${al*1.5})`;ctx.fill()}}if(d>=150&&d<220){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${(1-d/220)*(dk?.04:.015)})`;ctx.lineWidth=.2;ctx.stroke()}}
+    nodes.forEach(n=>{const d=Math.hypot(px-n.x,py-n.y);if(d<190){ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(n.x,n.y);ctx.strokeStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${(1-d/190)*(dk?.35:.14)})`;ctx.lineWidth=.5;ctx.stroke()}});
+    nodes.forEach(n=>{const g=.5+.5*Math.sin(n.p);ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${g*(dk?.55:.2)})`;ctx.fill()});
+    ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fillStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${dk?.6:.25})`;ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.strokeStyle=`rgba(${nc[0]},${nc[1]},${nc[2]},${dk?.2:.08})`;ctx.lineWidth=1;ctx.stroke();
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</body>
+</html>
