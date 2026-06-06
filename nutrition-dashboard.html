@@ -201,6 +201,31 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);b
 .btn-mini{font-size:.78rem;font-weight:600;padding:7px 13px;border-radius:10px;border:1px solid var(--brd2);background:var(--card-solid);cursor:pointer;color:var(--ink);transition:.2s}
 .btn-mini:hover{border-color:var(--green);color:var(--green-d)}
 
+/* ════════ HEALTH INSIGHTS ════════ */
+.smart-add{display:flex;align-items:center;gap:15px;padding:16px 18px;border-radius:16px;margin-bottom:20px;
+  background:linear-gradient(120deg,rgba(245,158,11,.13),rgba(15,157,88,.1));border:1px solid var(--brd2)}
+.smart-add .sa-ico{font-size:1.9rem;flex-shrink:0}
+.smart-add b{font-size:1rem;display:block;margin-bottom:2px}
+.smart-add p{font-size:.87rem;color:var(--ink2);margin:0}
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:14px}
+.insight{padding:18px;border-radius:16px;background:var(--card-solid);border:1px solid var(--brd);transition:.3s var(--ease)}
+.insight:hover{box-shadow:var(--sh);transform:translateY(-3px)}
+.insight .ih{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.insight .ih .iico{font-size:1.45rem}
+.insight .ih .it{font-weight:700;font-size:1.02rem}
+.insight .pill-status{margin-left:auto;font-size:.68rem;font-weight:700;padding:4px 11px;border-radius:20px;white-space:nowrap}
+.st-good{background:rgba(15,157,88,.16);color:var(--green-d)}
+.st-ok{background:rgba(245,158,11,.16);color:#b45309}
+.st-low{background:rgba(239,68,68,.13);color:#b91c1c}
+.st-none{background:var(--brd);color:var(--muted)}
+body.dark .st-ok{color:#fbbf24}
+body.dark .st-low{color:#fca5a5}
+.insight .ibar{height:7px;border-radius:6px;background:var(--brd);overflow:hidden;margin:11px 0}
+.insight .ibar i{display:block;height:100%;border-radius:6px;transition:width 1s var(--ease)}
+.insight .iquant{font-size:.83rem;color:var(--ink2);font-weight:600;line-height:1.4}
+.insight .isug{font-size:.8rem;color:var(--muted);margin-top:9px;display:flex;gap:6px;align-items:flex-start}
+.insight .isug b{color:var(--green-d);font-weight:700}
+
 /* ════════ FOOD GUIDE GRID ════════ */
 .alt{background:linear-gradient(180deg,transparent,rgba(15,157,88,.04),transparent)}
 .food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
@@ -430,6 +455,14 @@ footer{padding:54px 0 40px;border-top:1px solid var(--brd);margin-top:30px}
       </div>
     </div>
 
+    <!-- HEALTH INSIGHTS -->
+    <div class="panel card reveal" style="grid-column:1/-1">
+      <h3>🩺 Health Insights — quantified for you</h3>
+      <p class="sub">Personalised to your body — <button class="btn-mini" id="profileBtn">👤 set up my profile</button>. Estimates from logged foods; general guidance, not a diagnosis.</p>
+      <div class="smart-add" id="smartAdd"></div>
+      <div class="insight-grid" id="insightGrid"></div>
+    </div>
+
     <!-- ADVICE -->
     <div class="panel card reveal" style="grid-column:1/-1">
       <h3>🧠 Smart Advice — tailored to today</h3>
@@ -553,27 +586,28 @@ const store={
 const todayKey=()=>new Date().toISOString().slice(0,10);
 
 /* ---------- DATA ---------- */
+// micros per serving: sat=sat fat g, na=sodium mg, sug=sugar g, k=potassium mg, vc=vitC mg, ca=calcium mg, fe=iron mg, o3=omega3 g
 const QUICK=[
-  {n:'Oatmeal',e:'🥣',cal:150,p:5,c:27,f:3,fib:4},
-  {n:'Salmon',e:'🐟',cal:208,p:20,c:0,f:13,fib:0},
-  {n:'Avocado',e:'🥑',cal:160,p:2,c:9,f:15,fib:7},
-  {n:'Almonds (28g)',e:'🌰',cal:164,p:6,c:6,f:14,fib:4},
-  {n:'Blueberries',e:'🫐',cal:84,p:1,c:21,f:0,fib:4},
-  {n:'Spinach',e:'🥬',cal:23,p:3,c:4,f:0,fib:2},
-  {n:'Greek Yogurt',e:'🥛',cal:100,p:17,c:6,f:0,fib:0},
-  {n:'Eggs (2)',e:'🥚',cal:156,p:13,c:1,f:11,fib:0},
-  {n:'Chicken Breast',e:'🍗',cal:165,p:31,c:0,f:4,fib:0},
-  {n:'Brown Rice',e:'🍚',cal:216,p:5,c:45,f:2,fib:4},
-  {n:'Lentils',e:'🫘',cal:230,p:18,c:40,f:1,fib:16},
-  {n:'Broccoli',e:'🥦',cal:55,p:4,c:11,f:1,fib:5},
-  {n:'Banana',e:'🍌',cal:105,p:1,c:27,f:0,fib:3},
-  {n:'Olive Oil (tbsp)',e:'🫒',cal:119,p:0,c:0,f:14,fib:0},
-  {n:'Walnuts (28g)',e:'🥜',cal:185,p:4,c:4,f:18,fib:2},
-  {n:'Black Beans',e:'🫘',cal:227,p:15,c:41,f:1,fib:15},
-  {n:'Sweet Potato',e:'🍠',cal:112,p:2,c:26,f:0,fib:4},
-  {n:'Quinoa',e:'🌾',cal:222,p:8,c:39,f:4,fib:5},
-  {n:'Apple',e:'🍎',cal:95,p:0,c:25,f:0,fib:4},
-  {n:'Dark Chocolate',e:'🍫',cal:170,p:2,c:13,f:12,fib:3}
+  {n:'Oatmeal',e:'🥣',cal:150,p:5,c:27,f:3,fib:4,sat:.6,na:9,sug:1,k:164,vc:0,ca:21,fe:2,o3:.05},
+  {n:'Salmon',e:'🐟',cal:208,p:20,c:0,f:13,fib:0,sat:3,na:59,sug:0,k:360,vc:0,ca:9,fe:.5,o3:1.8},
+  {n:'Avocado',e:'🥑',cal:160,p:2,c:9,f:15,fib:7,sat:2,na:7,sug:1,k:485,vc:10,ca:12,fe:.5,o3:.1},
+  {n:'Almonds (28g)',e:'🌰',cal:164,p:6,c:6,f:14,fib:4,sat:1,na:0,sug:1,k:200,vc:0,ca:76,fe:1,o3:0},
+  {n:'Blueberries',e:'🫐',cal:84,p:1,c:21,f:0,fib:4,sat:0,na:1,sug:15,k:114,vc:14,ca:9,fe:.4,o3:.1},
+  {n:'Spinach',e:'🥬',cal:23,p:3,c:4,f:0,fib:2,sat:0,na:24,sug:0,k:167,vc:8,ca:30,fe:.8,o3:.1},
+  {n:'Greek Yogurt',e:'🥛',cal:100,p:17,c:6,f:0,fib:0,sat:0,na:60,sug:6,k:240,vc:0,ca:187,fe:0,o3:0},
+  {n:'Eggs (2)',e:'🥚',cal:156,p:13,c:1,f:11,fib:0,sat:3,na:142,sug:1,k:138,vc:0,ca:56,fe:1.8,o3:.1},
+  {n:'Chicken Breast',e:'🍗',cal:165,p:31,c:0,f:4,fib:0,sat:1,na:74,sug:0,k:256,vc:0,ca:6,fe:.5,o3:.05},
+  {n:'Brown Rice',e:'🍚',cal:216,p:5,c:45,f:2,fib:4,sat:.3,na:10,sug:1,k:154,vc:0,ca:20,fe:1,o3:.03},
+  {n:'Lentils',e:'🫘',cal:230,p:18,c:40,f:1,fib:16,sat:0,na:4,sug:4,k:731,vc:3,ca:38,fe:6.6,o3:.2},
+  {n:'Broccoli',e:'🥦',cal:55,p:4,c:11,f:1,fib:5,sat:0,na:64,sug:2,k:457,vc:81,ca:62,fe:1,o3:.1},
+  {n:'Banana',e:'🍌',cal:105,p:1,c:27,f:0,fib:3,sat:0,na:1,sug:14,k:422,vc:10,ca:6,fe:.3,o3:.03},
+  {n:'Olive Oil (tbsp)',e:'🫒',cal:119,p:0,c:0,f:14,fib:0,sat:2,na:0,sug:0,k:0,vc:0,ca:0,fe:0,o3:.1},
+  {n:'Walnuts (28g)',e:'🥜',cal:185,p:4,c:4,f:18,fib:2,sat:2,na:1,sug:1,k:125,vc:0,ca:28,fe:.8,o3:2.5},
+  {n:'Black Beans',e:'🫘',cal:227,p:15,c:41,f:1,fib:15,sat:0,na:2,sug:0,k:611,vc:0,ca:46,fe:3.6,o3:.2},
+  {n:'Sweet Potato',e:'🍠',cal:112,p:2,c:26,f:0,fib:4,sat:0,na:72,sug:7,k:438,vc:22,ca:39,fe:.8,o3:.01},
+  {n:'Quinoa',e:'🌾',cal:222,p:8,c:39,f:4,fib:5,sat:.5,na:13,sug:2,k:318,vc:0,ca:31,fe:2.8,o3:.1},
+  {n:'Apple',e:'🍎',cal:95,p:0,c:25,f:0,fib:4,sat:0,na:2,sug:19,k:195,vc:8,ca:11,fe:.2,o3:.01},
+  {n:'Dark Chocolate',e:'🍫',cal:170,p:2,c:13,f:12,fib:3,sat:7,na:6,sug:7,k:200,vc:0,ca:24,fe:3.3,o3:0}
 ];
 // foods that boost heart score (soluble fibre / healthy fats / sterols)
 const HEART_FOODS=['Oatmeal','Salmon','Avocado','Almonds (28g)','Blueberries','Lentils','Black Beans','Walnuts (28g)','Olive Oil (tbsp)','Apple','Broccoli','Quinoa','Spinach','Dark Chocolate','Sweet Potato'];
@@ -649,9 +683,28 @@ const COMBOS={
 
 /* ---------- STATE ---------- */
 let goals=store.get('goals',{cal:2000,pro:75,fib:30});
-let history=store.get('history',{}); // {date:{cal,pro,carb,fat,fib,items:[],heartCount}}
-function today(){if(!history[todayKey()])history[todayKey()]={cal:0,pro:0,carb:0,fat:0,fib:0,items:[],heart:0};return history[todayKey()];}
-function save(){store.set('history',history);store.set('goals',goals);}
+let profile=store.get('profile',{sex:'female',age:32,weight:68,height:166,activity:1.375});
+let history=store.get('history',{});
+function today(){if(!history[todayKey()])history[todayKey()]={cal:0,pro:0,carb:0,fat:0,fib:0,items:[],heart:0,sat:0,na:0,sug:0,k:0,vc:0,ca:0,fe:0,o3:0};return history[todayKey()];}
+function save(){store.set('history',history);store.set('goals',goals);store.set('profile',profile);}
+
+// Personalised daily targets from profile (Mifflin-St Jeor + standard guidelines)
+function getTargets(){
+  const p=profile,male=p.sex==='male';
+  const bmr=10*p.weight+6.25*p.height-5*p.age+(male?5:-161);
+  const tdee=Math.round(bmr*p.activity);
+  return {
+    tdee,
+    cal:goals.cal, pro:goals.pro, fib:goals.fib,
+    na:2300, naIdeal:1500,        // sodium cap / ideal (mg)
+    k:male?3400:2600,             // potassium (mg)
+    sat:Math.round((goals.cal*0.10)/9), // saturated fat cap (g) ~10% kcal
+    sug:male?36:25,               // added sugar (g)
+    ca:1000, fe:male?8:18, vc:male?90:75, o3:1.1
+  };
+}
+const pct=(v,g)=>Math.max(0,Math.min(v/g,1));
+const statusFrom=s=>s>=70?'good':s>=40?'ok':'low';
 
 /* ---------- RENDER QUICK FOODS ---------- */
 function renderQuick(){
@@ -662,16 +715,14 @@ function renderQuick(){
 /* ---------- ADD / REMOVE ---------- */
 function addItem(f){
   const t=today();
-  t.items.push({n:f.n,e:f.e||'🍴',cal:+f.cal||0,p:+f.p||0,c:+f.c||0,f:+f.f||0,fib:+f.fib||0,heart:!!f.heart});
+  t.items.push({n:f.n,e:f.e||'🍴',cal:+f.cal||0,p:+f.p||0,c:+f.c||0,f:+f.f||0,fib:+f.fib||0,heart:!!f.heart,
+    sat:+f.sat||0,na:+f.na||0,sug:+f.sug||0,k:+f.k||0,vc:+f.vc||0,ca:+f.ca||0,fe:+f.fe||0,o3:+f.o3||0});
   recalc();save();renderLog();updateDash();toast(`${f.e||'🍴'} ${f.n} added`);
 }
 function recalc(){
-  const t=today();
-  t.cal=t.items.reduce((s,i)=>s+i.cal,0);
-  t.pro=t.items.reduce((s,i)=>s+i.p,0);
-  t.carb=t.items.reduce((s,i)=>s+i.c,0);
-  t.fat=t.items.reduce((s,i)=>s+i.f,0);
-  t.fib=t.items.reduce((s,i)=>s+i.fib,0);
+  const t=today();const sum=k=>t.items.reduce((s,i)=>s+(+i[k]||0),0);
+  t.cal=sum('cal');t.pro=sum('p');t.carb=sum('c');t.fat=sum('f');t.fib=sum('fib');
+  t.sat=sum('sat');t.na=sum('na');t.sug=sum('sug');t.k=sum('k');t.vc=sum('vc');t.ca=sum('ca');t.fe=sum('fe');t.o3=sum('o3');
   t.heart=t.items.filter(i=>i.heart).length;
 }
 $('#addBtn').onclick=()=>{
@@ -796,8 +847,124 @@ function renderAdvice(){
   $('#adviceList').innerHTML=A.map(a=>`<div class="advice ${a[0]}"><div class="advice-ico">${a[1]}</div><div><b>${a[2]}</b><p>${a[3]}</p></div></div>`).join('');
 }
 
+/* ---------- HEALTH INSIGHTS (quantified) ---------- */
+function computeInsights(){
+  const t=today(),T=getTargets(),I=[];
+
+  // ❤️ CHOLESTEROL — soluble fibre, heart foods, saturated fat
+  const satScore=t.sat<=T.sat?100:Math.max(0,100-(t.sat-T.sat)/T.sat*100);
+  const chol=Math.round(pct(t.fib,T.fib)*40+Math.min(t.heart/3,1)*30+satScore*0.30);
+  I.push({ico:'❤️',title:'Cholesterol',score:chol,color:'var(--green)',
+    quant:`Soluble fibre ${Math.round(t.fib)}/${T.fib}g · sat fat ${t.sat.toFixed(0)}/${T.sat}g cap · ${t.heart} heart food${t.heart!==1?'s':''}`,
+    tip: t.fib<T.fib*0.6 ? 'Add 🥣 oats, 🫘 beans or 🍎 an apple — soluble fibre actively lowers LDL'
+       : t.sat>T.sat ? 'Saturated fat is high — swap to 🫒 olive oil, 🥑 avocado or 🥜 nuts'
+       : t.o3<T.o3*0.5 ? 'Add 🐟 oily fish or 🥜 walnuts for cholesterol-friendly omega-3'
+       : 'Excellent heart-food pattern — this keeps cholesterol in check 💚'});
+
+  // 🩺 BLOOD PRESSURE — sodium vs potassium
+  const naScore=t.na<=T.naIdeal?100:t.na>=T.na?0:Math.round(100-(t.na-T.naIdeal)/(T.na-T.naIdeal)*100);
+  const bp=Math.round(pct(t.k,T.k)*55+naScore*0.45);
+  I.push({ico:'🩺',title:'Blood Pressure',score:bp,color:'var(--berry)',
+    quant:`Potassium ${Math.round(t.k)}/${T.k}mg · sodium ${Math.round(t.na)}mg (cap ${T.na})`,
+    tip: t.na>T.na ? 'Sodium is over the cap — season with 🌿 herbs, 🍋 lemon & spices instead of salt'
+       : t.k<T.k*0.6 ? 'Lift potassium with 🍌 banana, 🍠 sweet potato or 🫘 beans — great for blood pressure'
+       : 'Your sodium–potassium balance is heart-friendly today 👍'});
+
+  // 💊 VITAMINS & MINERALS — coverage of 6 key nutrients
+  const checks=[['vitamin C',t.vc,T.vc,'🫐 berries, 🥦 broccoli or 🍊 citrus'],
+    ['calcium',t.ca,T.ca,'🥛 Greek yogurt or 🥬 leafy greens'],
+    ['iron',t.fe,T.fe,'🫘 lentils or 🥬 spinach (with vitamin C)'],
+    ['potassium',t.k,T.k,'🍌 banana or 🫘 beans'],
+    ['fibre',t.fib,T.fib,'🥣 oats or 🍎 fruit'],
+    ['omega-3',t.o3,T.o3,'🐟 salmon or 🥜 walnuts']];
+  const covered=checks.filter(c=>c[1]>=c[2]*0.6).length;
+  const miss=checks.find(c=>c[1]<c[2]*0.6);
+  I.push({ico:'💊',title:'Vitamins & Minerals',score:Math.round(covered/checks.length*100),color:'var(--violet)',
+    quant:`${covered} of ${checks.length} key nutrients covered today`,
+    tip: miss ? `Top up ${miss[0]} — try ${miss[3]}` : 'Brilliant micronutrient coverage today 🌈'});
+
+  // ⚖️ ENERGY & WEIGHT — calories vs needs + protein
+  const remain=T.cal-t.cal;
+  const en=t.cal===0?0:Math.round(100-Math.min(Math.abs(t.cal-T.cal)/T.cal,1)*100);
+  I.push({ico:'⚖️',title:'Energy & Weight',score:en,color:'var(--blue)',
+    quant: t.cal>T.cal ? `${Math.round(t.cal)} kcal · ${Math.round(-remain)} over your ${T.cal} target · protein ${Math.round(t.pro)}/${T.pro}g`
+                       : `${Math.round(t.cal)}/${T.cal} kcal · ${Math.round(remain)} left · protein ${Math.round(t.pro)}/${T.pro}g`,
+    tip: t.pro<T.pro*0.6 ? 'Protein is low — add 🥚 eggs, 🍗 chicken, 🫘 beans or 🥛 yogurt'
+       : remain>500 ? 'Room for a balanced meal — lean protein + veg + whole grains'
+       : remain<-250 ? 'A little over — a lighter, veg-forward next meal balances the day'
+       : 'Energy intake is well matched to your needs ⚖️'});
+
+  // 🍬 BLOOD SUGAR — added sugar + fibre buffering
+  const sugScore=t.sug<=T.sug?100:Math.max(0,100-(t.sug-T.sug)/T.sug*100);
+  const bs=Math.round(sugScore*0.6+pct(t.fib,T.fib)*40);
+  I.push({ico:'🍬',title:'Blood Sugar',score:bs,color:'var(--teal)',
+    quant:`Sugar ${Math.round(t.sug)}g (cap ~${T.sug}g) · fibre ${Math.round(t.fib)}g slows the spike`,
+    tip: t.sug>T.sug ? 'Sugar is high — swap sweets for 🍓 fruit + 🥜 nuts to blunt the spike'
+       : t.fib<T.fib*0.5 ? 'Pair carbs with fibre & protein to keep blood sugar steady'
+       : 'Steady, fibre-supported energy — nicely balanced 👌'});
+
+  return I;
+}
+function renderInsights(){
+  const ins=computeInsights(),t=today();
+  if(!t.items.length){
+    $('#smartAdd').innerHTML=`<div class="sa-ico">🍽️</div><div><b>Log a meal to unlock your insights</b><p>Tap a quick food above and your cholesterol, blood-pressure, nutrition, energy &amp; blood-sugar read-outs appear here — quantified to your profile.</p></div>`;
+  }else{
+    const weak=[...ins].sort((a,b)=>a.score-b.score)[0];
+    const allGood=ins.every(i=>i.score>=70);
+    $('#smartAdd').innerHTML=`<div class="sa-ico">${allGood?'🌟':'💡'}</div><div><b>${allGood?"You're crushing it today":"Today's smart add"}</b><p>${allGood?"Every health area is on track — keep doing exactly what you're doing!":weak.tip}</p></div>`;
+  }
+  $('#insightGrid').innerHTML=ins.map(i=>{
+    const st=t.items.length?statusFrom(i.score):'none';
+    const lbl={good:'On track',ok:'Getting there',low:'Needs a boost',none:'Awaiting food'}[st];
+    return `<div class="insight">
+      <div class="ih"><span class="iico">${i.ico}</span><span class="it">${i.title}</span><span class="pill-status st-${st}">${lbl}</span></div>
+      <div class="ibar"><i style="width:${t.items.length?i.score:0}%;background:${i.color}"></i></div>
+      <div class="iquant">${i.quant}</div>
+      <div class="isug">💡 <span><b>Tip:</b> ${i.tip}</span></div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- PROFILE ---------- */
+function openProfile(){
+  $('#modal').innerHTML=`
+    <div class="modal-head" style="--c1:var(--blue);--c2:var(--violet)">
+      <button class="mclose" onclick="closeModal()">✕</button>
+      <div class="me">👤</div><h3>Your profile</h3>
+      <div class="mtarget">Personalises every target &amp; insight</div>
+    </div>
+    <div class="modal-body">
+      <div class="add-row">
+        <div class="field"><label>Sex</label><select id="pSex"><option value="female">Female</option><option value="male">Male</option></select></div>
+        <div class="field"><label>Age</label><input id="pAge" type="number" value="${profile.age}"></div>
+      </div>
+      <div class="add-row">
+        <div class="field"><label>Weight (kg)</label><input id="pWeight" type="number" value="${profile.weight}"></div>
+        <div class="field"><label>Height (cm)</label><input id="pHeight" type="number" value="${profile.height}"></div>
+      </div>
+      <div class="field" style="margin-bottom:16px"><label>Activity level</label>
+        <select id="pAct">
+          <option value="1.2">Sedentary — little exercise</option>
+          <option value="1.375">Light — 1–3 days/week</option>
+          <option value="1.55">Moderate — 3–5 days/week</option>
+          <option value="1.725">Active — 6–7 days/week</option>
+        </select></div>
+      <button class="btn btn-pri" style="width:100%;justify-content:center" onclick="saveProfile()">Save &amp; recalculate my targets</button>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:14px">We estimate your calorie needs (Mifflin-St Jeor formula), plus protein, fibre, sodium, potassium and more — tuned to your sex, weight, height, age and activity. These are general estimates; your doctor or dietitian can set targets specific to your health.</p>
+    </div>`;
+  $('#pSex').value=profile.sex;$('#pAct').value=profile.activity;
+  $('#modalBg').classList.add('open');
+}
+window.saveProfile=()=>{
+  profile={sex:$('#pSex').value,age:+$('#pAge').value||32,weight:+$('#pWeight').value||68,height:+$('#pHeight').value||166,activity:+$('#pAct').value||1.375};
+  const T=getTargets();
+  goals.cal=T.tdee; goals.pro=Math.round(profile.weight*1.0); goals.fib=Math.round(T.tdee/1000*14);
+  save();updateDash();closeModal();toast('Profile saved — targets recalculated 🎯');
+};
+
 /* ---------- DASH UPDATE ---------- */
-function updateDash(){renderRings();renderDonut();renderTrend();renderScore();renderAdvice();}
+function updateDash(){renderRings();renderDonut();renderTrend();renderScore();renderInsights();renderAdvice();}
 
 /* ---------- FOOD GUIDE ---------- */
 function renderGuide(list){
@@ -888,7 +1055,10 @@ MY DASHBOARD RIGHT NOW (today's log):
 - Calories: ${t.cal} kcal (goal ${goals.cal})
 - Protein: ${t.pro} g (goal ${goals.pro})
 - Carbs: ${t.carb} g · Fat: ${t.fat} g · Fibre: ${t.fib} g (goal ${goals.fib})
+- Sodium: ${Math.round(t.na)} mg · Potassium: ${Math.round(t.k)} mg · Sat fat: ${t.sat.toFixed(0)} g · Sugar: ${Math.round(t.sug)} g
 - Heart Score: ${computeScore()}/100
+- Health insights: ${computeInsights().map(i=>i.title+' '+i.score).join(' · ')}
+- My profile: ${profile.sex}, ${profile.age}y, ${profile.weight}kg, ${profile.height}cm
 - Foods logged today: ${t.items.map(i=>i.n).join(', ')||'none yet'}
 
 IDEAS YOU COULD HELP WITH (pick any, or do your own):
@@ -938,6 +1108,7 @@ $$('[data-count]').forEach(el=>cio.observe(el));
 
 /* ---------- INIT ---------- */
 $('#todayDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+$('#profileBtn').onclick=openProfile;
 renderQuick();renderLog();renderGuide('lower');renderVits();renderCombos();updateDash();
 </script>
 </body>
