@@ -250,6 +250,22 @@ body.dark .st-low{color:#fca5a5}
 .insight .isug{font-size:.8rem;color:var(--muted);margin-top:9px;display:flex;gap:6px;align-items:flex-start}
 .insight .isug b{color:var(--green-d);font-weight:700}
 
+/* ════════ GETTING STARTED ════════ */
+.start-card{max-width:980px;margin:0 auto;padding:34px}
+.start-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.start-head .si-ic{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--teal));display:grid;place-items:center;font-size:1.5rem;flex-shrink:0;box-shadow:0 8px 20px rgba(15,157,88,.32)}
+.start-head h2{font-size:1.7rem}
+.goal-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px;padding:16px 20px;border-radius:16px;
+  background:linear-gradient(120deg,rgba(139,92,246,.1),rgba(59,130,246,.07));border:1px solid var(--brd2)}
+.goal-banner .gb-ic{font-size:1.7rem}
+.goal-banner .gb-txt{flex:1;min-width:200px}
+.goal-banner .gb-txt b{display:block;font-size:1.02rem}
+.goal-banner .gb-txt p{font-size:.86rem;color:var(--ink2);margin:2px 0 0}
+.goal-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.goal-pick{font-size:.82rem;font-weight:700;padding:9px 15px;border-radius:30px;border:1px solid var(--brd2);background:var(--card-solid);cursor:pointer;color:var(--ink);transition:.2s}
+.goal-pick:hover{border-color:var(--green);transform:translateY(-2px)}
+.goal-pick.active{background:linear-gradient(120deg,var(--violet),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(139,92,246,.3)}
+
 /* ════════ WATER TRACKER ════════ */
 .water-main{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
 .glass{position:relative;width:104px;height:128px;flex-shrink:0;border:3px solid var(--brd2);border-top:none;
@@ -475,16 +491,17 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
   <div class="nav-in wrap">
     <div class="brand">
       <span class="logo">🥗</span>
-      <span>NourishWell<small>Smart Nutrition</small></span>
+      <span>NourishWell<small data-i18n="navTag">Smart Nutrition</small></span>
     </div>
     <div class="nav-links" id="navLinks">
-      <a href="#dashboard">Tracker</a>
-      <a href="#guide">Heart Foods</a>
-      <a href="#vitamins">Vitamins</a>
-      <a href="#combos">Combinations</a>
-      <a href="#planner">Planner</a>
-      <a href="#enhance">Enhance</a>
+      <a href="#dashboard" data-i18n="navTracker">Tracker</a>
+      <a href="#guide" data-i18n="navHeart">Heart Foods</a>
+      <a href="#vitamins" data-i18n="navVitamins">Vitamins</a>
+      <a href="#combos" data-i18n="navCombos">Combinations</a>
+      <a href="#planner" data-i18n="navPlanner">Planner</a>
+      <a href="#enhance" data-i18n="navEnhance">Enhance</a>
     </div>
+    <button class="icon-btn" id="langBtn" title="English / Español">ES</button>
     <button class="icon-btn" id="themeBtn" title="Toggle light / dark">🌙</button>
     <button class="icon-btn menu-tgl" id="menuBtn">☰</button>
   </div>
@@ -494,19 +511,19 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 <header id="hero" class="wrap">
   <div class="hero-grid">
     <div class="reveal in">
-      <span class="eyebrow"><span class="dot"></span>Personalised &amp; private — runs in your browser</span>
-      <h1>Eat smarter,<br><span class="grad">feel the difference.</span></h1>
-      <p class="lede">A beautiful place to track what you eat, lower your cholesterol naturally, and learn exactly which vitamins, minerals and food combinations work <em>for</em> your body — and which work against it.</p>
+      <span class="eyebrow"><span class="dot"></span><span data-i18n="heroEyebrow">Personalised &amp; private — runs in your browser</span></span>
+      <h1><span data-i18n="heroH1a">Eat smarter,</span><br><span class="grad" data-i18n="heroH1b">feel the difference.</span></h1>
+      <p class="lede" data-i18n="heroLede">A beautiful place to track what you eat, lower your cholesterol naturally, and learn exactly which vitamins, minerals and food combinations work for your body — and which work against it.</p>
       <div class="hero-cta">
-        <a href="#dashboard" class="btn btn-pri">Start tracking →</a>
-        <a href="#guide" class="btn btn-ghost">Explore heart foods</a>
+        <a href="#dashboard" class="btn btn-pri" data-i18n="heroCta1">Start tracking →</a>
+        <a href="#guide" class="btn btn-ghost" data-i18n="heroCta2">Explore heart foods</a>
       </div>
       <div class="hero-stats">
-        <div class="hstat"><div class="n" data-count="24">0</div><div class="l">Nutrients explained</div></div>
-        <div class="hstat"><div class="n" data-count="110">0</div><div class="l">Foods in the library</div></div>
-        <div class="hstat"><div class="n" data-count="100">0</div><div class="l">% in your browser</div></div>
+        <div class="hstat"><div class="n" data-count="24">0</div><div class="l" data-i18n="statNutrients">Nutrients explained</div></div>
+        <div class="hstat"><div class="n" data-count="130">0</div><div class="l" data-i18n="statFoods">Foods in the library</div></div>
+        <div class="hstat"><div class="n" data-count="100">0</div><div class="l" data-i18n="statBrowser">% in your browser</div></div>
       </div>
-      <div class="install-hint" id="installHint">📲 <span><b>Use it like an app:</b> tap your browser's <b>Share → Add to Home Screen</b> for a full-screen icon.</span><span class="x" onclick="this.parentNode.style.display='none'">✕</span></div>
+      <div class="install-hint" id="installHint"><span data-i18n-html="installHint">📲 <span><b>Use it like an app:</b> tap your browser's <b>Share → Add to Home Screen</b> for a full-screen icon.</span></span><span class="x" onclick="this.parentNode.style.display='none'">✕</span></div>
     </div>
     <div class="hero-visual reveal in">
       <div class="hero-photo">
@@ -529,53 +546,71 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
   </div>
 </header>
 
+<!-- ════════ GETTING STARTED ════════ -->
+<section id="start" class="wrap" style="padding-top:30px">
+  <div class="sec-head reveal">
+    <span class="sec-tag" data-i18n="gsTag">Start Here</span>
+    <h2 data-i18n="gsTitle">Three simple steps to get going</h2>
+    <p data-i18n="gsSub">New here? This is all there is to it.</p>
+  </div>
+  <div class="start-card card reveal">
+    <div class="steps">
+      <div class="step"><div class="num">1</div><b data-i18n="gs1t">Set your profile & goal</b><p data-i18n="gs1p">Tell us your age, sex and weight, and choose what you want to improve.</p></div>
+      <div class="step"><div class="num">2</div><b data-i18n="gs2t">Log food & water</b><p data-i18n="gs2p">Search the library, tap the foods you eat and add glasses of water.</p></div>
+      <div class="step"><div class="num">3</div><b data-i18n="gs3t">Read your insights</b><p data-i18n="gs3p">Get a Heart Score and quantified, goal-aware advice.</p></div>
+    </div>
+    <div class="goal-banner" id="goalBanner"></div>
+    <div class="goal-pills" id="goalPills"></div>
+  </div>
+</section>
+
 <!-- ════════ DASHBOARD ════════ -->
 <section id="dashboard" class="wrap">
   <div class="sec-head reveal">
-    <span class="sec-tag">Today's Tracker</span>
-    <h2>Your day, beautifully measured</h2>
-    <p>Log what you eat and watch your macros, fibre and heart-health score update live. Everything saves automatically on this device.</p>
+    <span class="sec-tag" data-i18n="dashTag">Today's Tracker</span>
+    <h2 data-i18n="dashTitle">Your day, beautifully measured</h2>
+    <p data-i18n="dashSub">Log what you eat and watch your macros, fibre and heart-health score update live. Everything saves automatically on this device.</p>
   </div>
 
   <div class="dash">
     <!-- LEFT: add + log -->
     <div class="panel card reveal">
-      <h3>🍽️ Food Log <span style="font-size:.8rem;font-weight:500;color:var(--muted);margin-left:auto" id="todayDate"></span></h3>
-      <p class="sub">Search the library, tap to log — or add your own below.</p>
+      <h3><span data-i18n="logTitle">🍽️ Food Log</span> <span style="font-size:.8rem;font-weight:500;color:var(--muted);margin-left:auto" id="todayDate"></span></h3>
+      <p class="sub" data-i18n="logSub">Search the library, tap to log — or add your own below.</p>
 
-      <div class="picker-search"><span class="si">🔍</span><input id="foodSearch" placeholder="Search 110+ foods…" autocomplete="off"></div>
+      <div class="picker-search"><span class="si">🔍</span><input id="foodSearch" data-i18n-ph="foodSearchPh" placeholder="Search 110+ foods…" autocomplete="off"></div>
       <div class="cat-pills" id="catPills"></div>
       <div class="food-chips" id="quickFoods"></div>
-      <div class="online-row"><button class="btn-mini" id="onlineBtn">🌐 Can't find it? Search the web (Open Food Facts)</button></div>
+      <div class="online-row"><button class="btn-mini" id="onlineBtn" data-i18n="onlineBtn">🌐 Can't find it? Search the web (Open Food Facts)</button></div>
 
       <details class="custom-add">
-        <summary>＋ Add a custom food (not in the list)</summary>
+        <summary data-i18n="customSummary">＋ Add a custom food (not in the list)</summary>
         <div class="add-row">
-          <div class="field" style="flex:3"><label>Food name</label><input id="fName" placeholder="e.g. Grandma's stew"></div>
-          <div class="field" style="flex:1;min-width:70px"><label>Icon</label><input id="fEmoji" placeholder="🍲" maxlength="2"></div>
-          <div class="field"><label>Calories</label><input id="fCal" type="number" placeholder="kcal" min="0"></div>
+          <div class="field" style="flex:3"><label data-i18n="lblFood">Food name</label><input id="fName" placeholder="…"></div>
+          <div class="field" style="flex:1;min-width:70px"><label data-i18n="lblIcon">Icon</label><input id="fEmoji" placeholder="🍲" maxlength="2"></div>
+          <div class="field"><label data-i18n="lblCal">Calories</label><input id="fCal" type="number" placeholder="kcal" min="0"></div>
         </div>
         <div class="add-row">
-          <div class="field"><label>Protein g</label><input id="fPro" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Carbs g</label><input id="fCarb" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Fat g</label><input id="fFat" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Fibre g</label><input id="fFib" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblProtein">Protein g</label><input id="fPro" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblCarbs">Carbs g</label><input id="fCarb" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblFat">Fat g</label><input id="fFat" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblFibre">Fibre g</label><input id="fFib" type="number" placeholder="0" min="0"></div>
         </div>
-        <div class="micro-hint">✨ Optional micronutrients — fill these so the food powers your Health Insights:</div>
+        <div class="micro-hint" data-i18n="microHint">✨ Optional micronutrients — fill these so the food powers your Health Insights:</div>
         <div class="add-row">
-          <div class="field"><label>Sat fat g</label><input id="fSat" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Sodium mg</label><input id="fNa" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Sugar g</label><input id="fSug" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Potassium mg</label><input id="fK" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblSat">Sat fat g</label><input id="fSat" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblSodium">Sodium mg</label><input id="fNa" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblSugar">Sugar g</label><input id="fSug" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblPotassium">Potassium mg</label><input id="fK" type="number" placeholder="0" min="0"></div>
         </div>
         <div class="add-row">
-          <div class="field"><label>Vitamin C mg</label><input id="fVc" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Calcium mg</label><input id="fCa" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Iron mg</label><input id="fFe" type="number" placeholder="0" min="0"></div>
-          <div class="field"><label>Omega-3 g</label><input id="fO3" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblVitc">Vitamin C mg</label><input id="fVc" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblCalcium">Calcium mg</label><input id="fCa" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblIron">Iron mg</label><input id="fFe" type="number" placeholder="0" min="0"></div>
+          <div class="field"><label data-i18n="lblOmega">Omega-3 g</label><input id="fO3" type="number" placeholder="0" min="0"></div>
         </div>
-        <label class="save-check"><input type="checkbox" id="fSave"> ⭐ Save to “My Foods” so it's one tap next time</label>
-        <button class="btn btn-pri" style="width:100%;justify-content:center" id="addBtn">+ Add to today</button>
+        <label class="save-check"><input type="checkbox" id="fSave"> <span data-i18n="saveCheck">⭐ Save to “My Foods” so it's one tap next time</span></label>
+        <button class="btn btn-pri" style="width:100%;justify-content:center" id="addBtn" data-i18n="addBtn">+ Add to today</button>
       </details>
 
       <div class="log-list" id="logList"></div>
@@ -583,29 +618,29 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 
     <!-- RIGHT: rings + donut -->
     <div class="panel card reveal">
-      <h3>📊 Live Breakdown</h3>
-      <p class="sub">Against your daily goals — <button class="btn-mini" id="goalsBtn">edit goals</button></p>
+      <h3 data-i18n="bdTitle">📊 Live Breakdown</h3>
+      <p class="sub"><span data-i18n="bdSub">Against your daily goals —</span> <button class="btn-mini" id="goalsBtn" data-i18n="goalsBtn">edit goals</button></p>
       <div class="rings" id="rings"></div>
       <div class="donut-box"><canvas id="macroDonut"></canvas></div>
       <div class="macro-legend">
-        <div class="ml"><span class="sw" style="background:var(--berry)"></span>Protein</div>
-        <div class="ml"><span class="sw" style="background:var(--amber)"></span>Carbs</div>
-        <div class="ml"><span class="sw" style="background:var(--blue)"></span>Fat</div>
+        <div class="ml"><span class="sw" style="background:var(--berry)"></span><span data-i18n="legProtein">Protein</span></div>
+        <div class="ml"><span class="sw" style="background:var(--amber)"></span><span data-i18n="legCarbs">Carbs</span></div>
+        <div class="ml"><span class="sw" style="background:var(--blue)"></span><span data-i18n="legFat">Fat</span></div>
       </div>
     </div>
 
     <!-- WATER -->
     <div class="panel card reveal">
-      <h3>💧 Hydration</h3>
-      <p class="sub">Goal <span id="waterGoal">2.4 L</span> · tap to add a drink</p>
+      <h3 data-i18n="waterTitle">💧 Hydration</h3>
+      <p class="sub"><span data-i18n="waterSub">Goal</span> <span id="waterGoal">2.4 L</span></p>
       <div class="water-main">
         <div class="glass"><div class="glass-fill" id="glassFill"></div>
           <div class="glass-val"><b id="waterNow">0.0L</b><span id="waterPct">0%</span></div></div>
         <div class="water-btns">
-          <button class="wbtn" data-ml="150">＋ Cup<small>150 ml</small></button>
-          <button class="wbtn" data-ml="250">＋ Glass<small>250 ml</small></button>
-          <button class="wbtn" data-ml="500">＋ Bottle<small>500 ml</small></button>
-          <button class="wbtn undo" data-ml="-250">− Undo<small>250 ml</small></button>
+          <button class="wbtn" data-ml="150"><span data-i18n="wCup">＋ Cup</span><small>150 ml</small></button>
+          <button class="wbtn" data-ml="250"><span data-i18n="wGlass">＋ Glass</span><small>250 ml</small></button>
+          <button class="wbtn" data-ml="500"><span data-i18n="wBottle">＋ Bottle</span><small>500 ml</small></button>
+          <button class="wbtn undo" data-ml="-250"><span data-i18n="wUndo">− Undo</span><small>250 ml</small></button>
         </div>
       </div>
     </div>
@@ -628,23 +663,23 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 
     <!-- HEALTH INSIGHTS -->
     <div class="panel card reveal" style="grid-column:1/-1">
-      <h3>🩺 Health Insights — quantified for you</h3>
-      <p class="sub">Personalised to your body — <button class="btn-mini" id="profileBtn">👤 set up my profile</button>. Estimates from logged foods; general guidance, not a diagnosis.</p>
+      <h3 data-i18n="insTitle">🩺 Health Insights — quantified for you</h3>
+      <p class="sub"><span data-i18n="insSub">Personalised to your body —</span> <button class="btn-mini" id="profileBtn" data-i18n="profileBtn">👤 set up my profile</button><span data-i18n="insNote">. Estimates from logged foods; general guidance, not a diagnosis.</span></p>
       <div class="smart-add" id="smartAdd"></div>
       <div class="insight-grid" id="insightGrid"></div>
     </div>
 
     <!-- ADVICE -->
     <div class="panel card reveal" style="grid-column:1/-1">
-      <h3>🧠 Smart Advice — tailored to today</h3>
-      <p class="sub">Updates automatically as you log. General wellness guidance, not medical advice.</p>
+      <h3 data-i18n="advTitle">🧠 Smart Advice — tailored to today</h3>
+      <p class="sub" data-i18n="advSub">Updates automatically as you log. General wellness guidance, not medical advice.</p>
       <div class="advice-list" id="adviceList"></div>
     </div>
 
     <!-- TRENDS -->
     <div class="panel card reveal" style="grid-column:1/-1">
-      <h3>📈 7-Day Trends</h3>
-      <p class="sub">Your calorie &amp; fibre history. Comes alive as the days add up.</p>
+      <h3 data-i18n="trendTitle">📈 7-Day Trends</h3>
+      <p class="sub" data-i18n="trendSub">Your calorie &amp; fibre history. Comes alive as the days add up.</p>
       <div class="trend-box"><canvas id="trendChart"></canvas></div>
     </div>
   </div>
@@ -654,13 +689,13 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 <section id="guide" class="alt">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="sec-tag">The Cholesterol Kitchen</span>
-      <h2>Foods that lower it — and foods that raise it</h2>
-      <p>Soluble fibre, healthy fats and plant sterols are the quiet heroes of a healthy heart. Swap the red list for the green list.</p>
+      <span class="sec-tag" data-i18n="guideTag">The Cholesterol Kitchen</span>
+      <h2 data-i18n="guideTitle">Foods that lower it — and foods that raise it</h2>
+      <p data-i18n="guideSub">Soluble fibre, healthy fats and plant sterols are the quiet heroes of a healthy heart. Swap the red list for the green list.</p>
     </div>
     <div class="toggle-pills reveal">
-      <button class="pill active" data-list="lower">💚 Lowers cholesterol</button>
-      <button class="pill" data-list="limit">⚠️ Limit these</button>
+      <button class="pill active" data-list="lower" data-i18n="pillLower">💚 Lowers cholesterol</button>
+      <button class="pill" data-list="limit" data-i18n="pillLimit">⚠️ Limit these</button>
     </div>
     <div class="food-grid reveal" id="foodGrid"></div>
   </div>
@@ -669,11 +704,11 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 <!-- ════════ VITAMINS & MINERALS ════════ -->
 <section id="vitamins" class="wrap">
   <div class="sec-head reveal">
-    <span class="sec-tag">Nutrient Encyclopedia</span>
-    <h2>Vitamins &amp; minerals, decoded</h2>
-    <p>Tap any nutrient to learn what it does, the best foods to get it from, how much you need and the signs you're running low.</p>
+    <span class="sec-tag" data-i18n="vitTag">Nutrient Encyclopedia</span>
+    <h2 data-i18n="vitTitle">Vitamins &amp; minerals, decoded</h2>
+    <p data-i18n="vitSub">Tap any nutrient to learn what it does, the best foods to get it from, how much you need and the signs you're running low.</p>
   </div>
-  <div class="search-bar reveal"><span class="si">🔍</span><input id="vitSearch" placeholder="Search a vitamin, mineral or benefit…"></div>
+  <div class="search-bar reveal"><span class="si">🔍</span><input id="vitSearch" data-i18n-ph="vitSearchPh" placeholder="Search a vitamin, mineral or benefit…"></div>
   <div class="vit-grid reveal" id="vitGrid"></div>
 </section>
 
@@ -681,17 +716,17 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 <section id="combos" class="alt">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="sec-tag">Smart Pairing</span>
-      <h2>What to combine — and what to keep apart</h2>
-      <p>The same food can do twice as much (or half as much) depending on what you eat it with. These pairings change how well your body absorbs nutrients.</p>
+      <span class="sec-tag" data-i18n="comboTag">Smart Pairing</span>
+      <h2 data-i18n="comboTitle">What to combine — and what to keep apart</h2>
+      <p data-i18n="comboSub">The same food can do twice as much (or half as much) depending on what you eat it with. These pairings change how well your body absorbs nutrients.</p>
     </div>
     <div class="combo-grid">
       <div class="combo-col reveal">
-        <h3>✅ Power pairings</h3>
+        <h3 data-i18n="comboDoTitle">✅ Power pairings</h3>
         <div class="combo-list" id="comboDo"></div>
       </div>
       <div class="combo-col reveal">
-        <h3>🚫 Avoid together</h3>
+        <h3 data-i18n="comboDontTitle">🚫 Avoid together</h3>
         <div class="combo-list" id="comboDont"></div>
       </div>
     </div>
@@ -701,14 +736,14 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 <!-- ════════ MEAL PLANNER ════════ -->
 <section id="planner" class="wrap">
   <div class="sec-head reveal">
-    <span class="sec-tag">7-Day Plan</span>
-    <h2>Plan a heart-healthy week</h2>
-    <p>Tap any slot to choose a meal, or auto-fill a balanced week in one click. Then turn it into a shopping list.</p>
+    <span class="sec-tag" data-i18n="planTag">7-Day Plan</span>
+    <h2 data-i18n="planTitle">Plan a heart-healthy week</h2>
+    <p data-i18n="planSub">Tap any slot to choose a meal, or auto-fill a balanced week in one click. Then turn it into a shopping list.</p>
   </div>
   <div class="planner-actions reveal">
-    <button class="btn btn-pri" id="autoPlan">✨ Auto-fill my week</button>
-    <button class="btn btn-ghost" id="shopBtn">🛒 Shopping list</button>
-    <button class="btn btn-ghost" id="clearPlan">Clear plan</button>
+    <button class="btn btn-pri" id="autoPlan" data-i18n="autoPlan">✨ Auto-fill my week</button>
+    <button class="btn btn-ghost" id="shopBtn" data-i18n="shopBtn">🛒 Shopping list</button>
+    <button class="btn btn-ghost" id="clearPlan" data-i18n="clearPlan">Clear plan</button>
   </div>
   <div class="planner-scroll reveal"><div class="planner-grid" id="plannerGrid"></div></div>
 </section>
@@ -719,27 +754,27 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
     <div class="claude-head">
       <div class="claude-logo">✳️</div>
       <div>
-        <h3>Make it yours with Claude</h3>
-        <p style="color:var(--ink2);font-size:.95rem;margin-top:2px">This dashboard is one HTML file. Open it with Claude and just <em>talk</em> to grow it.</p>
+        <h3 data-i18n="enhTitle">Make it yours with Claude</h3>
+        <p style="color:var(--ink2);font-size:.95rem;margin-top:2px" data-i18n="enhSub">This dashboard is one HTML file. Open it with Claude and just talk to grow it.</p>
       </div>
     </div>
 
     <div class="steps">
-      <div class="step"><div class="num">1</div><b>Save this file</b><p>Keep <code>nutrition-dashboard.html</code> somewhere easy to find on your computer.</p></div>
-      <div class="step"><div class="num">2</div><b>Open it with Claude</b><p>Use Claude Code, or upload the file to claude.ai and ask for changes. See the preview update live.</p></div>
-      <div class="step"><div class="num">3</div><b>Describe what you want</b><p>“Add a water tracker”, “track my blood pressure”, “make it pink”. Claude edits the file for you.</p></div>
+      <div class="step"><div class="num">1</div><b><span data-i18n="step1t">Save this file</span></b><p data-i18n="step1p">Keep nutrition-dashboard.html somewhere easy to find on your computer.</p></div>
+      <div class="step"><div class="num">2</div><b><span data-i18n="step2t">Open it with Claude</span></b><p data-i18n="step2p">Use Claude Code, or upload the file to claude.ai and ask for changes.</p></div>
+      <div class="step"><div class="num">3</div><b><span data-i18n="step3t">Describe what you want</span></b><p data-i18n="step3p">“Add a water tracker”, “track my blood pressure”, “make it pink”. Claude edits the file for you.</p></div>
     </div>
 
     <div class="note-area">
-      <label style="font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">📝 Your notes &amp; goals (saved on this device)</label>
-      <textarea id="userNotes" placeholder="e.g. I want to lower my LDL cholesterol, I'm vegetarian, I love smoothies, please track my afternoon energy dips…"></textarea>
+      <label style="font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)" data-i18n="notesLabel">📝 Your notes &amp; goals (saved on this device)</label>
+      <textarea id="userNotes" data-i18n-ph="notesPh" placeholder="…"></textarea>
     </div>
 
-    <button class="btn btn-pri" id="genPrompt">✳️ Generate my Claude prompt</button>
+    <button class="btn btn-pri" id="genPrompt" data-i18n="genPrompt">✳️ Generate my Claude prompt</button>
     <div class="prompt-box" id="promptBox" style="display:none"></div>
     <div class="claude-actions" id="promptActions" style="display:none">
-      <button class="btn btn-ghost" id="copyPrompt">📋 Copy prompt</button>
-      <button class="btn btn-ghost" id="exportData">⬇️ Export my data (JSON)</button>
+      <button class="btn btn-ghost" id="copyPrompt" data-i18n="copyPrompt">📋 Copy prompt</button>
+      <button class="btn btn-ghost" id="exportData" data-i18n="exportData">⬇️ Export my data (JSON)</button>
     </div>
   </div>
 </section>
@@ -748,18 +783,18 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
 <footer class="wrap">
   <div class="foot-grid">
     <div class="foot-brand"><span class="logo">🥗</span> NourishWell</div>
-    <p class="disclaimer"><strong>Made with care.</strong> NourishWell is an educational wellness tool, not a medical device. The advice here is general and shouldn't replace guidance from your doctor or a registered dietitian — especially for cholesterol, medication or any health condition. Your data never leaves this browser.</p>
+    <p class="disclaimer"><strong data-i18n="footStrong">Made with care.</strong> <span data-i18n="footText">NourishWell is an educational wellness tool, not a medical device. The advice here is general and shouldn't replace guidance from your doctor or a registered dietitian — especially for cholesterol, medication or any health condition. Your data never leaves this browser.</span></p>
   </div>
 </footer>
 
 <!-- ════════ MOBILE TAB BAR ════════ -->
 <div id="tabbar">
   <div class="tabs">
-    <a href="#dashboard" data-sec="dashboard"><span class="ti">📊</span>Tracker</a>
-    <a href="#guide" data-sec="guide"><span class="ti">💚</span>Heart</a>
-    <a href="#vitamins" data-sec="vitamins"><span class="ti">💊</span>Vitamins</a>
-    <a href="#planner" data-sec="planner"><span class="ti">🗓️</span>Plan</a>
-    <a href="#enhance" data-sec="enhance"><span class="ti">✳️</span>Enhance</a>
+    <a href="#dashboard" data-sec="dashboard"><span class="ti">📊</span><span data-i18n="tabTracker">Tracker</span></a>
+    <a href="#guide" data-sec="guide"><span class="ti">💚</span><span data-i18n="tabHeart">Heart</span></a>
+    <a href="#vitamins" data-sec="vitamins"><span class="ti">💊</span><span data-i18n="tabVitamins">Vitamins</span></a>
+    <a href="#planner" data-sec="planner"><span class="ti">🗓️</span><span data-i18n="tabPlan">Plan</span></a>
+    <a href="#enhance" data-sec="enhance"><span class="ti">✳️</span><span data-i18n="tabEnhance">Enhance</span></a>
   </div>
 </div>
 
@@ -782,10 +817,92 @@ const store={
 };
 const todayKey=()=>new Date().toISOString().slice(0,10);
 
+/* ══════════ i18n (English / Español) ══════════ */
+let lang=store.get('lang','en');
+const tr=(en,es)=>lang==='es'?es:en;   // inline helper for dynamic strings
+const UI={
+ en:{
+  navTag:'Smart Nutrition',navTracker:'Tracker',navHeart:'Heart Foods',navVitamins:'Vitamins',navCombos:'Combinations',navPlanner:'Planner',navEnhance:'Enhance',
+  tabTracker:'Tracker',tabHeart:'Heart',tabVitamins:'Vitamins',tabPlan:'Plan',tabEnhance:'Enhance',
+  heroEyebrow:'Personalised & private — runs in your browser',heroH1a:'Eat smarter,',heroH1b:'feel the difference.',
+  heroLede:'A beautiful place to track what you eat, lower your cholesterol naturally, and learn exactly which vitamins, minerals and food combinations work for your body — and which work against it.',
+  heroCta1:'Start tracking →',heroCta2:'Explore heart foods',
+  statNutrients:'Nutrients explained',statFoods:'Foods in the library',statBrowser:'% in your browser',
+  fcHeart:'Heart Score',fcFibre:'Fibre on track',fcFibreSub:'Lowers cholesterol',fcNutrients:'24 nutrients',fcNutrientsSub:'Tap to learn more',
+  installHint:'📲 <span><b>Use it like an app:</b> tap your browser\'s <b>Share → Add to Home Screen</b> for a full-screen icon.</span>',
+  gsTag:'Start Here',gsTitle:'Three simple steps to get going',gsSub:'New here? This is all there is to it.',
+  gs1t:'Set your profile & goal',gs1p:'Tell us your age, sex and weight, and choose what you want to improve — cholesterol, blood pressure, vitamins or general wellness.',
+  gs2t:'Log food & water',gs2p:'Search the library, tap the foods you eat and add glasses of water. Everything saves on your device, privately.',
+  gs3t:'Read your insights',gs3p:'Get a Heart Score plus quantified, goal-aware advice: what you\'re doing well and exactly what to add next.',
+  gsBtn:'⚙️ Set my profile & goal',gsGoalNow:'Your current goal:',goalNotSet:'not set yet',focusBadge:'⭐ Your focus',
+  dashTag:'Today\'s Tracker',dashTitle:'Your day, beautifully measured',dashSub:'Log what you eat and watch your macros, fibre and heart-health score update live. Everything saves automatically on this device.',
+  logTitle:'🍽️ Food Log',logSub:'Search the library, tap to log — or add your own below.',foodSearchPh:'Search 130+ foods…',onlineBtn:'🌐 Can\'t find it? Search the web (Open Food Facts)',
+  customSummary:'＋ Add a custom food (not in the list)',microHint:'✨ Optional micronutrients — fill these so the food powers your Health Insights:',saveCheck:'⭐ Save to “My Foods” so it\'s one tap next time',addBtn:'+ Add to today',
+  lblFood:'Food name',lblIcon:'Icon',lblCal:'Calories',lblProtein:'Protein g',lblCarbs:'Carbs g',lblFat:'Fat g',lblFibre:'Fibre g',lblSat:'Sat fat g',lblSodium:'Sodium mg',lblSugar:'Sugar g',lblPotassium:'Potassium mg',lblVitc:'Vitamin C mg',lblCalcium:'Calcium mg',lblIron:'Iron mg',lblOmega:'Omega-3 g',
+  bdTitle:'📊 Live Breakdown',bdSub:'Against your daily goals —',goalsBtn:'edit goals',legProtein:'Protein',legCarbs:'Carbs',legFat:'Fat',
+  waterTitle:'💧 Hydration',waterSub:'tap to add a drink · Goal',wCup:'＋ Cup',wGlass:'＋ Glass',wBottle:'＋ Bottle',wUndo:'− Undo',
+  insTitle:'🩺 Health Insights — quantified for you',insSub:'Personalised to your body —',profileBtn:'👤 set up my profile',insNote:'. Estimates from logged foods; general guidance, not a diagnosis.',
+  advTitle:'🧠 Smart Advice — tailored to today',advSub:'Updates automatically as you log. General wellness guidance, not medical advice.',
+  trendTitle:'📈 7-Day Trends',trendSub:'Your calorie & fibre history. Comes alive as the days add up.',
+  guideTag:'The Cholesterol Kitchen',guideTitle:'Foods that lower it — and foods that raise it',guideSub:'Soluble fibre, healthy fats and plant sterols are the quiet heroes of a healthy heart. Swap the red list for the green list.',pillLower:'💚 Lowers cholesterol',pillLimit:'⚠️ Limit these',
+  vitTag:'Nutrient Encyclopedia',vitTitle:'Vitamins & minerals, decoded',vitSub:'Tap any nutrient to learn what it does, the best foods to get it from, how much you need and the signs you\'re running low.',vitSearchPh:'Search a vitamin, mineral or benefit…',
+  comboTag:'Smart Pairing',comboTitle:'What to combine — and what to keep apart',comboSub:'The same food can do twice as much (or half as much) depending on what you eat it with. These pairings change how well your body absorbs nutrients.',comboDoTitle:'✅ Power pairings',comboDontTitle:'🚫 Avoid together',
+  planTag:'7-Day Plan',planTitle:'Plan a heart-healthy week',planSub:'Tap any slot to choose a meal, or auto-fill a balanced week in one click. Then turn it into a shopping list.',autoPlan:'✨ Auto-fill my week',shopBtn:'🛒 Shopping list',clearPlan:'Clear plan',
+  enhTitle:'Make it yours with Claude',enhSub:'This dashboard is one HTML file. Open it with Claude and just talk to grow it.',
+  step1t:'Save this file',step1p:'Keep nutrition-dashboard.html somewhere easy to find on your computer.',step2t:'Open it with Claude',step2p:'Use Claude Code, or upload the file to claude.ai and ask for changes.',step3t:'Describe what you want',step3p:'“Add a recipe”, “track my blood pressure”, “make it pink”. Claude edits the file for you.',
+  notesLabel:'📝 Your notes & goals (saved on this device)',notesPh:'e.g. I want to lower my LDL cholesterol, I\'m vegetarian, I love smoothies, please track my afternoon energy dips…',genPrompt:'✳️ Generate my Claude prompt',copyPrompt:'📋 Copy prompt',exportData:'⬇️ Export my data (JSON)',
+  footText:'NourishWell is an educational wellness tool, not a medical device. The advice here is general and shouldn\'t replace guidance from your doctor or a registered dietitian — especially for cholesterol, medication or any health condition. Your data never leaves this browser.',footStrong:'Made with care.'
+ },
+ es:{
+  navTag:'Nutrición Inteligente',navTracker:'Registro',navHeart:'Corazón',navVitamins:'Vitaminas',navCombos:'Combinaciones',navPlanner:'Planificador',navEnhance:'Mejorar',
+  tabTracker:'Registro',tabHeart:'Corazón',tabVitamins:'Vitaminas',tabPlan:'Plan',tabEnhance:'Mejorar',
+  heroEyebrow:'Personalizado y privado — funciona en tu navegador',heroH1a:'Come mejor,',heroH1b:'siente la diferencia.',
+  heroLede:'Un lugar precioso para registrar lo que comes, bajar el colesterol de forma natural y aprender exactamente qué vitaminas, minerales y combinaciones de alimentos funcionan a favor de tu cuerpo — y cuáles en contra.',
+  heroCta1:'Empezar a registrar →',heroCta2:'Ver alimentos para el corazón',
+  statNutrients:'Nutrientes explicados',statFoods:'Alimentos en la biblioteca',statBrowser:'% en tu navegador',
+  fcHeart:'Puntuación Cardíaca',fcFibre:'Fibra al día',fcFibreSub:'Baja el colesterol',fcNutrients:'24 nutrientes',fcNutrientsSub:'Toca para saber más',
+  installHint:'📲 <span><b>Úsalo como una app:</b> toca <b>Compartir → Añadir a pantalla de inicio</b> para un icono a pantalla completa.</span>',
+  gsTag:'Empieza Aquí',gsTitle:'Tres pasos sencillos para comenzar',gsSub:'¿Nuevo aquí? Esto es todo lo que hay que hacer.',
+  gs1t:'Configura tu perfil y meta',gs1p:'Dinos tu edad, sexo y peso, y elige qué quieres mejorar: colesterol, presión arterial, vitaminas o bienestar general.',
+  gs2t:'Registra comida y agua',gs2p:'Busca en la biblioteca, toca los alimentos que comes y añade vasos de agua. Todo se guarda en tu dispositivo, de forma privada.',
+  gs3t:'Lee tus análisis',gs3p:'Obtén una Puntuación Cardíaca y consejos cuantificados según tu meta: qué haces bien y exactamente qué añadir después.',
+  gsBtn:'⚙️ Configurar mi perfil y meta',gsGoalNow:'Tu meta actual:',goalNotSet:'aún sin definir',focusBadge:'⭐ Tu enfoque',
+  dashTag:'Registro de Hoy',dashTitle:'Tu día, medido con belleza',dashSub:'Registra lo que comes y observa tus macros, fibra y puntuación cardíaca actualizarse en vivo. Todo se guarda automáticamente en este dispositivo.',
+  logTitle:'🍽️ Diario de Comida',logSub:'Busca en la biblioteca, toca para registrar — o añade el tuyo abajo.',foodSearchPh:'Busca entre 130+ alimentos…',onlineBtn:'🌐 ¿No lo encuentras? Busca en la web (Open Food Facts)',
+  customSummary:'＋ Añadir alimento personalizado (que no está en la lista)',microHint:'✨ Micronutrientes opcionales — complétalos para que el alimento alimente tus Análisis de Salud:',saveCheck:'⭐ Guardar en “Mis Alimentos” para registrarlo con un toque la próxima vez',addBtn:'+ Añadir a hoy',
+  lblFood:'Nombre del alimento',lblIcon:'Icono',lblCal:'Calorías',lblProtein:'Proteína g',lblCarbs:'Carbohid. g',lblFat:'Grasa g',lblFibre:'Fibra g',lblSat:'Grasa sat. g',lblSodium:'Sodio mg',lblSugar:'Azúcar g',lblPotassium:'Potasio mg',lblVitc:'Vitamina C mg',lblCalcium:'Calcio mg',lblIron:'Hierro mg',lblOmega:'Omega-3 g',
+  bdTitle:'📊 Desglose en Vivo',bdSub:'Según tus metas diarias —',goalsBtn:'editar metas',legProtein:'Proteína',legCarbs:'Carbohid.',legFat:'Grasa',
+  waterTitle:'💧 Hidratación',waterSub:'toca para añadir bebida · Meta',wCup:'＋ Taza',wGlass:'＋ Vaso',wBottle:'＋ Botella',wUndo:'− Deshacer',
+  insTitle:'🩺 Análisis de Salud — cuantificado para ti',insSub:'Personalizado a tu cuerpo —',profileBtn:'👤 configurar mi perfil',insNote:'. Estimaciones a partir de lo registrado; orientación general, no un diagnóstico.',
+  advTitle:'🧠 Consejos Inteligentes — para hoy',advSub:'Se actualizan automáticamente al registrar. Orientación de bienestar general, no consejo médico.',
+  trendTitle:'📈 Tendencias de 7 Días',trendSub:'Tu historial de calorías y fibra. Cobra vida a medida que pasan los días.',
+  guideTag:'La Cocina del Colesterol',guideTitle:'Alimentos que lo bajan — y alimentos que lo suben',guideSub:'La fibra soluble, las grasas saludables y los esteroles vegetales son los héroes silenciosos de un corazón sano. Cambia la lista roja por la verde.',pillLower:'💚 Bajan el colesterol',pillLimit:'⚠️ Limita estos',
+  vitTag:'Enciclopedia de Nutrientes',vitTitle:'Vitaminas y minerales, explicados',vitSub:'Toca cualquier nutriente para saber qué hace, los mejores alimentos para obtenerlo, cuánto necesitas y las señales de que te falta.',vitSearchPh:'Busca una vitamina, mineral o beneficio…',
+  comboTag:'Combinación Inteligente',comboTitle:'Qué combinar — y qué mantener separado',comboSub:'El mismo alimento puede rendir el doble (o la mitad) según con qué lo comas. Estas combinaciones cambian cuánto absorbe tu cuerpo.',comboDoTitle:'✅ Combinaciones potentes',comboDontTitle:'🚫 Evita juntar',
+  planTag:'Plan de 7 Días',planTitle:'Planea una semana saludable',planSub:'Toca cualquier espacio para elegir una comida, o auto-rellena una semana equilibrada con un clic. Luego conviértela en lista de compras.',autoPlan:'✨ Auto-rellenar mi semana',shopBtn:'🛒 Lista de compras',clearPlan:'Borrar plan',
+  enhTitle:'Hazlo tuyo con Claude',enhSub:'Este panel es un solo archivo HTML. Ábrelo con Claude y solo habla para hacerlo crecer.',
+  step1t:'Guarda este archivo',step1p:'Guarda nutrition-dashboard.html en un lugar fácil de encontrar en tu ordenador.',step2t:'Ábrelo con Claude',step2p:'Usa Claude Code, o sube el archivo a claude.ai y pide cambios.',step3t:'Describe lo que quieres',step3p:'“Añade una receta”, “registra mi presión arterial”, “hazlo rosa”. Claude edita el archivo por ti.',
+  notesLabel:'📝 Tus notas y metas (guardadas en este dispositivo)',notesPh:'p. ej. Quiero bajar mi colesterol LDL, soy vegetariana, me encantan los smoothies, registra mis bajones de energía por la tarde…',genPrompt:'✳️ Generar mi mensaje para Claude',copyPrompt:'📋 Copiar mensaje',exportData:'⬇️ Exportar mis datos (JSON)',
+  footText:'NourishWell es una herramienta educativa de bienestar, no un dispositivo médico. Los consejos aquí son generales y no sustituyen la orientación de tu médico o dietista titulado — especialmente para el colesterol, medicación o cualquier condición de salud. Tus datos nunca salen de este navegador.',footStrong:'Hecho con cariño.'
+ }
+};
+const ui=k=>(UI[lang][k]??UI.en[k]??k);
+function applyLang(){
+  document.documentElement.lang=lang;
+  $$('[data-i18n]').forEach(el=>el.textContent=ui(el.dataset.i18n));
+  $$('[data-i18n-html]').forEach(el=>el.innerHTML=ui(el.dataset.i18nHtml));
+  $$('[data-i18n-ph]').forEach(el=>el.placeholder=ui(el.dataset.i18nPh));
+  const lb=$('#langBtn');if(lb)lb.textContent=lang==='es'?'EN':'ES';
+}
+function setLang(l){lang=l;store.set('lang',l);applyLang();
+  if(typeof updateDash==='function'){renderGuide(curGuide);renderPlanner();renderGoalBanner();updateDash();}}
+
 /* ---------- DATA ---------- */
 // ── FOOD LIBRARY ───────────────────────────────────────────
 // values are per typical serving (estimates from standard nutrition data)
-const FOOD_CAT={pro:'🍗 Protein',dairy:'🥛 Dairy',legume:'🫘 Legumes',grain:'🌾 Grains',veg:'🥦 Veggies',fruit:'🍎 Fruit',nut:'🥜 Nuts & Seeds',fat:'🫒 Oils',drink:'🥤 Drinks',ferment:'🦠 Fermented',treat:'🍫 Treats'};
+const FOOD_CAT={pro:'🍗 Protein',dairy:'🥛 Dairy',legume:'🫘 Legumes',grain:'🌾 Grains',veg:'🥦 Veggies',fruit:'🍎 Fruit',nut:'🥜 Nuts & Seeds',fat:'🫒 Oils',med:'🌍 Mediterranean & Moroccan',drink:'🥤 Drinks',ferment:'🦠 Fermented',treat:'🍫 Treats'};
+const CAT_ES={pro:'🍗 Proteína',dairy:'🥛 Lácteos',legume:'🫘 Legumbres',grain:'🌾 Cereales',veg:'🥦 Verduras',fruit:'🍎 Fruta',nut:'🥜 Frutos secos',fat:'🫒 Aceites',med:'🌍 Mediterránea y Marroquí',drink:'🥤 Bebidas',ferment:'🦠 Fermentados',treat:'🍫 Caprichos'};
+const catLabel=c=>lang==='es'?CAT_ES[c]:FOOD_CAT[c];
 // [name, emoji, cat, cal,protein,carbs,fat,fibre, satfat,sodium(mg),sugar,potassium(mg),vitC(mg),calcium(mg),iron(mg),omega3, heart?]
 const RAW=[
  ['Chicken Breast','🍗','pro',165,31,0,4,0,1,74,0,256,0,6,0.5,0.05,0],
@@ -900,7 +1017,27 @@ const RAW=[
  ['Honey (tbsp)','🍯','treat',64,0,17,0,0,0,1,17,11,0,1,0.1,0,0],
  ['French Fries','🍟','treat',312,3,41,15,4,2.3,210,0,579,7,15,0.8,0.1,0],
  ['Pizza Slice','🍕','treat',285,12,36,10,2,4.5,640,4,184,1,200,2.5,0.05,0],
- ['Bacon (2 strips)','🥓','treat',92,6,0,7,0,2.5,370,0,90,0,2,0.3,0.02,0]
+ ['Bacon (2 strips)','🥓','treat',92,6,0,7,0,2.5,370,0,90,0,2,0.3,0.02,0],
+ ['Falafel (3)','🧆','med',170,6,17,9,4,1.2,290,1,290,1,40,2,0.05,0],
+ ['Tabbouleh','🥗','med',120,3,20,4,4,0.5,180,2,250,30,40,1.3,0.1,1],
+ ['Bulgur','🌾','med',151,6,34,0,8,0.1,9,0,124,0,18,1.7,0.05,1],
+ ['Chicken Tagine','🍲','med',320,28,22,12,5,2.5,420,8,650,20,60,2.5,0.1,1],
+ ['Harira (lentil soup)','🍲','med',220,12,30,5,6,1,480,4,500,5,60,3.5,0.1,1],
+ ['Shakshuka','🍳','med',200,11,12,12,3,3,650,7,450,25,80,2.5,0.1,0],
+ ['Tahini (tbsp)','🥣','med',89,3,3,8,1,1.1,5,0,62,0,64,0.7,0.05,1],
+ ['Tzatziki','🥣','med',60,3,4,3,0,2,150,3,90,1,90,0.1,0,0],
+ ['Olives (10)','🫒','med',58,0,3,5,1,0.7,420,0,4,0,44,0.7,0.05,1],
+ ['Pita Bread','🫓','med',165,5,33,1,1,0.2,322,1,72,0,52,1.6,0.05,0],
+ ['Stuffed Grape Leaves','🍃','med',180,3,22,9,4,1.5,500,2,150,5,40,1.5,0.1,0],
+ ['Ratatouille','🍆','med',110,2,15,5,4,0.7,200,8,500,30,40,1,0.05,1],
+ ['Zaalouk (eggplant dip)','🍆','med',90,2,10,5,4,0.8,260,5,330,4,30,0.7,0.05,1],
+ ['Lamb Kofta','🍢','med',250,18,2,18,0,7,400,1,280,2,20,2,0.05,0],
+ ['Grilled Lamb (3oz)','🍖','med',250,21,0,18,0,8,72,0,290,0,17,1.7,0.05,0],
+ ['Harissa (tbsp)','🌶️','med',15,0,2,1,1,0.1,200,1,30,2,5,0.3,0,0],
+ ['Dates (3)','🌴','med',200,2,53,0,5,0,2,45,460,0,40,0.5,0,0],
+ ['Dried Apricots (5)','🍑','med',84,1,22,0,3,0,3,17,378,1,18,0.8,0,0],
+ ['Couscous Royale','🍲','med',380,18,45,14,5,3,520,4,520,12,50,2.8,0.1,0],
+ ['Moroccan Mint Tea','🍵','med',30,0,8,0,0,0,5,8,20,0,2,0,0,0]
 ];
 const FOODS=RAW.map(r=>({n:r[0],e:r[1],cat:r[2],cal:r[3],p:r[4],c:r[5],f:r[6],fib:r[7],sat:r[8],na:r[9],sug:r[10],k:r[11],vc:r[12],ca:r[13],fe:r[14],o3:r[15],heart:!!r[16]}));
 let myFoods=store.get('myFoods',[]);
@@ -944,8 +1081,44 @@ const MEALS={
   ]
 };
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const SLOTS=[['breakfast','🌅 Breakfast'],['lunch','🥗 Lunch'],['dinner','🍽️ Dinner'],['snack','🍎 Snack']];
+const DAYS_ES={Mon:'Lun',Tue:'Mar',Wed:'Mié',Thu:'Jue',Fri:'Vie',Sat:'Sáb',Sun:'Dom'};
+const SLOTS=[['breakfast','🌅','Breakfast','Desayuno'],['lunch','🥗','Lunch','Almuerzo'],['dinner','🍽️','Dinner','Cena'],['snack','🍎','Snack','Snack']];
+const slotLabel=s=>{const r=SLOTS.find(x=>x[0]===s);return r[1]+' '+tr(r[2],r[3]);};
 let plan=store.get('plan',{});
+
+// ── HEALTH GOALS ─────────────────────────────────────────
+const GOALS=[
+  {k:'generic',ic:'🌿',insight:null},
+  {k:'cholesterol',ic:'❤️',insight:'chol'},
+  {k:'bp',ic:'🩺',insight:'bp'},
+  {k:'vitamins',ic:'💊',insight:'vit'},
+  {k:'weight',ic:'⚖️',insight:'energy'}
+];
+const goalLabel=k=>tr(
+  {generic:'General wellness',cholesterol:'Lower cholesterol',bp:'Lower blood pressure',vitamins:'Boost vitamins & minerals',weight:'Manage weight'}[k],
+  {generic:'Bienestar general',cholesterol:'Bajar el colesterol',bp:'Bajar la presión arterial',vitamins:'Aumentar vitaminas y minerales',weight:'Controlar el peso'}[k]);
+const goalStrategy=k=>tr(
+  {generic:'Eat a colourful, varied diet, stay hydrated and keep moving. Your advice adapts to whatever you log.',
+   cholesterol:'Focus on soluble fibre (oats, beans, apples), healthy fats (olive oil, nuts, oily fish) and limit saturated fat.',
+   bp:'Boost potassium (banana, beans, leafy greens), keep sodium low, and favour the Mediterranean pattern.',
+   vitamins:'Eat the rainbow — aim to cover vitamin C, iron, calcium, potassium and omega-3 every day.',
+   weight:'Match calories to your needs, prioritise protein and fibre to stay full, and watch added sugar.'}[k],
+  {generic:'Come variado y colorido, mantente hidratada y en movimiento. Tus consejos se adaptan a lo que registres.',
+   cholesterol:'Prioriza fibra soluble (avena, legumbres, manzanas), grasas saludables (aceite de oliva, frutos secos, pescado azul) y limita la grasa saturada.',
+   bp:'Aumenta el potasio (plátano, legumbres, verduras de hoja), mantén bajo el sodio y favorece el patrón mediterráneo.',
+   vitamins:'Come el arcoíris — cubre vitamina C, hierro, calcio, potasio y omega-3 cada día.',
+   weight:'Ajusta las calorías a tus necesidades, prioriza proteína y fibra para saciarte, y vigila el azúcar añadido.'}[k]);
+function renderGoalBanner(){
+  const g=(profile.goal)||'generic',gd=GOALS.find(x=>x.k===g);
+  $('#goalBanner').innerHTML=`<span class="gb-ic">${gd.ic}</span>
+    <div class="gb-txt"><b>${ui('gsGoalNow')} ${goalLabel(g)}</b><p>${goalStrategy(g)}</p></div>
+    <button class="btn btn-pri" id="gsBtn2">${ui('gsBtn')}</button>`;
+  $('#gsBtn2').onclick=openProfile;
+}
+function renderGoalPills(){
+  $('#goalPills').innerHTML=GOALS.map(g=>`<button class="goal-pick ${((profile.goal)||'generic')===g.k?'active':''}" data-g="${g.k}">${g.ic} ${goalLabel(g.k)}</button>`).join('');
+  $$('#goalPills .goal-pick').forEach(b=>b.onclick=()=>{profile.goal=b.dataset.g;save();renderGoalPills();renderGoalBanner();updateDash();toast(tr('Goal set: ','Meta: ')+goalLabel(profile.goal));});
+}
 
 const GUIDE={
   lower:[
@@ -1018,7 +1191,7 @@ const COMBOS={
 
 /* ---------- STATE ---------- */
 let goals=store.get('goals',{cal:2000,pro:75,fib:30});
-let profile=store.get('profile',{sex:'female',age:32,weight:68,height:166,activity:1.375});
+let profile=store.get('profile',{sex:'female',age:32,weight:68,height:166,activity:1.375,goal:'generic'});
 let history=store.get('history',{});
 function today(){if(!history[todayKey()])history[todayKey()]={cal:0,pro:0,carb:0,fat:0,fib:0,items:[],heart:0,sat:0,na:0,sug:0,k:0,vc:0,ca:0,fe:0,o3:0,water:0};return history[todayKey()];}
 function save(){store.set('history',history);store.set('goals',goals);store.set('profile',profile);}
@@ -1045,9 +1218,9 @@ const statusFrom=s=>s>=70?'good':s>=40?'ok':'low';
 /* ---------- FOOD PICKER (searchable library) ---------- */
 let pickerCat='all',pickerQ='';
 function renderCatPills(){
-  let html=`<button class="cpill ${pickerCat==='all'?'active':''}" data-c="all">🍽️ All</button>`;
-  if(myFoods.length)html+=`<button class="cpill ${pickerCat==='mine'?'active':''}" data-c="mine">⭐ My Foods</button>`;
-  html+=Object.keys(FOOD_CAT).map(c=>`<button class="cpill ${pickerCat===c?'active':''}" data-c="${c}">${FOOD_CAT[c]}</button>`).join('');
+  let html=`<button class="cpill ${pickerCat==='all'?'active':''}" data-c="all">${tr('🍽️ All','🍽️ Todos')}</button>`;
+  if(myFoods.length)html+=`<button class="cpill ${pickerCat==='mine'?'active':''}" data-c="mine">${tr('⭐ My Foods','⭐ Mis Alimentos')}</button>`;
+  html+=Object.keys(FOOD_CAT).map(c=>`<button class="cpill ${pickerCat===c?'active':''}" data-c="${c}">${catLabel(c)}</button>`).join('');
   $('#catPills').innerHTML=html;
   $$('#catPills .cpill').forEach(b=>b.onclick=()=>{pickerCat=b.dataset.c;renderCatPills();renderPicker();});
 }
@@ -1056,7 +1229,7 @@ function renderPicker(){
   let list = pickerCat==='mine' ? myFoods.slice() : allFoods().filter(f=>pickerCat==='all'||f.cat===pickerCat);
   if(q)list=list.filter(f=>f.n.toLowerCase().includes(q));
   const el=$('#quickFoods');
-  if(!list.length){el.innerHTML=`<div class="empty" style="padding:16px;font-size:.85rem;width:100%"><div class="e">🔎</div>No match — add it with “custom food” below 👇</div>`;return;}
+  if(!list.length){el.innerHTML=`<div class="empty" style="padding:16px;font-size:.85rem;width:100%"><div class="e">🔎</div>${tr('No match — add it with “custom food” below 👇','Sin coincidencias — añádelo con “alimento personalizado” abajo 👇')}</div>`;return;}
   el.innerHTML=list.map(f=>`<button class="chip" data-n="${encodeURIComponent(f.n)}">${f.e} ${f.n}${f.heart?' 💚':''}</button>`).join('');
   $$('#quickFoods .chip').forEach(c=>c.onclick=()=>{const f=allFoods().find(x=>x.n===decodeURIComponent(c.dataset.n));if(f)addItem(f);});
 }
@@ -1066,7 +1239,7 @@ function addItem(f){
   const t=today();
   t.items.push({n:f.n,e:f.e||'🍴',cal:+f.cal||0,p:+f.p||0,c:+f.c||0,f:+f.f||0,fib:+f.fib||0,heart:!!f.heart,
     sat:+f.sat||0,na:+f.na||0,sug:+f.sug||0,k:+f.k||0,vc:+f.vc||0,ca:+f.ca||0,fe:+f.fe||0,o3:+f.o3||0});
-  recalc();save();renderLog();updateDash();toast(`${f.e||'🍴'} ${f.n} added`);
+  recalc();save();renderLog();updateDash();toast(`${f.e||'🍴'} ${f.n} ${tr('added','añadido')}`);
 }
 function recalc(){
   const t=today();const sum=k=>t.items.reduce((s,i)=>s+(+i[k]||0),0);
@@ -1075,13 +1248,13 @@ function recalc(){
   t.heart=t.items.filter(i=>i.heart).length;
 }
 $('#addBtn').onclick=()=>{
-  const n=$('#fName').value.trim();if(!n){toast('Give your food a name 🙂');return;}
+  const n=$('#fName').value.trim();if(!n){toast(tr('Give your food a name 🙂','Ponle un nombre al alimento 🙂'));return;}
   const g=id=>+$('#'+id).value||0;
   const heart=HEART_KEYWORDS.some(h=>n.toLowerCase().includes(h));
   const food={n,e:$('#fEmoji').value.trim()||'🍴',cat:'mine',cal:g('fCal'),p:g('fPro'),c:g('fCarb'),f:g('fFat'),fib:g('fFib'),
     sat:g('fSat'),na:g('fNa'),sug:g('fSug'),k:g('fK'),vc:g('fVc'),ca:g('fCa'),fe:g('fFe'),o3:g('fO3'),heart};
   if($('#fSave').checked && !myFoods.some(m=>m.n.toLowerCase()===n.toLowerCase())){
-    myFoods.push(food);store.set('myFoods',myFoods);renderCatPills();renderPicker();toast('⭐ Saved to My Foods');
+    myFoods.push(food);store.set('myFoods',myFoods);renderCatPills();renderPicker();toast(tr('⭐ Saved to My Foods','⭐ Guardado en Mis Alimentos'));
   }
   addItem(food);
   ['fName','fEmoji','fCal','fPro','fCarb','fFat','fFib','fSat','fNa','fSug','fK','fVc','fCa','fFe','fO3'].forEach(id=>$('#'+id).value='');
@@ -1090,16 +1263,16 @@ $('#addBtn').onclick=()=>{
 
 function renderLog(){
   const t=today();const el=$('#logList');
-  if(!t.items.length){el.innerHTML=`<div class="empty"><div class="e">🍃</div>No foods yet today — tap a quick food above to begin.</div>`;return;}
+  if(!t.items.length){el.innerHTML=`<div class="empty"><div class="e">🍃</div>${tr('No foods yet today — tap a food above to begin.','Aún no hay alimentos hoy — toca un alimento arriba para empezar.')}</div>`;return;}
   el.innerHTML=t.items.map((i,idx)=>`
     <div class="log-item">
       <div class="log-emoji">${i.e}</div>
       <div class="log-info">
         <div class="log-name">${i.n} ${i.heart?'<span title="Heart-friendly">💚</span>':''}</div>
-        <div class="log-macros">P ${i.p}g · C ${i.c}g · F ${i.f}g · Fibre ${i.fib}g</div>
+        <div class="log-macros">P ${i.p}g · C ${i.c}g · ${tr('F','G')} ${i.f}g · ${tr('Fibre','Fibra')} ${i.fib}g</div>
       </div>
       <div class="log-cal">${i.cal}</div>
-      <button class="log-del" data-i="${idx}" title="Remove">✕</button>
+      <button class="log-del" data-i="${idx}" title="${tr('Remove','Quitar')}">✕</button>
     </div>`).join('');
   $$('#logList .log-del').forEach(b=>b.onclick=()=>{today().items.splice(+b.dataset.i,1);recalc();save();renderLog();updateDash();});
 }
@@ -1176,30 +1349,29 @@ function renderScore(){
   arc.style.transition='stroke-dashoffset 1.1s var(--ease)';
   arc.style.strokeDashoffset=circ*(1-sc/100);
   animateNum($('#scoreNum'),sc);
-  $('#heroScore').textContent=sc>0?sc+' / 100 today':'Build it today';
+  $('#heroScore').textContent=sc>0?sc+tr(' / 100 today',' / 100 hoy'):tr('Build it today','Constrúyela hoy');
   let title,desc;
-  if(sc>=80){title='Outstanding heart day! 🌟';desc='Fibre, healthy fats and variety are all dialled in. This is exactly the pattern that keeps cholesterol in check.';}
-  else if(sc>=60){title='Strong and steady 💚';desc='A genuinely heart-healthy day. Nudge fibre or add an oily-fish/legume portion to reach the top tier.';}
-  else if(sc>=35){title='Good foundation 🌱';desc='You\'re on the board. Add soluble fibre (oats, beans, apples) and swap some saturated fat for olive oil or nuts.';}
-  else if(sc>0){title='Just getting started 🍃';desc='Log a bit more, then lean into the green list below — beans, oats, berries and a little olive oil move this fast.';}
-  else{title='Let\'s build a great day';desc='Your Heart Score blends fibre, healthy fats, protein balance and cholesterol-friendly foods. Start logging to watch it climb.';}
+  if(sc>=80){title=tr('Outstanding heart day! 🌟','¡Día cardíaco excelente! 🌟');desc=tr('Fibre, healthy fats and variety are all dialled in. This is exactly the pattern that keeps cholesterol in check.','Fibra, grasas saludables y variedad están perfectas. Este es justo el patrón que mantiene el colesterol a raya.');}
+  else if(sc>=60){title=tr('Strong and steady 💚','Fuerte y constante 💚');desc=tr('A genuinely heart-healthy day. Nudge fibre or add an oily-fish/legume portion to reach the top tier.','Un día realmente saludable para el corazón. Sube la fibra o añade pescado azul/legumbres para llegar a lo más alto.');}
+  else if(sc>=35){title=tr('Good foundation 🌱','Buena base 🌱');desc=tr('You\'re on the board. Add soluble fibre (oats, beans, apples) and swap some saturated fat for olive oil or nuts.','Vas bien. Añade fibra soluble (avena, legumbres, manzanas) y cambia grasa saturada por aceite de oliva o frutos secos.');}
+  else if(sc>0){title=tr('Just getting started 🍃','Apenas empezando 🍃');desc=tr('Log a bit more, then lean into the green list below — beans, oats, berries and a little olive oil move this fast.','Registra un poco más y apóyate en la lista verde de abajo — legumbres, avena, frutos rojos y un poco de aceite de oliva suben esto rápido.');}
+  else{title=tr('Let\'s build a great day','Construyamos un gran día');desc=tr('Your Heart Score blends fibre, healthy fats, protein balance and cholesterol-friendly foods. Start logging to watch it climb.','Tu Puntuación Cardíaca combina fibra, grasas saludables, equilibrio de proteína y alimentos amigables con el colesterol. Empieza a registrar para verla subir.');}
   $('#scoreTitle').textContent=title;$('#scoreDesc').textContent=desc;
 }
 function renderAdvice(){
   const t=today();const A=[];
-  if(!t.items.length){A.push(['tip','💡','Begin your day','Add your first meal above. As you log, you\'ll get specific, personalised tips right here.']);}
-  if(t.fib>0&&t.fib<goals.fib){A.push(['warn','🌾',`Fibre is at ${Math.round(t.fib)}g of ${goals.fib}g`,'Add oats, lentils, beans, an apple or some broccoli — soluble fibre is the #1 food-based way to lower LDL cholesterol.']);}
-  if(t.fib>=goals.fib){A.push(['good','✅','Fibre goal smashed','Excellent — this is doing real work for your gut and cholesterol. Keep it up tomorrow.']);}
+  if(!t.items.length){A.push(['tip','💡',tr('Begin your day','Comienza tu día'),tr('Add your first meal above. As you log, you\'ll get specific, personalised tips right here.','Añade tu primera comida arriba. A medida que registres, recibirás consejos específicos y personalizados aquí mismo.')]);}
+  if(t.fib>0&&t.fib<goals.fib){A.push(['warn','🌾',tr(`Fibre is at ${Math.round(t.fib)}g of ${goals.fib}g`,`Fibra en ${Math.round(t.fib)}g de ${goals.fib}g`),tr('Add oats, lentils, beans, an apple or some broccoli — soluble fibre is the #1 food-based way to lower LDL cholesterol.','Añade avena, lentejas, legumbres, una manzana o brócoli — la fibra soluble es la forma #1 de bajar el colesterol LDL con comida.')]);}
+  if(t.fib>=goals.fib){A.push(['good','✅',tr('Fibre goal smashed','¡Meta de fibra lograda!'),tr('Excellent — this is doing real work for your gut and cholesterol. Keep it up tomorrow.','Excelente — esto ayuda de verdad a tu intestino y colesterol. Sigue así mañana.')]);}
   const fatPct=t.cal? (t.fat*9)/t.cal : 0;
-  if(fatPct>0.4){A.push(['warn','🧈','Fat is a big share of today',`About ${Math.round(fatPct*100)}% of calories are from fat. Favour the healthy kind — olive oil, avocado, nuts and fish — over butter and fried food.`]);}
-  if(t.pro>0&&t.pro<goals.pro*0.6){A.push(['tip','💪','Protein is running low','Add eggs, Greek yogurt, beans, tofu or fish to stay full and protect muscle.']);}
-  if(t.heart>=3){A.push(['good','❤️','Heart-friendly foods loaded',`You\'ve eaten ${t.heart} cholesterol-friendly foods today. This is the Mediterranean pattern that protects arteries.`]);}
-  else if(t.items.length>2&&t.heart<2){A.push(['tip','🫐','Add a heart hero','Try berries, walnuts, oats or salmon — small swaps with an outsized effect on cholesterol.']);}
-  if(t.cal>goals.cal*1.15){A.push(['warn','⚖️','Above your calorie goal','You\'re a little over today. No drama — a lighter, veg-forward dinner balances it out.']);}
-  // veg check
-  const veggies=['Spinach','Broccoli','Sweet Potato'].some(v=>t.items.some(i=>i.n.includes(v)));
-  if(t.items.length>=2&&!veggies){A.push(['tip','🥦','Where are the greens?','Add a vegetable or two — they bring fibre, potassium and antioxidants with barely any calories.']);}
-  if(t.items.length&&A.filter(a=>a[0]==='warn').length===0&&t.fib>=goals.fib*0.7){A.push(['good','🌟','Beautifully balanced','Great variety and balance today. Pair iron-rich foods with vitamin C, and keep coffee away from iron-heavy meals for the bonus round.']);}
+  if(fatPct>0.4){A.push(['warn','🧈',tr('Fat is a big share of today','La grasa es gran parte de hoy'),tr(`About ${Math.round(fatPct*100)}% of calories are from fat. Favour the healthy kind — olive oil, avocado, nuts and fish — over butter and fried food.`,`Cerca del ${Math.round(fatPct*100)}% de las calorías vienen de grasa. Prefiere la saludable — aceite de oliva, aguacate, frutos secos y pescado — antes que mantequilla y frituras.`)]);}
+  if(t.pro>0&&t.pro<goals.pro*0.6){A.push(['tip','💪',tr('Protein is running low','La proteína va baja'),tr('Add eggs, Greek yogurt, beans, tofu or fish to stay full and protect muscle.','Añade huevos, yogur griego, legumbres, tofu o pescado para saciarte y proteger el músculo.')]);}
+  if(t.heart>=3){A.push(['good','❤️',tr('Heart-friendly foods loaded','Cargada de alimentos cardiosaludables'),tr(`You\'ve eaten ${t.heart} cholesterol-friendly foods today. This is the Mediterranean pattern that protects arteries.`,`Has comido ${t.heart} alimentos amigables con el colesterol hoy. Este es el patrón mediterráneo que protege las arterias.`)]);}
+  else if(t.items.length>2&&t.heart<2){A.push(['tip','🫐',tr('Add a heart hero','Añade un héroe del corazón'),tr('Try berries, walnuts, oats or salmon — small swaps with an outsized effect on cholesterol.','Prueba frutos rojos, nueces, avena o salmón — pequeños cambios con gran efecto en el colesterol.')]);}
+  if(t.cal>goals.cal*1.15){A.push(['warn','⚖️',tr('Above your calorie goal','Por encima de tu meta de calorías'),tr('You\'re a little over today. No drama — a lighter, veg-forward dinner balances it out.','Vas un poco por encima hoy. Sin problema — una cena ligera con muchas verduras lo equilibra.')]);}
+  const veggies=['Spinach','Broccoli','Sweet Potato','Kale','Ratatouille','Zaalouk'].some(v=>t.items.some(i=>i.n.includes(v)));
+  if(t.items.length>=2&&!veggies){A.push(['tip','🥦',tr('Where are the greens?','¿Dónde están las verduras?'),tr('Add a vegetable or two — they bring fibre, potassium and antioxidants with barely any calories.','Añade una verdura o dos — aportan fibra, potasio y antioxidantes con apenas calorías.')]);}
+  if(t.items.length&&A.filter(a=>a[0]==='warn').length===0&&t.fib>=goals.fib*0.7){A.push(['good','🌟',tr('Beautifully balanced','Bellamente equilibrado'),tr('Great variety and balance today. Pair iron-rich foods with vitamin C, and keep coffee away from iron-heavy meals for the bonus round.','Gran variedad y equilibrio hoy. Combina alimentos ricos en hierro con vitamina C, y evita el café junto a comidas con mucho hierro.')]);}
   $('#adviceList').innerHTML=A.map(a=>`<div class="advice ${a[0]}"><div class="advice-ico">${a[1]}</div><div><b>${a[2]}</b><p>${a[3]}</p></div></div>`).join('');
 }
 
@@ -1207,85 +1379,88 @@ function renderAdvice(){
 function computeInsights(){
   const t=today(),T=getTargets(),I=[];
 
-  // ❤️ CHOLESTEROL — soluble fibre, heart foods, saturated fat
   const satScore=t.sat<=T.sat?100:Math.max(0,100-(t.sat-T.sat)/T.sat*100);
   const chol=Math.round(pct(t.fib,T.fib)*40+Math.min(t.heart/3,1)*30+satScore*0.30);
-  I.push({ico:'❤️',title:'Cholesterol',score:chol,color:'var(--green)',
-    quant:`Soluble fibre ${Math.round(t.fib)}/${T.fib}g · sat fat ${t.sat.toFixed(0)}/${T.sat}g cap · ${t.heart} heart food${t.heart!==1?'s':''}`,
-    tip: t.fib<T.fib*0.6 ? 'Add 🥣 oats, 🫘 beans or 🍎 an apple — soluble fibre actively lowers LDL'
-       : t.sat>T.sat ? 'Saturated fat is high — swap to 🫒 olive oil, 🥑 avocado or 🥜 nuts'
-       : t.o3<T.o3*0.5 ? 'Add 🐟 oily fish or 🥜 walnuts for cholesterol-friendly omega-3'
-       : 'Excellent heart-food pattern — this keeps cholesterol in check 💚'});
+  I.push({k:'chol',ico:'❤️',title:tr('Cholesterol','Colesterol'),score:chol,color:'var(--green)',
+    quant:tr(`Soluble fibre ${Math.round(t.fib)}/${T.fib}g · sat fat ${t.sat.toFixed(0)}/${T.sat}g cap · ${t.heart} heart food${t.heart!==1?'s':''}`,`Fibra soluble ${Math.round(t.fib)}/${T.fib}g · grasa sat. ${t.sat.toFixed(0)}/${T.sat}g máx · ${t.heart} aliment. cardio`),
+    tip: t.fib<T.fib*0.6 ? tr('Add 🥣 oats, 🫘 beans or 🍎 an apple — soluble fibre actively lowers LDL','Añade 🥣 avena, 🫘 legumbres o 🍎 una manzana — la fibra soluble baja el LDL')
+       : t.sat>T.sat ? tr('Saturated fat is high — swap to 🫒 olive oil, 🥑 avocado or 🥜 nuts','Grasa saturada alta — cambia a 🫒 aceite de oliva, 🥑 aguacate o 🥜 frutos secos')
+       : t.o3<T.o3*0.5 ? tr('Add 🐟 oily fish or 🥜 walnuts for cholesterol-friendly omega-3','Añade 🐟 pescado azul o 🥜 nueces por su omega-3')
+       : tr('Excellent heart-food pattern — this keeps cholesterol in check 💚','Excelente patrón cardiosaludable — mantiene el colesterol a raya 💚')});
 
-  // 🩺 BLOOD PRESSURE — sodium vs potassium
   const naScore=t.na<=T.naIdeal?100:t.na>=T.na?0:Math.round(100-(t.na-T.naIdeal)/(T.na-T.naIdeal)*100);
   const bp=Math.round(pct(t.k,T.k)*55+naScore*0.45);
-  I.push({ico:'🩺',title:'Blood Pressure',score:bp,color:'var(--berry)',
-    quant:`Potassium ${Math.round(t.k)}/${T.k}mg · sodium ${Math.round(t.na)}mg (cap ${T.na})`,
-    tip: t.na>T.na ? 'Sodium is over the cap — season with 🌿 herbs, 🍋 lemon & spices instead of salt'
-       : t.k<T.k*0.6 ? 'Lift potassium with 🍌 banana, 🍠 sweet potato or 🫘 beans — great for blood pressure'
-       : 'Your sodium–potassium balance is heart-friendly today 👍'});
+  I.push({k:'bp',ico:'🩺',title:tr('Blood Pressure','Presión Arterial'),score:bp,color:'var(--berry)',
+    quant:tr(`Potassium ${Math.round(t.k)}/${T.k}mg · sodium ${Math.round(t.na)}mg (cap ${T.na})`,`Potasio ${Math.round(t.k)}/${T.k}mg · sodio ${Math.round(t.na)}mg (máx ${T.na})`),
+    tip: t.na>T.na ? tr('Sodium is over the cap — season with 🌿 herbs, 🍋 lemon & spices instead of salt','El sodio supera el límite — sazona con 🌿 hierbas, 🍋 limón y especias en vez de sal')
+       : t.k<T.k*0.6 ? tr('Lift potassium with 🍌 banana, 🍠 sweet potato or 🫘 beans — great for blood pressure','Sube el potasio con 🍌 plátano, 🍠 batata o 🫘 legumbres — ideal para la presión')
+       : tr('Your sodium–potassium balance is heart-friendly today 👍','Tu equilibrio sodio–potasio es cardiosaludable hoy 👍')});
 
-  // 💊 VITAMINS & MINERALS — coverage of 6 key nutrients
-  const checks=[['vitamin C',t.vc,T.vc,'🫐 berries, 🥦 broccoli or 🍊 citrus'],
-    ['calcium',t.ca,T.ca,'🥛 Greek yogurt or 🥬 leafy greens'],
-    ['iron',t.fe,T.fe,'🫘 lentils or 🥬 spinach (with vitamin C)'],
-    ['potassium',t.k,T.k,'🍌 banana or 🫘 beans'],
-    ['fibre',t.fib,T.fib,'🥣 oats or 🍎 fruit'],
-    ['omega-3',t.o3,T.o3,'🐟 salmon or 🥜 walnuts']];
+  const checks=[['vitamin C',t.vc,T.vc,tr('🫐 berries, 🥦 broccoli or 🍊 citrus','🫐 frutos rojos, 🥦 brócoli o 🍊 cítricos')],
+    ['calcium',t.ca,T.ca,tr('🥛 Greek yogurt or 🥬 leafy greens','🥛 yogur griego o 🥬 verduras de hoja')],
+    ['iron',t.fe,T.fe,tr('🫘 lentils or 🥬 spinach (with vitamin C)','🫘 lentejas o 🥬 espinaca (con vitamina C)')],
+    ['potassium',t.k,T.k,tr('🍌 banana or 🫘 beans','🍌 plátano o 🫘 legumbres')],
+    ['fibre',t.fib,T.fib,tr('🥣 oats or 🍎 fruit','🥣 avena o 🍎 fruta')],
+    ['omega-3',t.o3,T.o3,tr('🐟 salmon or 🥜 walnuts','🐟 salmón o 🥜 nueces')]];
+  const nameES={'vitamin C':'vitamina C',calcium:'calcio',iron:'hierro',potassium:'potasio',fibre:'fibra','omega-3':'omega-3'};
   const covered=checks.filter(c=>c[1]>=c[2]*0.6).length;
   const miss=checks.find(c=>c[1]<c[2]*0.6);
-  I.push({ico:'💊',title:'Vitamins & Minerals',score:Math.round(covered/checks.length*100),color:'var(--violet)',
-    quant:`${covered} of ${checks.length} key nutrients covered today`,
-    tip: miss ? `Top up ${miss[0]} — try ${miss[3]}` : 'Brilliant micronutrient coverage today 🌈'});
+  I.push({k:'vit',ico:'💊',title:tr('Vitamins & Minerals','Vitaminas y Minerales'),score:Math.round(covered/checks.length*100),color:'var(--violet)',
+    quant:tr(`${covered} of ${checks.length} key nutrients covered today`,`${covered} de ${checks.length} nutrientes clave cubiertos hoy`),
+    tip: miss ? tr(`Top up ${miss[0]} — try ${miss[3]}`,`Refuerza ${nameES[miss[0]]} — prueba ${miss[3]}`) : tr('Brilliant micronutrient coverage today 🌈','Excelente cobertura de micronutrientes hoy 🌈')});
 
-  // ⚖️ ENERGY & WEIGHT — calories vs needs + protein
   const remain=T.cal-t.cal;
   const en=t.cal===0?0:Math.round(100-Math.min(Math.abs(t.cal-T.cal)/T.cal,1)*100);
-  I.push({ico:'⚖️',title:'Energy & Weight',score:en,color:'var(--blue)',
-    quant: t.cal>T.cal ? `${Math.round(t.cal)} kcal · ${Math.round(-remain)} over your ${T.cal} target · protein ${Math.round(t.pro)}/${T.pro}g`
-                       : `${Math.round(t.cal)}/${T.cal} kcal · ${Math.round(remain)} left · protein ${Math.round(t.pro)}/${T.pro}g`,
-    tip: t.pro<T.pro*0.6 ? 'Protein is low — add 🥚 eggs, 🍗 chicken, 🫘 beans or 🥛 yogurt'
-       : remain>500 ? 'Room for a balanced meal — lean protein + veg + whole grains'
-       : remain<-250 ? 'A little over — a lighter, veg-forward next meal balances the day'
-       : 'Energy intake is well matched to your needs ⚖️'});
+  I.push({k:'energy',ico:'⚖️',title:tr('Energy & Weight','Energía y Peso'),score:en,color:'var(--blue)',
+    quant: t.cal>T.cal ? tr(`${Math.round(t.cal)} kcal · ${Math.round(-remain)} over your ${T.cal} target · protein ${Math.round(t.pro)}/${T.pro}g`,`${Math.round(t.cal)} kcal · ${Math.round(-remain)} sobre tu meta de ${T.cal} · proteína ${Math.round(t.pro)}/${T.pro}g`)
+                       : tr(`${Math.round(t.cal)}/${T.cal} kcal · ${Math.round(remain)} left · protein ${Math.round(t.pro)}/${T.pro}g`,`${Math.round(t.cal)}/${T.cal} kcal · faltan ${Math.round(remain)} · proteína ${Math.round(t.pro)}/${T.pro}g`),
+    tip: t.pro<T.pro*0.6 ? tr('Protein is low — add 🥚 eggs, 🍗 chicken, 🫘 beans or 🥛 yogurt','Proteína baja — añade 🥚 huevos, 🍗 pollo, 🫘 legumbres o 🥛 yogur')
+       : remain>500 ? tr('Room for a balanced meal — lean protein + veg + whole grains','Hay espacio para una comida equilibrada — proteína magra + verduras + cereales integrales')
+       : remain<-250 ? tr('A little over — a lighter, veg-forward next meal balances the day','Un poco por encima — una próxima comida ligera con verduras equilibra el día')
+       : tr('Energy intake is well matched to your needs ⚖️','Tu energía está bien ajustada a tus necesidades ⚖️')});
 
-  // 🍬 BLOOD SUGAR — added sugar + fibre buffering
   const sugScore=t.sug<=T.sug?100:Math.max(0,100-(t.sug-T.sug)/T.sug*100);
   const bs=Math.round(sugScore*0.6+pct(t.fib,T.fib)*40);
-  I.push({ico:'🍬',title:'Blood Sugar',score:bs,color:'var(--teal)',
-    quant:`Sugar ${Math.round(t.sug)}g (cap ~${T.sug}g) · fibre ${Math.round(t.fib)}g slows the spike`,
-    tip: t.sug>T.sug ? 'Sugar is high — swap sweets for 🍓 fruit + 🥜 nuts to blunt the spike'
-       : t.fib<T.fib*0.5 ? 'Pair carbs with fibre & protein to keep blood sugar steady'
-       : 'Steady, fibre-supported energy — nicely balanced 👌'});
+  I.push({k:'sugar',ico:'🍬',title:tr('Blood Sugar','Azúcar en Sangre'),score:bs,color:'var(--teal)',
+    quant:tr(`Sugar ${Math.round(t.sug)}g (cap ~${T.sug}g) · fibre ${Math.round(t.fib)}g slows the spike`,`Azúcar ${Math.round(t.sug)}g (máx ~${T.sug}g) · fibra ${Math.round(t.fib)}g frena el pico`),
+    tip: t.sug>T.sug ? tr('Sugar is high — swap sweets for 🍓 fruit + 🥜 nuts to blunt the spike','Azúcar alta — cambia dulces por 🍓 fruta + 🥜 frutos secos para suavizar el pico')
+       : t.fib<T.fib*0.5 ? tr('Pair carbs with fibre & protein to keep blood sugar steady','Combina carbohidratos con fibra y proteína para estabilizar la glucosa')
+       : tr('Steady, fibre-supported energy — nicely balanced 👌','Energía estable, apoyada en fibra — bien equilibrado 👌')});
 
-  // 💧 HYDRATION
-  const w=t.water||0;
-  I.push({ico:'💧',title:'Hydration',score:Math.round(pct(w,T.water)*100),color:'#3b82f6',
-    quant:`${(w/1000).toFixed(1)} of ${(T.water/1000).toFixed(1)} L today`,
-    tip: w<T.water*0.4 ? 'Drink up — aim for a glass of water every couple of hours 💧'
-       : w<T.water ? `Almost there — about ${Math.ceil((T.water-w)/250)} more glass${Math.ceil((T.water-w)/250)>1?'es':''} to hit your goal`
-       : 'Beautifully hydrated today — great for energy & focus 💧'});
+  const w=t.water||0;const moreG=Math.ceil((T.water-w)/250);
+  I.push({k:'hydration',ico:'💧',title:tr('Hydration','Hidratación'),score:Math.round(pct(w,T.water)*100),color:'#3b82f6',
+    quant:tr(`${(w/1000).toFixed(1)} of ${(T.water/1000).toFixed(1)} L today`,`${(w/1000).toFixed(1)} de ${(T.water/1000).toFixed(1)} L hoy`),
+    tip: w<T.water*0.4 ? tr('Drink up — aim for a glass of water every couple of hours 💧','Bebe más — un vaso de agua cada par de horas 💧')
+       : w<T.water ? tr(`Almost there — about ${moreG} more glass${moreG>1?'es':''} to hit your goal`,`Casi — unos ${moreG} vaso${moreG>1?'s':''} más para tu meta`)
+       : tr('Beautifully hydrated today — great for energy & focus 💧','Bien hidratada hoy — ideal para energía y concentración 💧')});
 
   return I;
 }
 function renderInsights(){
-  const ins=computeInsights(),t=today();
+  let ins=computeInsights();const t=today();
+  const focusKey=(profile.goal&&(GOALS.find(g=>g.k===profile.goal)||{}).insight)||null;
+  if(focusKey)ins=ins.slice().sort((a,b)=>(a.k===focusKey?-1:b.k===focusKey?1:0));
   if(!t.items.length){
-    $('#smartAdd').innerHTML=`<div class="sa-ico">🍽️</div><div><b>Log a meal to unlock your insights</b><p>Tap a quick food above and your cholesterol, blood-pressure, nutrition, energy &amp; blood-sugar read-outs appear here — quantified to your profile.</p></div>`;
+    $('#smartAdd').innerHTML=`<div class="sa-ico">🍽️</div><div><b>${tr('Log a meal to unlock your insights','Registra una comida para ver tus análisis')}</b><p>${tr('Tap a food above and your cholesterol, blood-pressure, nutrition, energy & blood-sugar read-outs appear here — quantified to your profile.','Toca un alimento arriba y tus lecturas de colesterol, presión, nutrición, energía y azúcar aparecerán aquí — cuantificadas a tu perfil.')}</p></div>`;
   }else{
-    const weak=[...ins].sort((a,b)=>a.score-b.score)[0];
+    const focusIns=focusKey?ins.find(i=>i.k===focusKey):null;
+    let pick=(focusIns&&focusIns.score<75)?focusIns:[...ins].sort((a,b)=>a.score-b.score)[0];
     const allGood=ins.every(i=>i.score>=70);
-    $('#smartAdd').innerHTML=`<div class="sa-ico">${allGood?'🌟':'💡'}</div><div><b>${allGood?"You're crushing it today":"Today's smart add"}</b><p>${allGood?"Every health area is on track — keep doing exactly what you're doing!":weak.tip}</p></div>`;
+    const head=allGood?tr("You're crushing it today",'¡Lo estás haciendo genial hoy!')
+      :(focusIns&&pick===focusIns)?tr('Focus on your goal','Enfócate en tu meta'):tr("Today's smart add",'Sugerencia de hoy');
+    const body=allGood?tr('Every health area is on track — keep doing exactly what you\'re doing!','Cada área de salud va bien — ¡sigue haciendo justo lo que haces!'):pick.tip;
+    $('#smartAdd').innerHTML=`<div class="sa-ico">${allGood?'🌟':'💡'}</div><div><b>${head}</b><p>${body}</p></div>`;
   }
   $('#insightGrid').innerHTML=ins.map(i=>{
     const st=t.items.length?statusFrom(i.score):'none';
-    const lbl={good:'On track',ok:'Getting there',low:'Needs a boost',none:'Awaiting food'}[st];
-    return `<div class="insight">
+    const lbl={good:tr('On track','Vas bien'),ok:tr('Getting there','Casi'),low:tr('Needs a boost','A mejorar'),none:tr('Awaiting food','Esperando comida')}[st];
+    const focus=(i.k===focusKey);
+    return `<div class="insight"${focus?' style="border-color:var(--brd2);box-shadow:0 0 0 2px var(--brd2)"':''}>
       <div class="ih"><span class="iico">${i.ico}</span><span class="it">${i.title}</span><span class="pill-status st-${st}">${lbl}</span></div>
+      ${focus?`<div style="font-size:.66rem;font-weight:800;color:var(--violet);letter-spacing:.04em;margin:-2px 0 6px">${ui('focusBadge')}</div>`:''}
       <div class="ibar"><i style="width:${t.items.length?i.score:0}%;background:${i.color}"></i></div>
       <div class="iquant">${i.quant}</div>
-      <div class="isug">💡 <span><b>Tip:</b> ${i.tip}</span></div>
+      <div class="isug">💡 <span><b>${tr('Tip:','Consejo:')}</b> ${i.tip}</span></div>
     </div>`;
   }).join('');
 }
@@ -1295,36 +1470,39 @@ function openProfile(){
   $('#modal').innerHTML=`
     <div class="modal-head" style="--c1:var(--blue);--c2:var(--violet)">
       <button class="mclose" onclick="closeModal()">✕</button>
-      <div class="me">👤</div><h3>Your profile</h3>
-      <div class="mtarget">Personalises every target &amp; insight</div>
+      <div class="me">👤</div><h3>${tr('Your profile & goal','Tu perfil y meta')}</h3>
+      <div class="mtarget">${tr('Personalises every target & insight','Personaliza cada meta y análisis')}</div>
     </div>
     <div class="modal-body">
       <div class="add-row">
-        <div class="field"><label>Sex</label><select id="pSex"><option value="female">Female</option><option value="male">Male</option></select></div>
-        <div class="field"><label>Age</label><input id="pAge" type="number" value="${profile.age}"></div>
+        <div class="field"><label>${tr('Sex','Sexo')}</label><select id="pSex"><option value="female">${tr('Female','Mujer')}</option><option value="male">${tr('Male','Hombre')}</option></select></div>
+        <div class="field"><label>${tr('Age','Edad')}</label><input id="pAge" type="number" value="${profile.age}"></div>
       </div>
       <div class="add-row">
-        <div class="field"><label>Weight (kg)</label><input id="pWeight" type="number" value="${profile.weight}"></div>
-        <div class="field"><label>Height (cm)</label><input id="pHeight" type="number" value="${profile.height}"></div>
+        <div class="field"><label>${tr('Weight (kg)','Peso (kg)')}</label><input id="pWeight" type="number" value="${profile.weight}"></div>
+        <div class="field"><label>${tr('Height (cm)','Altura (cm)')}</label><input id="pHeight" type="number" value="${profile.height}"></div>
       </div>
-      <div class="field" style="margin-bottom:16px"><label>Activity level</label>
+      <div class="field" style="margin-bottom:16px"><label>${tr('Activity level','Nivel de actividad')}</label>
         <select id="pAct">
-          <option value="1.2">Sedentary — little exercise</option>
-          <option value="1.375">Light — 1–3 days/week</option>
-          <option value="1.55">Moderate — 3–5 days/week</option>
-          <option value="1.725">Active — 6–7 days/week</option>
+          <option value="1.2">${tr('Sedentary — little exercise','Sedentario — poco ejercicio')}</option>
+          <option value="1.375">${tr('Light — 1–3 days/week','Ligero — 1–3 días/sem')}</option>
+          <option value="1.55">${tr('Moderate — 3–5 days/week','Moderado — 3–5 días/sem')}</option>
+          <option value="1.725">${tr('Active — 6–7 days/week','Activo — 6–7 días/sem')}</option>
         </select></div>
-      <button class="btn btn-pri" style="width:100%;justify-content:center" onclick="saveProfile()">Save &amp; recalculate my targets</button>
-      <p style="font-size:.8rem;color:var(--muted);margin-top:14px">We estimate your calorie needs (Mifflin-St Jeor formula), plus protein, fibre, sodium, potassium and more — tuned to your sex, weight, height, age and activity. These are general estimates; your doctor or dietitian can set targets specific to your health.</p>
+      <div class="field" style="margin-bottom:8px"><label>${tr('🎯 Your main health goal','🎯 Tu meta de salud principal')}</label>
+        <select id="pGoal">${GOALS.map(g=>`<option value="${g.k}">${g.ic} ${goalLabel(g.k)}</option>`).join('')}</select></div>
+      <p style="font-size:.78rem;color:var(--muted);margin:0 0 16px">${tr('Your goal puts the most relevant insight first and steers the “smart add” suggestion.','Tu meta pone primero el análisis más relevante y guía la sugerencia inteligente.')}</p>
+      <button class="btn btn-pri" style="width:100%;justify-content:center" onclick="saveProfile()">${tr('Save & recalculate my targets','Guardar y recalcular mis metas')}</button>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:14px">${tr('We estimate your calorie needs (Mifflin-St Jeor formula), plus protein, fibre, sodium, potassium and more — tuned to your sex, weight, height, age and activity. These are general estimates; your doctor or dietitian can set targets specific to your health.','Estimamos tus calorías (fórmula Mifflin-St Jeor), además de proteína, fibra, sodio, potasio y más — según tu sexo, peso, altura, edad y actividad. Son estimaciones generales; tu médico o dietista puede fijar metas específicas a tu salud.')}</p>
     </div>`;
-  $('#pSex').value=profile.sex;$('#pAct').value=profile.activity;
+  $('#pSex').value=profile.sex;$('#pAct').value=profile.activity;$('#pGoal').value=profile.goal||'generic';
   $('#modalBg').classList.add('open');
 }
 window.saveProfile=()=>{
-  profile={sex:$('#pSex').value,age:+$('#pAge').value||32,weight:+$('#pWeight').value||68,height:+$('#pHeight').value||166,activity:+$('#pAct').value||1.375};
+  profile={sex:$('#pSex').value,age:+$('#pAge').value||32,weight:+$('#pWeight').value||68,height:+$('#pHeight').value||166,activity:+$('#pAct').value||1.375,goal:$('#pGoal').value||'generic'};
   const T=getTargets();
   goals.cal=T.tdee; goals.pro=Math.round(profile.weight*1.0); goals.fib=Math.round(T.tdee/1000*14);
-  save();updateDash();closeModal();toast('Profile saved — targets recalculated 🎯');
+  save();renderGoalPills();renderGoalBanner();updateDash();closeModal();toast(tr('Profile saved — targets recalculated 🎯','Perfil guardado — metas recalculadas 🎯'));
 };
 
 /* ---------- WATER ---------- */
@@ -1341,9 +1519,10 @@ function addWater(ml){const t=today();t.water=Math.max(0,(t.water||0)+ml);save()
 
 /* ---------- MEAL PLANNER ---------- */
 function renderPlanner(){
-  let html=`<div class="pg-head pg-corner"></div>`+DAYS.map(d=>`<div class="pg-head">${d}</div>`).join('');
-  SLOTS.forEach(([slot,label])=>{
-    html+=`<div class="pg-slot">${label}</div>`;
+  const dl=d=>lang==='es'?DAYS_ES[d]:d;
+  let html=`<div class="pg-head pg-corner"></div>`+DAYS.map(d=>`<div class="pg-head">${dl(d)}</div>`).join('');
+  SLOTS.forEach(([slot])=>{
+    html+=`<div class="pg-slot">${slotLabel(slot)}</div>`;
     DAYS.forEach(d=>{const m=plan[d]&&plan[d][slot];
       html+=`<div class="pg-cell ${m?'filled':''}" data-d="${d}" data-s="${slot}">${m?`<span class="pm-e">${m.e}</span><span class="pm-n">${m.n}</span>`:`<span class="pm-add">＋</span>`}</div>`;});
   });
@@ -1351,18 +1530,18 @@ function renderPlanner(){
   $$('#plannerGrid .pg-cell').forEach(c=>c.onclick=()=>openMealPicker(c.dataset.d,c.dataset.s));
 }
 function openMealPicker(day,slot){
-  const label=SLOTS.find(s=>s[0]===slot)[1];
+  const r=SLOTS.find(s=>s[0]===slot);const dl=lang==='es'?DAYS_ES[day]:day;
   $('#modal').innerHTML=`
     <div class="modal-head" style="--c1:var(--green);--c2:var(--teal)">
       <button class="mclose" onclick="closeModal()">✕</button>
-      <div class="me">${label.split(' ')[0]}</div><h3>${day} · ${label.split(' ')[1]}</h3>
-      <div class="mtarget">Pick a heart-healthy meal</div>
+      <div class="me">${r[1]}</div><h3>${dl} · ${tr(r[2],r[3])}</h3>
+      <div class="mtarget">${tr('Pick a heart-healthy meal','Elige una comida saludable')}</div>
     </div>
     <div class="modal-body">
       <div class="meal-opts">${MEALS[slot].map((m,i)=>`<button class="meal-opt" data-i="${i}">
         <span class="mo-e">${m.e}</span><div><b>${m.n}</b><p>${m.blurb}</p><small>${m.items.join(' · ')}</small></div>
         <span class="mo-cal">${m.cal}</span></button>`).join('')}</div>
-      <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="setMeal('${day}','${slot}',-1)">Clear this slot</button>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="setMeal('${day}','${slot}',-1)">${tr('Clear this slot','Vaciar este espacio')}</button>
     </div>`;
   $$('#modal .meal-opt').forEach(b=>b.onclick=()=>setMeal(day,slot,+b.dataset.i));
   $('#modalBg').classList.add('open');
@@ -1372,7 +1551,7 @@ window.setMeal=(day,slot,i)=>{
   if(i<0)delete plan[day][slot]; else plan[day][slot]={n:MEALS[slot][i].n,e:MEALS[slot][i].e};
   store.set('plan',plan);renderPlanner();closeModal();
 };
-function autoPlan(){plan={};DAYS.forEach(d=>{plan[d]={};SLOTS.forEach(([slot])=>{const m=MEALS[slot][Math.floor(Math.random()*MEALS[slot].length)];plan[d][slot]={n:m.n,e:m.e};});});store.set('plan',plan);renderPlanner();toast('✨ A balanced week, served');}
+function autoPlan(){plan={};DAYS.forEach(d=>{plan[d]={};SLOTS.forEach(([slot])=>{const m=MEALS[slot][Math.floor(Math.random()*MEALS[slot].length)];plan[d][slot]={n:m.n,e:m.e};});});store.set('plan',plan);renderPlanner();toast(tr('✨ A balanced week, served','✨ Una semana equilibrada, lista'));}
 function shoppingList(){
   const counts={};
   DAYS.forEach(d=>SLOTS.forEach(([slot])=>{const a=plan[d]&&plan[d][slot];if(!a)return;
@@ -1381,12 +1560,12 @@ function shoppingList(){
   $('#modal').innerHTML=`
     <div class="modal-head" style="--c1:var(--teal);--c2:var(--green)">
       <button class="mclose" onclick="closeModal()">✕</button>
-      <div class="me">🛒</div><h3>Shopping list</h3>
-      <div class="mtarget">${keys.length} item${keys.length!==1?'s':''} for your week</div>
+      <div class="me">🛒</div><h3>${tr('Shopping list','Lista de compras')}</h3>
+      <div class="mtarget">${keys.length} ${tr(keys.length!==1?'items':'item',keys.length!==1?'artículos':'artículo')} ${tr('for your week','para tu semana')}</div>
     </div>
     <div class="modal-body">
       ${keys.length?`<ul class="shop-list">${keys.map(k=>`<li><span>${k}</span><span class="qty">×${counts[k]}</span></li>`).join('')}</ul>`
-        :`<div class="empty"><div class="e">🛒</div>Your plan is empty — tap “Auto-fill my week” or pick a few meals first.</div>`}
+        :`<div class="empty"><div class="e">🛒</div>${tr('Your plan is empty — tap “Auto-fill my week” or pick a few meals first.','Tu plan está vacío — toca “Auto-rellenar mi semana” o elige algunas comidas primero.')}</div>`}
     </div>`;
   $('#modalBg').classList.add('open');
 }
@@ -1397,13 +1576,13 @@ function openOnline(){
   $('#modal').innerHTML=`
     <div class="modal-head" style="--c1:#2563eb;--c2:#06b6d4">
       <button class="mclose" onclick="closeModal()">✕</button>
-      <div class="me">🌐</div><h3>Online food search</h3>
-      <div class="mtarget">Search thousands of real products</div>
+      <div class="me">🌐</div><h3>${tr('Online food search','Búsqueda de alimentos online')}</h3>
+      <div class="mtarget">${tr('Search thousands of real products','Busca miles de productos reales')}</div>
     </div>
     <div class="modal-body">
-      <div class="picker-search"><span class="si">🔍</span><input id="offInput" placeholder="e.g. oat milk, granola, a brand name…" autocomplete="off"></div>
-      <button class="btn btn-pri" style="width:100%;justify-content:center" id="offGo">Search</button>
-      <div class="off-results" id="offResults"><p class="off-note">🌐 Powered by Open Food Facts (open database). Values are per 100&nbsp;g and may be incomplete. Needs an internet connection.</p></div>
+      <div class="picker-search"><span class="si">🔍</span><input id="offInput" placeholder="${tr('e.g. oat milk, granola, a brand name…','p. ej. leche de avena, granola, una marca…')}" autocomplete="off"></div>
+      <button class="btn btn-pri" style="width:100%;justify-content:center" id="offGo">${tr('Search','Buscar')}</button>
+      <div class="off-results" id="offResults"><p class="off-note">${tr('🌐 Powered by Open Food Facts (open database). Values are per 100 g and may be incomplete. Needs an internet connection.','🌐 Con tecnología de Open Food Facts (base de datos abierta). Los valores son por 100 g y pueden estar incompletos. Requiere conexión a internet.')}</p></div>
     </div>`;
   $('#modalBg').classList.add('open');
   const go=()=>runOff();
@@ -1413,12 +1592,12 @@ function openOnline(){
 }
 async function runOff(){
   const q=$('#offInput').value.trim();if(!q)return;
-  $('#offResults').innerHTML='<div class="empty"><div class="e">⏳</div>Searching the food database…</div>';
+  $('#offResults').innerHTML='<div class="empty"><div class="e">⏳</div>'+tr('Searching the food database…','Buscando en la base de datos…')+'</div>';
   try{
     const url='https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&search_simple=1&action=process&json=1&page_size=24&fields=product_name,brands,nutriments';
     const res=await fetch(url);const data=await res.json();
     offCache=(data.products||[]).filter(p=>p.product_name&&p.nutriments&&p.nutriments['energy-kcal_100g']!=null);
-    if(!offCache.length){$('#offResults').innerHTML='<div class="empty"><div class="e">🤷</div>No results with nutrition data — try a simpler name.</div>';return;}
+    if(!offCache.length){$('#offResults').innerHTML='<div class="empty"><div class="e">🤷</div>'+tr('No results with nutrition data — try a simpler name.','Sin resultados con datos nutricionales — prueba un nombre más simple.')+'</div>';return;}
     const r1=v=>Math.round((+v||0));
     $('#offResults').innerHTML=offCache.map((p,i)=>{const n=p.nutriments;
       return `<button class="off-item" data-i="${i}"><div><b>${p.product_name}</b>${p.brands?`<small> · ${p.brands.split(',')[0]}</small>`:''}
@@ -1426,7 +1605,7 @@ async function runOff(){
         <span class="mo-cal">＋</span></button>`;}).join('');
     $$('#offResults .off-item').forEach(b=>b.onclick=()=>addOff(+b.dataset.i));
   }catch(e){
-    $('#offResults').innerHTML='<div class="empty"><div class="e">📡</div>Couldn’t reach the food database. Check your internet connection and try again.</div>';
+    $('#offResults').innerHTML='<div class="empty"><div class="e">📡</div>'+tr('Couldn’t reach the food database. Check your internet connection and try again.','No se pudo conectar con la base de datos. Revisa tu conexión a internet e inténtalo de nuevo.')+'</div>';
   }
 }
 function addOff(i){
@@ -1453,10 +1632,11 @@ function renderGuide(list){
         <div class="fc-badge ${list==='limit'?'limit':''}">${list==='lower'?'💚 '+f.tag:'⚠️ '+f.tag}</div>
       </div>
       <div class="fc-body"><h4>${f.e} ${f.n}</h4><p>${f.why}</p>
-        <span class="fc-tag ${list==='limit'?'limit':''}">${list==='lower'?'Eat more':'Eat less'}</span></div>
+        <span class="fc-tag ${list==='limit'?'limit':''}">${list==='lower'?tr('Eat more','Come más'):tr('Eat less','Come menos')}</span></div>
     </div>`).join('');
 }
-$$('.pill').forEach(p=>p.onclick=()=>{$$('.pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');renderGuide(p.dataset.list);});
+let curGuide='lower';
+$$('.pill').forEach(p=>p.onclick=()=>{$$('.pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');curGuide=p.dataset.list;renderGuide(curGuide);});
 
 /* ---------- VITAMINS ---------- */
 function renderVits(filter=''){
@@ -1465,7 +1645,7 @@ function renderVits(filter=''){
   $('#vitGrid').innerHTML=list.length?list.map((n,i)=>`
     <div class="vit-card" style="--c1:${n.c1};--c2:${n.c2}" data-i="${NUTRIENTS.indexOf(n)}">
       <div class="vit-emoji">${n.e}</div><div class="vit-name">${n.n}</div><div class="vit-sub">${n.sub}</div>
-    </div>`).join(''):`<div class="empty" style="grid-column:1/-1"><div class="e">🔍</div>No match — try “bones”, “energy” or “iron”.</div>`;
+    </div>`).join(''):`<div class="empty" style="grid-column:1/-1"><div class="e">🔍</div>${tr('No match — try “bones”, “energy” or “iron”.','Sin coincidencias — prueba “huesos”, “energía” o “hierro”.')}</div>`;
   $$('#vitGrid .vit-card').forEach(c=>c.onclick=()=>openVit(+c.dataset.i));
 }
 function openVit(i){
@@ -1504,19 +1684,19 @@ $('#goalsBtn').onclick=()=>{
   $('#modal').innerHTML=`
     <div class="modal-head" style="--c1:var(--green);--c2:var(--teal)">
       <button class="mclose" onclick="closeModal()">✕</button>
-      <div class="me">🎯</div><h3>Set your daily goals</h3>
-      <div class="mtarget">Tailor the dashboard to you</div>
+      <div class="me">🎯</div><h3>${tr('Set your daily goals','Define tus metas diarias')}</h3>
+      <div class="mtarget">${tr('Tailor the dashboard to you','Ajusta el panel a ti')}</div>
     </div>
     <div class="modal-body">
-      <div class="add-row"><div class="field"><label>Calories (kcal)</label><input id="gCal" type="number" value="${goals.cal}"></div>
-      <div class="field"><label>Protein (g)</label><input id="gPro" type="number" value="${goals.pro}"></div>
-      <div class="field"><label>Fibre (g)</label><input id="gFib" type="number" value="${goals.fib}"></div></div>
-      <button class="btn btn-pri" style="width:100%;justify-content:center" onclick="saveGoals()">Save goals</button>
-      <p style="font-size:.8rem;color:var(--muted);margin-top:14px">Tip: many adults aim for ~2000 kcal, 25–38g fibre, and protein around 0.8–1.2g per kg of body weight. Ask your doctor or dietitian for your personal numbers.</p>
+      <div class="add-row"><div class="field"><label>${tr('Calories (kcal)','Calorías (kcal)')}</label><input id="gCal" type="number" value="${goals.cal}"></div>
+      <div class="field"><label>${tr('Protein (g)','Proteína (g)')}</label><input id="gPro" type="number" value="${goals.pro}"></div>
+      <div class="field"><label>${tr('Fibre (g)','Fibra (g)')}</label><input id="gFib" type="number" value="${goals.fib}"></div></div>
+      <button class="btn btn-pri" style="width:100%;justify-content:center" onclick="saveGoals()">${tr('Save goals','Guardar metas')}</button>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:14px">${tr('Tip: many adults aim for ~2000 kcal, 25–38g fibre, and protein around 0.8–1.2g per kg of body weight. Ask your doctor or dietitian for your personal numbers.','Consejo: muchos adultos buscan ~2000 kcal, 25–38g de fibra y proteína de ~0,8–1,2g por kg de peso. Consulta a tu médico o dietista para tus números personales.')}</p>
     </div>`;
   $('#modalBg').classList.add('open');
 };
-window.saveGoals=()=>{goals={cal:+$('#gCal').value||2000,pro:+$('#gPro').value||75,fib:+$('#gFib').value||30};save();updateDash();closeModal();toast('Goals updated 🎯');};
+window.saveGoals=()=>{goals={cal:+$('#gCal').value||2000,pro:+$('#gPro').value||75,fib:+$('#gFib').value||30};save();updateDash();closeModal();toast(tr('Goals updated 🎯','Metas actualizadas 🎯'));};
 
 /* ---------- CLAUDE PROMPT ---------- */
 $('#userNotes').value=store.get('notes','');
@@ -1591,14 +1771,16 @@ const cio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){anima
 $$('[data-count]').forEach(el=>cio.observe(el));
 
 /* ---------- INIT ---------- */
-$('#todayDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+$('#todayDate').textContent=new Date().toLocaleDateString(lang==='es'?'es-ES':undefined,{weekday:'long',month:'short',day:'numeric'});
+$('#langBtn').onclick=()=>{setLang(lang==='es'?'en':'es');$('#todayDate').textContent=new Date().toLocaleDateString(lang==='es'?'es-ES':undefined,{weekday:'long',month:'short',day:'numeric'});};
 $('#profileBtn').onclick=openProfile;
 $('#foodSearch').oninput=e=>{pickerQ=e.target.value;renderPicker();};
 $('#onlineBtn').onclick=openOnline;
 $$('.wbtn').forEach(b=>b.onclick=()=>addWater(+b.dataset.ml));
 $('#autoPlan').onclick=autoPlan;
 $('#shopBtn').onclick=shoppingList;
-$('#clearPlan').onclick=()=>{plan={};store.set('plan',plan);renderPlanner();toast('Plan cleared');};
+$('#clearPlan').onclick=()=>{plan={};store.set('plan',plan);renderPlanner();toast(tr('Plan cleared','Plan borrado'));};
+applyLang();renderGoalPills();renderGoalBanner();
 renderCatPills();renderPicker();renderLog();renderGuide('lower');renderVits();renderCombos();renderPlanner();updateDash();
 </script>
 </body>
