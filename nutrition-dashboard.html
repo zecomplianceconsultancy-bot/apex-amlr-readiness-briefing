@@ -250,6 +250,67 @@ body.dark .st-low{color:#fca5a5}
 .insight .isug{font-size:.8rem;color:var(--muted);margin-top:9px;display:flex;gap:6px;align-items:flex-start}
 .insight .isug b{color:var(--green-d);font-weight:700}
 
+/* ════════ WATER TRACKER ════════ */
+.water-main{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.glass{position:relative;width:104px;height:128px;flex-shrink:0;border:3px solid var(--brd2);border-top:none;
+  border-radius:10px 10px 26px 26px;overflow:hidden;background:var(--card-solid)}
+.glass-fill{position:absolute;left:0;right:0;bottom:0;height:0%;transition:height .8s var(--ease);
+  background:linear-gradient(180deg,#60a5fa,#3b82f6 70%,#2563eb)}
+.glass-fill::before,.glass-fill::after{content:'';position:absolute;top:-9px;left:-25%;width:150%;height:18px;border-radius:45%}
+.glass-fill::before{background:rgba(255,255,255,.35);animation:wave 4s linear infinite}
+.glass-fill::after{background:rgba(255,255,255,.18);animation:wave 6s linear infinite reverse}
+@keyframes wave{from{transform:translateX(-25%) rotate(0)}to{transform:translateX(0%) rotate(360deg)}}
+.glass-val{position:absolute;inset:0;display:grid;place-items:center;text-align:center;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,.18)}
+.glass-val b{font-family:'Fraunces';font-size:1.5rem;line-height:1;color:var(--ink)}
+.glass-val span{font-size:.66rem;color:var(--muted);font-weight:600}
+.water-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px;flex:1;min-width:180px}
+.wbtn{font-family:'DM Sans';font-weight:700;font-size:.86rem;padding:11px;border-radius:13px;border:1px solid var(--brd2);
+  background:var(--card-solid);color:var(--ink);cursor:pointer;transition:.22s;display:flex;flex-direction:column;align-items:center;gap:1px}
+.wbtn small{font-size:.66rem;color:var(--muted);font-weight:500}
+.wbtn:hover{background:linear-gradient(120deg,#3b82f6,#60a5fa);color:#fff;border-color:transparent;transform:translateY(-2px)}
+.wbtn:hover small{color:rgba(255,255,255,.85)}
+.wbtn.undo:hover{background:linear-gradient(120deg,#94a3b8,#cbd5e1)}
+
+/* ════════ MEAL PLANNER ════════ */
+.planner-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+.planner-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;border-radius:var(--r)}
+.planner-grid{display:grid;grid-template-columns:88px repeat(7,minmax(124px,1fr));gap:8px;min-width:840px}
+.pg-head{font-weight:800;font-family:'Fraunces';text-align:center;padding:10px 0;font-size:.95rem;color:var(--ink2)}
+.pg-corner{background:transparent}
+.pg-slot{display:flex;align-items:center;font-weight:700;font-size:.82rem;color:var(--green-d);padding:0 6px}
+.pg-cell{min-height:78px;border-radius:14px;border:1px dashed var(--brd2);background:var(--card-solid);cursor:pointer;
+  padding:10px 9px;display:flex;flex-direction:column;justify-content:center;gap:4px;transition:.22s;text-align:center}
+.pg-cell:hover{border-style:solid;border-color:var(--green);transform:translateY(-2px);box-shadow:var(--sh)}
+.pg-cell.filled{border-style:solid;background:linear-gradient(135deg,rgba(15,157,88,.09),rgba(20,184,166,.05))}
+.pg-cell .pm-e{font-size:1.5rem;line-height:1}
+.pg-cell .pm-n{font-size:.74rem;font-weight:700;line-height:1.2}
+.pg-cell .pm-add{font-size:1.5rem;color:var(--dim)}
+.meal-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.meal-opt{display:flex;align-items:center;gap:13px;text-align:left;padding:13px 15px;border-radius:14px;border:1px solid var(--brd);
+  background:var(--card-solid);cursor:pointer;transition:.22s;width:100%;color:var(--ink)}
+.meal-opt:hover{border-color:var(--green);transform:translateX(4px);box-shadow:var(--sh)}
+.meal-opt .mo-e{font-size:1.8rem;flex-shrink:0}
+.meal-opt b{font-size:.98rem}
+.meal-opt p{font-size:.8rem;color:var(--ink2);margin:2px 0}
+.meal-opt small{font-size:.72rem;color:var(--muted)}
+.meal-opt .mo-cal{margin-left:auto;font-weight:800;font-family:'Fraunces';color:var(--green-d);flex-shrink:0}
+.shop-list{columns:2;column-gap:24px}
+@media(max-width:520px){.shop-list{columns:1}}
+.shop-list li{break-inside:avoid;list-style:none;padding:9px 0;border-bottom:1px solid var(--brd);font-size:.92rem;display:flex;justify-content:space-between;gap:8px}
+.shop-list li .qty{color:var(--green-d);font-weight:700}
+
+/* ════════ ONLINE SEARCH ════════ */
+.online-row{display:flex;justify-content:center;margin-bottom:6px}
+.off-results{margin-top:14px;max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:9px}
+.off-note{font-size:.76rem;color:var(--muted);background:var(--brd);padding:10px 13px;border-radius:11px;margin-bottom:4px}
+.off-item{display:flex;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:13px;border:1px solid var(--brd);
+  background:var(--card-solid);cursor:pointer;transition:.2s;width:100%;color:var(--ink)}
+.off-item:hover{border-color:var(--green);transform:translateX(3px)}
+.off-item b{font-size:.92rem}
+.off-item small{color:var(--muted);font-weight:500}
+.off-item p{font-size:.76rem;color:var(--ink2);margin:2px 0 0}
+.off-item .mo-cal{margin-left:auto;font-size:1.4rem;color:var(--green-d);font-weight:800}
+
 /* ════════ FOOD GUIDE GRID ════════ */
 .alt{background:linear-gradient(180deg,transparent,rgba(15,157,88,.04),transparent)}
 .food-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
@@ -421,6 +482,7 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
       <a href="#guide">Heart Foods</a>
       <a href="#vitamins">Vitamins</a>
       <a href="#combos">Combinations</a>
+      <a href="#planner">Planner</a>
       <a href="#enhance">Enhance</a>
     </div>
     <button class="icon-btn" id="themeBtn" title="Toggle light / dark">🌙</button>
@@ -484,6 +546,7 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
       <div class="picker-search"><span class="si">🔍</span><input id="foodSearch" placeholder="Search 110+ foods…" autocomplete="off"></div>
       <div class="cat-pills" id="catPills"></div>
       <div class="food-chips" id="quickFoods"></div>
+      <div class="online-row"><button class="btn-mini" id="onlineBtn">🌐 Can't find it? Search the web (Open Food Facts)</button></div>
 
       <details class="custom-add">
         <summary>＋ Add a custom food (not in the list)</summary>
@@ -528,6 +591,22 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
         <div class="ml"><span class="sw" style="background:var(--berry)"></span>Protein</div>
         <div class="ml"><span class="sw" style="background:var(--amber)"></span>Carbs</div>
         <div class="ml"><span class="sw" style="background:var(--blue)"></span>Fat</div>
+      </div>
+    </div>
+
+    <!-- WATER -->
+    <div class="panel card reveal">
+      <h3>💧 Hydration</h3>
+      <p class="sub">Goal <span id="waterGoal">2.4 L</span> · tap to add a drink</p>
+      <div class="water-main">
+        <div class="glass"><div class="glass-fill" id="glassFill"></div>
+          <div class="glass-val"><b id="waterNow">0.0L</b><span id="waterPct">0%</span></div></div>
+        <div class="water-btns">
+          <button class="wbtn" data-ml="150">＋ Cup<small>150 ml</small></button>
+          <button class="wbtn" data-ml="250">＋ Glass<small>250 ml</small></button>
+          <button class="wbtn" data-ml="500">＋ Bottle<small>500 ml</small></button>
+          <button class="wbtn undo" data-ml="-250">− Undo<small>250 ml</small></button>
+        </div>
       </div>
     </div>
 
@@ -619,6 +698,21 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
   </div>
 </section>
 
+<!-- ════════ MEAL PLANNER ════════ -->
+<section id="planner" class="wrap">
+  <div class="sec-head reveal">
+    <span class="sec-tag">7-Day Plan</span>
+    <h2>Plan a heart-healthy week</h2>
+    <p>Tap any slot to choose a meal, or auto-fill a balanced week in one click. Then turn it into a shopping list.</p>
+  </div>
+  <div class="planner-actions reveal">
+    <button class="btn btn-pri" id="autoPlan">✨ Auto-fill my week</button>
+    <button class="btn btn-ghost" id="shopBtn">🛒 Shopping list</button>
+    <button class="btn btn-ghost" id="clearPlan">Clear plan</button>
+  </div>
+  <div class="planner-scroll reveal"><div class="planner-grid" id="plannerGrid"></div></div>
+</section>
+
 <!-- ════════ ENHANCE WITH CLAUDE ════════ -->
 <section id="enhance" class="wrap">
   <div class="claude-card card reveal">
@@ -664,7 +758,7 @@ input,select,textarea,button{font-size:16px}      /* stops iOS auto-zoom on focu
     <a href="#dashboard" data-sec="dashboard"><span class="ti">📊</span>Tracker</a>
     <a href="#guide" data-sec="guide"><span class="ti">💚</span>Heart</a>
     <a href="#vitamins" data-sec="vitamins"><span class="ti">💊</span>Vitamins</a>
-    <a href="#combos" data-sec="combos"><span class="ti">🔗</span>Combos</a>
+    <a href="#planner" data-sec="planner"><span class="ti">🗓️</span>Plan</a>
     <a href="#enhance" data-sec="enhance"><span class="ti">✳️</span>Enhance</a>
   </div>
 </div>
@@ -814,6 +908,45 @@ const allFoods=()=>FOODS.concat(myFoods);
 // keywords that flag a custom food as heart-friendly
 const HEART_KEYWORDS=['oat','bean','lentil','salmon','tuna','sardine','mackerel','fish','walnut','almond','nut','olive','avocado','berry','berries','spinach','broccoli','kale','apple','pear','quinoa','seed','chia','flax','tofu','edamame','chickpea','tomato','orange','kiwi','barley'];
 
+// ── MEAL LIBRARY (heart-healthy suggestions) ──────────────
+const MEALS={
+  breakfast:[
+    {n:'Overnight Oats & Berries',e:'🥣',cal:340,blurb:'Soluble fibre + antioxidants to start the day.',items:['Oats','Milk','Blueberries','Chia seeds','Honey']},
+    {n:'Greek Yogurt Parfait',e:'🥛',cal:280,blurb:'High protein, gut-friendly, low sugar.',items:['Greek yogurt','Strawberries','Almonds','Oats']},
+    {n:'Veggie Omelette',e:'🍳',cal:300,blurb:'Protein + greens to stay full till lunch.',items:['Eggs','Spinach','Tomato','Bell pepper','Olive oil']},
+    {n:'Avocado Toast',e:'🥑',cal:330,blurb:'Healthy fats on wholegrain for steady energy.',items:['Whole wheat bread','Avocado','Egg','Tomato']},
+    {n:'Smoothie Bowl',e:'🥤',cal:310,blurb:'Potassium-rich and packed with vitamin C.',items:['Banana','Berries','Greek yogurt','Flaxseed','Spinach']},
+    {n:'Chia Pudding',e:'⚫',cal:260,blurb:'Omega-3 and fibre, made the night before.',items:['Chia seeds','Milk','Mango','Almonds']}
+  ],
+  lunch:[
+    {n:'Lentil Soup & Salad',e:'🥣',cal:420,blurb:'Soluble fibre powerhouse for cholesterol.',items:['Lentils','Carrots','Onion','Spinach','Olive oil']},
+    {n:'Quinoa Power Bowl',e:'🥗',cal:480,blurb:'Complete protein with colourful veg.',items:['Quinoa','Chickpeas','Avocado','Bell pepper','Kale']},
+    {n:'Grilled Chicken Wrap',e:'🌯',cal:450,blurb:'Lean protein and fibre on wholegrain.',items:['Chicken breast','Whole wheat bread','Spinach','Tomato','Hummus']},
+    {n:'Salmon & Greens Salad',e:'🐟',cal:430,blurb:'Omega-3 to lower triglycerides.',items:['Salmon','Spinach','Cucumber','Olive oil','Walnuts']},
+    {n:'Chickpea Buddha Bowl',e:'🫘',cal:470,blurb:'Plant protein and a rainbow of nutrients.',items:['Chickpeas','Brown rice','Broccoli','Carrots','Tahini']},
+    {n:'Bean Burrito Bowl',e:'🌮',cal:490,blurb:'Fibre + potassium, naturally low in sat fat.',items:['Black beans','Brown rice','Tomato','Avocado','Bell pepper']}
+  ],
+  dinner:[
+    {n:'Baked Salmon & Veg',e:'🐟',cal:520,blurb:'Omega-3 dinner with roasted vegetables.',items:['Salmon','Sweet potato','Broccoli','Olive oil']},
+    {n:'Tofu Stir-fry',e:'🥢',cal:480,blurb:'Plant protein with potassium-rich veg.',items:['Tofu','Brown rice','Broccoli','Bell pepper','Green beans']},
+    {n:'Turkey Chili',e:'🌶️',cal:500,blurb:'Lean protein and three kinds of fibre.',items:['Turkey breast','Kidney beans','Tomato','Onion','Bell pepper']},
+    {n:'Mediterranean Bowl',e:'🫒',cal:510,blurb:'The gold-standard heart-healthy pattern.',items:['Chickpeas','Quinoa','Cucumber','Tomato','Feta','Olive oil']},
+    {n:'Pasta Primavera',e:'🍝',cal:490,blurb:'Wholegrain pasta loaded with vegetables.',items:['Whole wheat pasta','Zucchini','Tomato','Spinach','Olive oil']},
+    {n:'Black Bean Tacos',e:'🌮',cal:470,blurb:'Fibre-rich and full of flavour.',items:['Black beans','Whole wheat bread','Avocado','Tomato','Cabbage']}
+  ],
+  snack:[
+    {n:'Apple & Almond Butter',e:'🍎',cal:200,blurb:'Pectin fibre + healthy fat.',items:['Apple','Almond butter']},
+    {n:'Hummus & Veg Sticks',e:'🥕',cal:160,blurb:'Fibre and crunch, low sodium.',items:['Hummus','Carrots','Cucumber','Bell pepper']},
+    {n:'Mixed Nuts',e:'🥜',cal:180,blurb:'Sterols and healthy fats for the heart.',items:['Almonds','Walnuts','Pistachios']},
+    {n:'Yogurt & Berries',e:'🫐',cal:150,blurb:'Probiotics and antioxidants.',items:['Greek yogurt','Blueberries']},
+    {n:'Dark Chocolate & Walnuts',e:'🍫',cal:210,blurb:'Antioxidants + omega-3, a treat that loves you back.',items:['Dark chocolate','Walnuts']},
+    {n:'Edamame',e:'🫛',cal:190,blurb:'Plant protein and fibre in one pod.',items:['Edamame']}
+  ]
+};
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const SLOTS=[['breakfast','🌅 Breakfast'],['lunch','🥗 Lunch'],['dinner','🍽️ Dinner'],['snack','🍎 Snack']];
+let plan=store.get('plan',{});
+
 const GUIDE={
   lower:[
     {n:'Oats & Barley',e:'🥣',why:'Beta-glucan, a soluble fibre, binds cholesterol in the gut so it leaves the body.',tag:'Soluble fibre',img:'photo-1614961233913-a5113a4a34ed'},
@@ -887,7 +1020,7 @@ const COMBOS={
 let goals=store.get('goals',{cal:2000,pro:75,fib:30});
 let profile=store.get('profile',{sex:'female',age:32,weight:68,height:166,activity:1.375});
 let history=store.get('history',{});
-function today(){if(!history[todayKey()])history[todayKey()]={cal:0,pro:0,carb:0,fat:0,fib:0,items:[],heart:0,sat:0,na:0,sug:0,k:0,vc:0,ca:0,fe:0,o3:0};return history[todayKey()];}
+function today(){if(!history[todayKey()])history[todayKey()]={cal:0,pro:0,carb:0,fat:0,fib:0,items:[],heart:0,sat:0,na:0,sug:0,k:0,vc:0,ca:0,fe:0,o3:0,water:0};return history[todayKey()];}
 function save(){store.set('history',history);store.set('goals',goals);store.set('profile',profile);}
 
 // Personalised daily targets from profile (Mifflin-St Jeor + standard guidelines)
@@ -902,7 +1035,8 @@ function getTargets(){
     k:male?3400:2600,             // potassium (mg)
     sat:Math.round((goals.cal*0.10)/9), // saturated fat cap (g) ~10% kcal
     sug:male?36:25,               // added sugar (g)
-    ca:1000, fe:male?8:18, vc:male?90:75, o3:1.1
+    ca:1000, fe:male?8:18, vc:male?90:75, o3:1.1,
+    water:Math.round(p.weight*35/50)*50  // hydration target (ml) ~35ml/kg
   };
 }
 const pct=(v,g)=>Math.max(0,Math.min(v/g,1));
@@ -1125,6 +1259,14 @@ function computeInsights(){
        : t.fib<T.fib*0.5 ? 'Pair carbs with fibre & protein to keep blood sugar steady'
        : 'Steady, fibre-supported energy — nicely balanced 👌'});
 
+  // 💧 HYDRATION
+  const w=t.water||0;
+  I.push({ico:'💧',title:'Hydration',score:Math.round(pct(w,T.water)*100),color:'#3b82f6',
+    quant:`${(w/1000).toFixed(1)} of ${(T.water/1000).toFixed(1)} L today`,
+    tip: w<T.water*0.4 ? 'Drink up — aim for a glass of water every couple of hours 💧'
+       : w<T.water ? `Almost there — about ${Math.ceil((T.water-w)/250)} more glass${Math.ceil((T.water-w)/250)>1?'es':''} to hit your goal`
+       : 'Beautifully hydrated today — great for energy & focus 💧'});
+
   return I;
 }
 function renderInsights(){
@@ -1185,8 +1327,121 @@ window.saveProfile=()=>{
   save();updateDash();closeModal();toast('Profile saved — targets recalculated 🎯');
 };
 
+/* ---------- WATER ---------- */
+function renderWater(){
+  const t=today(),T=getTargets();
+  const p=Math.min(Math.round((t.water||0)/T.water*100),100);
+  $('#glassFill').style.height=p+'%';
+  $('#waterNow').textContent=((t.water||0)/1000).toFixed(1)+'L';
+  $('#waterPct').textContent=p+'%';
+  $('#waterGoal').textContent=(T.water/1000).toFixed(1)+' L';
+}
+function addWater(ml){const t=today();t.water=Math.max(0,(t.water||0)+ml);save();renderWater();renderInsights();
+  if(ml>0)toast('💧 '+ml+' ml logged');}
+
+/* ---------- MEAL PLANNER ---------- */
+function renderPlanner(){
+  let html=`<div class="pg-head pg-corner"></div>`+DAYS.map(d=>`<div class="pg-head">${d}</div>`).join('');
+  SLOTS.forEach(([slot,label])=>{
+    html+=`<div class="pg-slot">${label}</div>`;
+    DAYS.forEach(d=>{const m=plan[d]&&plan[d][slot];
+      html+=`<div class="pg-cell ${m?'filled':''}" data-d="${d}" data-s="${slot}">${m?`<span class="pm-e">${m.e}</span><span class="pm-n">${m.n}</span>`:`<span class="pm-add">＋</span>`}</div>`;});
+  });
+  $('#plannerGrid').innerHTML=html;
+  $$('#plannerGrid .pg-cell').forEach(c=>c.onclick=()=>openMealPicker(c.dataset.d,c.dataset.s));
+}
+function openMealPicker(day,slot){
+  const label=SLOTS.find(s=>s[0]===slot)[1];
+  $('#modal').innerHTML=`
+    <div class="modal-head" style="--c1:var(--green);--c2:var(--teal)">
+      <button class="mclose" onclick="closeModal()">✕</button>
+      <div class="me">${label.split(' ')[0]}</div><h3>${day} · ${label.split(' ')[1]}</h3>
+      <div class="mtarget">Pick a heart-healthy meal</div>
+    </div>
+    <div class="modal-body">
+      <div class="meal-opts">${MEALS[slot].map((m,i)=>`<button class="meal-opt" data-i="${i}">
+        <span class="mo-e">${m.e}</span><div><b>${m.n}</b><p>${m.blurb}</p><small>${m.items.join(' · ')}</small></div>
+        <span class="mo-cal">${m.cal}</span></button>`).join('')}</div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="setMeal('${day}','${slot}',-1)">Clear this slot</button>
+    </div>`;
+  $$('#modal .meal-opt').forEach(b=>b.onclick=()=>setMeal(day,slot,+b.dataset.i));
+  $('#modalBg').classList.add('open');
+}
+window.setMeal=(day,slot,i)=>{
+  if(!plan[day])plan[day]={};
+  if(i<0)delete plan[day][slot]; else plan[day][slot]={n:MEALS[slot][i].n,e:MEALS[slot][i].e};
+  store.set('plan',plan);renderPlanner();closeModal();
+};
+function autoPlan(){plan={};DAYS.forEach(d=>{plan[d]={};SLOTS.forEach(([slot])=>{const m=MEALS[slot][Math.floor(Math.random()*MEALS[slot].length)];plan[d][slot]={n:m.n,e:m.e};});});store.set('plan',plan);renderPlanner();toast('✨ A balanced week, served');}
+function shoppingList(){
+  const counts={};
+  DAYS.forEach(d=>SLOTS.forEach(([slot])=>{const a=plan[d]&&plan[d][slot];if(!a)return;
+    const meal=MEALS[slot].find(m=>m.n===a.n);if(meal)meal.items.forEach(it=>counts[it]=(counts[it]||0)+1);}));
+  const keys=Object.keys(counts).sort();
+  $('#modal').innerHTML=`
+    <div class="modal-head" style="--c1:var(--teal);--c2:var(--green)">
+      <button class="mclose" onclick="closeModal()">✕</button>
+      <div class="me">🛒</div><h3>Shopping list</h3>
+      <div class="mtarget">${keys.length} item${keys.length!==1?'s':''} for your week</div>
+    </div>
+    <div class="modal-body">
+      ${keys.length?`<ul class="shop-list">${keys.map(k=>`<li><span>${k}</span><span class="qty">×${counts[k]}</span></li>`).join('')}</ul>`
+        :`<div class="empty"><div class="e">🛒</div>Your plan is empty — tap “Auto-fill my week” or pick a few meals first.</div>`}
+    </div>`;
+  $('#modalBg').classList.add('open');
+}
+
+/* ---------- ONLINE FOOD SEARCH (Open Food Facts) ---------- */
+let offCache=[];
+function openOnline(){
+  $('#modal').innerHTML=`
+    <div class="modal-head" style="--c1:#2563eb;--c2:#06b6d4">
+      <button class="mclose" onclick="closeModal()">✕</button>
+      <div class="me">🌐</div><h3>Online food search</h3>
+      <div class="mtarget">Search thousands of real products</div>
+    </div>
+    <div class="modal-body">
+      <div class="picker-search"><span class="si">🔍</span><input id="offInput" placeholder="e.g. oat milk, granola, a brand name…" autocomplete="off"></div>
+      <button class="btn btn-pri" style="width:100%;justify-content:center" id="offGo">Search</button>
+      <div class="off-results" id="offResults"><p class="off-note">🌐 Powered by Open Food Facts (open database). Values are per 100&nbsp;g and may be incomplete. Needs an internet connection.</p></div>
+    </div>`;
+  $('#modalBg').classList.add('open');
+  const go=()=>runOff();
+  $('#offGo').onclick=go;
+  $('#offInput').onkeydown=e=>{if(e.key==='Enter')go();};
+  setTimeout(()=>$('#offInput').focus(),120);
+}
+async function runOff(){
+  const q=$('#offInput').value.trim();if(!q)return;
+  $('#offResults').innerHTML='<div class="empty"><div class="e">⏳</div>Searching the food database…</div>';
+  try{
+    const url='https://world.openfoodfacts.org/cgi/search.pl?search_terms='+encodeURIComponent(q)+'&search_simple=1&action=process&json=1&page_size=24&fields=product_name,brands,nutriments';
+    const res=await fetch(url);const data=await res.json();
+    offCache=(data.products||[]).filter(p=>p.product_name&&p.nutriments&&p.nutriments['energy-kcal_100g']!=null);
+    if(!offCache.length){$('#offResults').innerHTML='<div class="empty"><div class="e">🤷</div>No results with nutrition data — try a simpler name.</div>';return;}
+    const r1=v=>Math.round((+v||0));
+    $('#offResults').innerHTML=offCache.map((p,i)=>{const n=p.nutriments;
+      return `<button class="off-item" data-i="${i}"><div><b>${p.product_name}</b>${p.brands?`<small> · ${p.brands.split(',')[0]}</small>`:''}
+        <p>${r1(n['energy-kcal_100g'])} kcal · P ${r1(n.proteins_100g)}g · C ${r1(n.carbohydrates_100g)}g · F ${r1(n.fat_100g)}g /100g</p></div>
+        <span class="mo-cal">＋</span></button>`;}).join('');
+    $$('#offResults .off-item').forEach(b=>b.onclick=()=>addOff(+b.dataset.i));
+  }catch(e){
+    $('#offResults').innerHTML='<div class="empty"><div class="e">📡</div>Couldn’t reach the food database. Check your internet connection and try again.</div>';
+  }
+}
+function addOff(i){
+  const p=offCache[i],n=p.nutriments,num=v=>+v||0;
+  const heart=HEART_KEYWORDS.some(h=>p.product_name.toLowerCase().includes(h));
+  const food={n:p.product_name.slice(0,42),e:'🌐',cat:'mine',
+    cal:Math.round(num(n['energy-kcal_100g'])),p:num(n.proteins_100g),c:num(n.carbohydrates_100g),f:num(n.fat_100g),
+    fib:num(n.fiber_100g),sat:num(n['saturated-fat_100g']),na:Math.round(num(n.sodium_100g)*1000),sug:num(n.sugars_100g),
+    k:Math.round(num(n.potassium_100g)),vc:0,ca:Math.round(num(n.calcium_100g)),fe:num(n.iron_100g),o3:0,heart};
+  if(!myFoods.some(m=>m.n.toLowerCase()===food.n.toLowerCase())){myFoods.push(food);store.set('myFoods',myFoods);renderCatPills();}
+  addItem(food);renderPicker();closeModal();
+}
+
 /* ---------- DASH UPDATE ---------- */
-function updateDash(){renderRings();renderDonut();renderTrend();renderScore();renderInsights();renderAdvice();}
+function updateDash(){renderRings();renderDonut();renderTrend();renderScore();renderInsights();renderWater();renderAdvice();}
 
 /* ---------- FOOD GUIDE ---------- */
 function renderGuide(list){
@@ -1278,6 +1533,7 @@ MY DASHBOARD RIGHT NOW (today's log):
 - Protein: ${t.pro} g (goal ${goals.pro})
 - Carbs: ${t.carb} g · Fat: ${t.fat} g · Fibre: ${t.fib} g (goal ${goals.fib})
 - Sodium: ${Math.round(t.na)} mg · Potassium: ${Math.round(t.k)} mg · Sat fat: ${t.sat.toFixed(0)} g · Sugar: ${Math.round(t.sug)} g
+- Water: ${((t.water||0)/1000).toFixed(1)} L of ${(getTargets().water/1000).toFixed(1)} L goal
 - Heart Score: ${computeScore()}/100
 - Health insights: ${computeInsights().map(i=>i.title+' '+i.score).join(' · ')}
 - My profile: ${profile.sex}, ${profile.age}y, ${profile.weight}kg, ${profile.height}cm
@@ -1321,7 +1577,7 @@ $$('#navLinks a').forEach(a=>a.onclick=()=>$('#navLinks').classList.remove('open
 addEventListener('scroll',()=>{const h=document.documentElement;$('#prog').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
 
 /* ---------- MOBILE TAB SCROLL-SPY ---------- */
-const tabLinks=$$('#tabbar a');const secs=['dashboard','guide','vitamins','combos','enhance'];
+const tabLinks=$$('#tabbar a');const secs=['dashboard','guide','vitamins','planner','enhance'];
 const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
   tabLinks.forEach(a=>a.classList.toggle('active',a.dataset.sec===e.target.id));}}),{rootMargin:'-45% 0px -50% 0px'});
 secs.forEach(id=>{const el=document.getElementById(id);if(el)spy.observe(el);});
@@ -1338,7 +1594,12 @@ $$('[data-count]').forEach(el=>cio.observe(el));
 $('#todayDate').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
 $('#profileBtn').onclick=openProfile;
 $('#foodSearch').oninput=e=>{pickerQ=e.target.value;renderPicker();};
-renderCatPills();renderPicker();renderLog();renderGuide('lower');renderVits();renderCombos();updateDash();
+$('#onlineBtn').onclick=openOnline;
+$$('.wbtn').forEach(b=>b.onclick=()=>addWater(+b.dataset.ml));
+$('#autoPlan').onclick=autoPlan;
+$('#shopBtn').onclick=shoppingList;
+$('#clearPlan').onclick=()=>{plan={};store.set('plan',plan);renderPlanner();toast('Plan cleared');};
+renderCatPills();renderPicker();renderLog();renderGuide('lower');renderVits();renderCombos();renderPlanner();updateDash();
 </script>
 </body>
 </html>
