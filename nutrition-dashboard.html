@@ -265,6 +265,18 @@ body.dark .st-low{color:#fca5a5}
 .goal-pick{font-size:.82rem;font-weight:700;padding:9px 15px;border-radius:30px;border:1px solid var(--brd2);background:var(--card-solid);cursor:pointer;color:var(--ink);transition:.2s}
 .goal-pick:hover{border-color:var(--green);transform:translateY(-2px)}
 .goal-pick.active{background:linear-gradient(120deg,var(--violet),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(139,92,246,.3)}
+.goal-pick{font-size:.92rem;padding:12px 19px}
+.goal-pills-lbl{flex-basis:100%;font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:2px}
+/* multi-select dropdown */
+.multi-dd{border:1px solid var(--brd2);border-radius:12px;background:var(--card-solid);overflow:hidden}
+.multi-dd summary{list-style:none;cursor:pointer;padding:12px 14px;font-size:.92rem;font-weight:600;display:flex;align-items:center;gap:8px;color:var(--ink)}
+.multi-dd summary::-webkit-details-marker{display:none}
+.multi-dd summary::after{content:'▾';margin-left:auto;color:var(--muted);transition:.2s}
+.multi-dd[open] summary::after{transform:rotate(180deg)}
+.multi-opts{border-top:1px solid var(--brd);padding:6px}
+.mopt{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;font-size:.92rem;font-weight:600;cursor:pointer;transition:.18s;color:var(--ink)}
+.mopt:hover{background:var(--brd)}
+.mopt input{width:auto;accent-color:var(--violet)}
 
 /* ════════ WATER TRACKER ════════ */
 .water-main{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
@@ -1108,16 +1120,30 @@ const goalStrategy=k=>tr(
    bp:'Aumenta el potasio (plátano, legumbres, verduras de hoja), mantén bajo el sodio y favorece el patrón mediterráneo.',
    vitamins:'Come el arcoíris — cubre vitamina C, hierro, calcio, potasio y omega-3 cada día.',
    weight:'Ajusta las calorías a tus necesidades, prioriza proteína y fibra para saciarte, y vigila el azúcar añadido.'}[k]);
+const goalActive=k=>k==='generic'?(!profile.goals||!profile.goals.length):(profile.goals||[]).includes(k);
+function toggleGoal(k){
+  if(!profile.goals)profile.goals=[];
+  if(k==='generic'){profile.goals=[];}
+  else{const i=profile.goals.indexOf(k);if(i>=0)profile.goals.splice(i,1);else profile.goals.push(k);}
+  save();renderGoalPills();renderGoalBanner();updateDash();
+}
 function renderGoalBanner(){
-  const g=(profile.goal)||'generic',gd=GOALS.find(x=>x.k===g);
-  $('#goalBanner').innerHTML=`<span class="gb-ic">${gd.ic}</span>
-    <div class="gb-txt"><b>${ui('gsGoalNow')} ${goalLabel(g)}</b><p>${goalStrategy(g)}</p></div>
+  const gs=profile.goals||[];
+  let ic,head,body;
+  if(!gs.length){ic='🌿';head=tr('Your goal: General wellness','Tu meta: Bienestar general');body=goalStrategy('generic');}
+  else{ic=GOALS.find(x=>x.k===gs[0]).ic;
+    head=tr('Your goals: ','Tus metas: ')+gs.map(goalLabel).join(' · ');
+    body=gs.map(g=>`${GOALS.find(x=>x.k===g).ic} ${goalStrategy(g)}`).join('<br>');}
+  $('#goalBanner').innerHTML=`<span class="gb-ic">${ic}</span>
+    <div class="gb-txt"><b>${head}</b><p>${body}</p></div>
     <button class="btn btn-pri" id="gsBtn2">${ui('gsBtn')}</button>`;
   $('#gsBtn2').onclick=openProfile;
 }
 function renderGoalPills(){
-  $('#goalPills').innerHTML=GOALS.map(g=>`<button class="goal-pick ${((profile.goal)||'generic')===g.k?'active':''}" data-g="${g.k}">${g.ic} ${goalLabel(g.k)}</button>`).join('');
-  $$('#goalPills .goal-pick').forEach(b=>b.onclick=()=>{profile.goal=b.dataset.g;save();renderGoalPills();renderGoalBanner();updateDash();toast(tr('Goal set: ','Meta: ')+goalLabel(profile.goal));});
+  $('#goalPills').innerHTML=`<div class="goal-pills-lbl">${tr('🎯 Choose one or more goals — your advice adapts','🎯 Elige una o más metas — tus consejos se adaptan')}</div>`+
+    GOALS.map(g=>`<button class="goal-pick ${goalActive(g.k)?'active':''}" data-g="${g.k}">${goalActive(g.k)&&g.k!=='generic'?'✓ ':''}${g.ic} ${goalLabel(g.k)}</button>`).join('');
+  $$('#goalPills .goal-pick').forEach(b=>b.onclick=()=>{toggleGoal(b.dataset.g);
+    toast(b.dataset.g==='generic'?tr('Focus cleared — general wellness','Enfoque despejado — bienestar general'):(goalActive(b.dataset.g)?tr('Added: ','Añadida: '):tr('Removed: ','Quitada: '))+goalLabel(b.dataset.g));});
 }
 
 const GUIDE={
@@ -1191,7 +1217,8 @@ const COMBOS={
 
 /* ---------- STATE ---------- */
 let goals=store.get('goals',{cal:2000,pro:75,fib:30});
-let profile=store.get('profile',{sex:'female',age:32,weight:68,height:166,activity:1.375,goal:'generic'});
+let profile=store.get('profile',{sex:'female',age:32,weight:68,height:166,activity:1.375,goals:[]});
+if(profile.goals===undefined)profile.goals=(profile.goal&&profile.goal!=='generic')?[profile.goal]:[]; // migrate old single goal
 let history=store.get('history',{});
 function today(){if(!history[todayKey()])history[todayKey()]={cal:0,pro:0,carb:0,fat:0,fib:0,items:[],heart:0,sat:0,na:0,sug:0,k:0,vc:0,ca:0,fe:0,o3:0,water:0};return history[todayKey()];}
 function save(){store.set('history',history);store.set('goals',goals);store.set('profile',profile);}
@@ -1438,23 +1465,23 @@ function computeInsights(){
 }
 function renderInsights(){
   let ins=computeInsights();const t=today();
-  const focusKey=(profile.goal&&(GOALS.find(g=>g.k===profile.goal)||{}).insight)||null;
-  if(focusKey)ins=ins.slice().sort((a,b)=>(a.k===focusKey?-1:b.k===focusKey?1:0));
+  const focusKeys=(profile.goals||[]).map(g=>(GOALS.find(x=>x.k===g)||{}).insight).filter(Boolean);
+  if(focusKeys.length)ins=ins.slice().sort((a,b)=>(focusKeys.includes(b.k)?1:0)-(focusKeys.includes(a.k)?1:0));
   if(!t.items.length){
     $('#smartAdd').innerHTML=`<div class="sa-ico">🍽️</div><div><b>${tr('Log a meal to unlock your insights','Registra una comida para ver tus análisis')}</b><p>${tr('Tap a food above and your cholesterol, blood-pressure, nutrition, energy & blood-sugar read-outs appear here — quantified to your profile.','Toca un alimento arriba y tus lecturas de colesterol, presión, nutrición, energía y azúcar aparecerán aquí — cuantificadas a tu perfil.')}</p></div>`;
   }else{
-    const focusIns=focusKey?ins.find(i=>i.k===focusKey):null;
+    const focusIns=ins.filter(i=>focusKeys.includes(i.k)).sort((a,b)=>a.score-b.score)[0];
     let pick=(focusIns&&focusIns.score<75)?focusIns:[...ins].sort((a,b)=>a.score-b.score)[0];
     const allGood=ins.every(i=>i.score>=70);
     const head=allGood?tr("You're crushing it today",'¡Lo estás haciendo genial hoy!')
-      :(focusIns&&pick===focusIns)?tr('Focus on your goal','Enfócate en tu meta'):tr("Today's smart add",'Sugerencia de hoy');
+      :(focusIns&&pick===focusIns)?tr('Focus on your goals','Enfócate en tus metas'):tr("Today's smart add",'Sugerencia de hoy');
     const body=allGood?tr('Every health area is on track — keep doing exactly what you\'re doing!','Cada área de salud va bien — ¡sigue haciendo justo lo que haces!'):pick.tip;
     $('#smartAdd').innerHTML=`<div class="sa-ico">${allGood?'🌟':'💡'}</div><div><b>${head}</b><p>${body}</p></div>`;
   }
   $('#insightGrid').innerHTML=ins.map(i=>{
     const st=t.items.length?statusFrom(i.score):'none';
     const lbl={good:tr('On track','Vas bien'),ok:tr('Getting there','Casi'),low:tr('Needs a boost','A mejorar'),none:tr('Awaiting food','Esperando comida')}[st];
-    const focus=(i.k===focusKey);
+    const focus=focusKeys.includes(i.k);
     return `<div class="insight"${focus?' style="border-color:var(--brd2);box-shadow:0 0 0 2px var(--brd2)"':''}>
       <div class="ih"><span class="iico">${i.ico}</span><span class="it">${i.title}</span><span class="pill-status st-${st}">${lbl}</span></div>
       ${focus?`<div style="font-size:.66rem;font-weight:800;color:var(--violet);letter-spacing:.04em;margin:-2px 0 6px">${ui('focusBadge')}</div>`:''}
@@ -1489,17 +1516,24 @@ function openProfile(){
           <option value="1.55">${tr('Moderate — 3–5 days/week','Moderado — 3–5 días/sem')}</option>
           <option value="1.725">${tr('Active — 6–7 days/week','Activo — 6–7 días/sem')}</option>
         </select></div>
-      <div class="field" style="margin-bottom:8px"><label>${tr('🎯 Your main health goal','🎯 Tu meta de salud principal')}</label>
-        <select id="pGoal">${GOALS.map(g=>`<option value="${g.k}">${g.ic} ${goalLabel(g.k)}</option>`).join('')}</select></div>
-      <p style="font-size:.78rem;color:var(--muted);margin:0 0 16px">${tr('Your goal puts the most relevant insight first and steers the “smart add” suggestion.','Tu meta pone primero el análisis más relevante y guía la sugerencia inteligente.')}</p>
+      <div class="field" style="margin-bottom:8px"><label>${tr('🎯 Your health goals — choose any','🎯 Tus metas de salud — elige varias')}</label>
+        <details class="multi-dd" id="goalDD">
+          <summary id="goalSummary"></summary>
+          <div class="multi-opts">${GOALS.filter(g=>g.k!=='generic').map(g=>`<label class="mopt"><input type="checkbox" class="pGoalChk" value="${g.k}" ${(profile.goals||[]).includes(g.k)?'checked':''}> ${g.ic} ${goalLabel(g.k)}</label>`).join('')}</div>
+        </details></div>
+      <p style="font-size:.78rem;color:var(--muted);margin:0 0 16px">${tr('Pick as many as you like — selected goals are shown first with a focus badge and steer the “smart add” tip. None selected = general wellness.','Elige las que quieras — las metas seleccionadas aparecen primero con una insignia y guían la sugerencia. Ninguna seleccionada = bienestar general.')}</p>
       <button class="btn btn-pri" style="width:100%;justify-content:center" onclick="saveProfile()">${tr('Save & recalculate my targets','Guardar y recalcular mis metas')}</button>
       <p style="font-size:.8rem;color:var(--muted);margin-top:14px">${tr('We estimate your calorie needs (Mifflin-St Jeor formula), plus protein, fibre, sodium, potassium and more — tuned to your sex, weight, height, age and activity. These are general estimates; your doctor or dietitian can set targets specific to your health.','Estimamos tus calorías (fórmula Mifflin-St Jeor), además de proteína, fibra, sodio, potasio y más — según tu sexo, peso, altura, edad y actividad. Son estimaciones generales; tu médico o dietista puede fijar metas específicas a tu salud.')}</p>
     </div>`;
-  $('#pSex').value=profile.sex;$('#pAct').value=profile.activity;$('#pGoal').value=profile.goal||'generic';
+  $('#pSex').value=profile.sex;$('#pAct').value=profile.activity;
+  const updSummary=()=>{const sel=$$('.pGoalChk').filter(c=>c.checked).map(c=>GOALS.find(g=>g.k===c.value));
+    $('#goalSummary').textContent=sel.length?sel.map(g=>g.ic+' '+goalLabel(g.k)).join(', '):tr('🌿 General wellness (none selected)','🌿 Bienestar general (ninguna)');};
+  updSummary();$$('.pGoalChk').forEach(c=>c.onchange=updSummary);
   $('#modalBg').classList.add('open');
 }
 window.saveProfile=()=>{
-  profile={sex:$('#pSex').value,age:+$('#pAge').value||32,weight:+$('#pWeight').value||68,height:+$('#pHeight').value||166,activity:+$('#pAct').value||1.375,goal:$('#pGoal').value||'generic'};
+  const goalsSel=$$('.pGoalChk').filter(c=>c.checked).map(c=>c.value);
+  profile={sex:$('#pSex').value,age:+$('#pAge').value||32,weight:+$('#pWeight').value||68,height:+$('#pHeight').value||166,activity:+$('#pAct').value||1.375,goals:goalsSel};
   const T=getTargets();
   goals.cal=T.tdee; goals.pro=Math.round(profile.weight*1.0); goals.fib=Math.round(T.tdee/1000*14);
   save();renderGoalPills();renderGoalBanner();updateDash();closeModal();toast(tr('Profile saved — targets recalculated 🎯','Perfil guardado — metas recalculadas 🎯'));
@@ -1717,6 +1751,8 @@ MY DASHBOARD RIGHT NOW (today's log):
 - Heart Score: ${computeScore()}/100
 - Health insights: ${computeInsights().map(i=>i.title+' '+i.score).join(' · ')}
 - My profile: ${profile.sex}, ${profile.age}y, ${profile.weight}kg, ${profile.height}cm
+- My health goals: ${(profile.goals&&profile.goals.length)?profile.goals.map(goalLabel).join(', '):'general wellness'}
+- Language: ${lang==='es'?'Spanish':'English'}
 - Foods logged today: ${t.items.map(i=>i.n).join(', ')||'none yet'}
 
 IDEAS YOU COULD HELP WITH (pick any, or do your own):
