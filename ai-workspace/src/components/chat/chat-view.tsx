@@ -6,6 +6,7 @@ import type { ClientModel } from "@/server/ai/catalog";
 import { readSse, toApiError } from "@/lib/api-client";
 import { Composer, type SendPayload } from "./composer";
 import { CopyButton } from "./copy-button";
+import { HandoffCard, type UIHandoff } from "./handoff-card";
 import { Markdown } from "./markdown";
 import { ProvenancePanel } from "./provenance-panel";
 import { RunCard } from "./run-card";
@@ -107,7 +108,13 @@ export function ChatView(props: Props) {
             break;
           }
           case "delta":
-            patch(assistantId, (m) => ({ content: m.content + (d.text as string) }));
+            patch(assistantId, (m) => ({ content: m.content + (d.text as string), handoff: null }));
+            break;
+          case "handoff":
+            patch(assistantId, () => ({ handoff: d.handoff as UIHandoff }));
+            break;
+          case "step-handoff":
+            patchStep(assistantId, d.stepId as string, () => ({ handoff: d.handoff as UIHandoff }));
             break;
 
           // ---- multi-model runs ----
@@ -140,10 +147,11 @@ export function ChatView(props: Props) {
             patchStep(assistantId, d.stepId as string, () => ({ status: "running", invocationId: d.invocationId as string }));
             break;
           case "step-delta":
-            patchStep(assistantId, d.stepId as string, (s) => ({ status: "running", text: s.text + (d.text as string) }));
+            patchStep(assistantId, d.stepId as string, (s) => ({ status: "running", text: s.text + (d.text as string), handoff: null }));
             break;
           case "step-done":
             patchStep(assistantId, d.stepId as string, (s) => ({
+              handoff: null,
               status: d.status as UIStep["status"],
               text: (d.text as string) || s.text,
               verdict: d.verdict as string | null,
@@ -286,7 +294,13 @@ function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMe
     <div className="max-w-3xl space-y-1.5">
       {warnings}
       <div className="rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-2 shadow-sm">
-        {m.content ? <Markdown>{m.content}</Markdown> : <span className="animate-pulse text-sm text-slate-400">Denkt na…</span>}
+        {m.handoff && !m.content && m.status === "streaming" ? (
+          <HandoffCard handoff={m.handoff} />
+        ) : m.content ? (
+          <Markdown>{m.content}</Markdown>
+        ) : (
+          <span className="animate-pulse text-sm text-slate-400">Denkt na…</span>
+        )}
         {m.status === "cancelled" && <p className="mt-2 text-xs text-slate-500">— geannuleerd</p>}
         {m.status === "error" && <p className="mt-2 text-xs text-rose-600">— fout tijdens genereren</p>}
         {s?.finishReason && FINISH_LABELS[s.finishReason] && <p className="mt-2 text-xs text-amber-700">⚠ {FINISH_LABELS[s.finishReason]}</p>}

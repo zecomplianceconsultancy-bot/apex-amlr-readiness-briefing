@@ -18,6 +18,7 @@ export const CAPABILITY_TAGS = [
   "coding",
   "fast",
   "offline",
+  "manual",
 ] as const;
 export type CapabilityTag = (typeof CAPABILITY_TAGS)[number];
 
@@ -42,7 +43,9 @@ export interface RankableModel {
 
 export function scoreModel(model: RankableModel, role: Role): number {
   const prefs = ROLE_PREFERENCES[role];
-  return prefs.reduce((score, tag, i) => (model.tags.includes(tag) ? score + (prefs.length - i) * 10 : score), 0);
+  const score = prefs.reduce((sum, tag, i) => (model.tags.includes(tag) ? sum + (prefs.length - i) * 10 : sum), 0);
+  // Equal strengths: an automatic route beats one where the user has to paste by hand.
+  return score > 0 && model.tags.includes("manual") ? score - 5 : score;
 }
 
 /** Best available model for a role, avoiding `exclude` unless nothing else is available. */
@@ -79,7 +82,8 @@ export function suggestResearchTeam(models: RankableModel[]): ResearchAssignment
 /** Strength-based default selection for comparing: up to 4 distinct engines + a judge. */
 export function suggestCompareTeam(models: RankableModel[]): { modelIds: string[]; judge: string | null } {
   const available = models.filter((m) => m.available);
-  const preferred = available.filter((m) => !m.tags.includes("offline") && !m.tags.includes("fast"));
+  // Comparing is automatic by nature: leave out test engines and steps you would have to paste by hand.
+  const preferred = available.filter((m) => !["offline", "fast", "manual"].some((t) => m.tags.includes(t)));
   const pool = (preferred.length >= 2 ? preferred : available).slice(0, 4).map((m) => m.id);
   return { modelIds: pool, judge: bestFor("judge", models) };
 }

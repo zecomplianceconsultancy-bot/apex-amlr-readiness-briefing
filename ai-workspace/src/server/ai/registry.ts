@@ -27,7 +27,7 @@ export interface ModelDefinition {
   /** Plain-language strengths, shown in the model pickers. */
   strengths: string;
   /** How the engine is reached: official API, or the tool's web UI in a desktop browser. */
-  transport: "api" | "browser" | "local";
+  transport: "api" | "browser" | "manual" | "local";
   /** Upper bound for the whole prompt in characters (browser UIs have input limits). */
   maxInputChars?: number;
 }
@@ -59,6 +59,25 @@ const browserModel = (
   maxInputChars,
 });
 
+/**
+ * Manual bridge: same tools, but the user sends the question in their own browser and pastes
+ * the answer back. For tools that block automated browsers (e.g. a "verify you are human" check).
+ */
+const manualModel = (id: string, label: string, maxInputChars: number, tags: ModelDefinition["tags"], strengths: string): ModelDefinition => ({
+  id: `manual:${id}`,
+  provider: "manual",
+  providerModel: id,
+  label: `${label} (handmatig)`,
+  description: `Je stuurt de vraag zelf in ${label} in je eigen browser en plakt het antwoord terug.`,
+  contextWindowTokens: Math.round(maxInputChars / 4),
+  maxOutputTokens: 16_000,
+  clearance: "internal",
+  tags: [...tags, "manual"],
+  strengths: `${strengths} — jij plakt`,
+  transport: "manual",
+  maxInputChars,
+});
+
 export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
   browserModel("perplexity", "Perplexity", "perplexity.ai in je browser.", 30_000, ["sources", "web-research"], "Actueel webonderzoek met bronvermelding"),
   browserModel("chatgpt", "ChatGPT", "chatgpt.com in je browser (model volgens je ChatGPT-instelling).", 60_000, ["structure", "writing", "reasoning"], "Gestructureerd uitwerken en schrijven"),
@@ -78,6 +97,37 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     ["fact-check", "web-research", "long-context", "reasoning"],
     "Feitencheck met Google Zoeken, zeer lange context",
   ),
+  manualModel("perplexity", "Perplexity", 30_000, ["sources", "web-research"], "Actueel webonderzoek met bronvermelding"),
+  manualModel("chatgpt", "ChatGPT", 60_000, ["structure", "writing", "reasoning"], "Gestructureerd uitwerken en schrijven"),
+  manualModel("claude", "Claude", 100_000, ["critical-review", "reasoning", "long-context", "writing"], "Kritische analyse en nuance"),
+  manualModel("gemini", "Gemini", 60_000, ["fact-check", "web-research", "long-context", "reasoning"], "Feitencheck met Google Zoeken"),
+  {
+    // Clearance "internal" until the Perplexity API data-processing terms are reviewed.
+    id: "perplexity:sonar-pro",
+    provider: "perplexity",
+    providerModel: "sonar-pro",
+    label: "Perplexity Sonar Pro (API)",
+    description: "Perplexity via de officiële API: webonderzoek met bronnen, volledig automatisch.",
+    contextWindowTokens: 200_000,
+    maxOutputTokens: 8_000,
+    clearance: "internal",
+    tags: ["sources", "web-research"],
+    strengths: "Actueel webonderzoek met bronvermelding",
+    transport: "api",
+  },
+  {
+    id: "perplexity:sonar",
+    provider: "perplexity",
+    providerModel: "sonar",
+    label: "Perplexity Sonar (API)",
+    description: "Snelle en goedkope Perplexity-zoekvraag via de API.",
+    contextWindowTokens: 128_000,
+    maxOutputTokens: 8_000,
+    clearance: "internal",
+    tags: ["web-research", "fast"],
+    strengths: "Snel webonderzoek met bronnen",
+    transport: "api",
+  },
   {
     id: "anthropic:claude-opus-5",
     provider: "anthropic",

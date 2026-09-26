@@ -29,6 +29,11 @@ export const SiteProfileSchema = z.object({
   citationsScope: z.string().optional(),
   /** Longest prompt we attempt to type into this UI. */
   maxPromptChars: z.number().int().positive(),
+  /**
+   * URL that opens the tool with the question pre-filled ("{q}" = URL-encoded question). Used by
+   * the manual bridge in the user's own browser; long questions are pasted instead.
+   */
+  prefillUrl: z.string().optional(),
   /** Answer is considered final when its text is unchanged for this long. */
   stableMs: z.number().int().positive().default(2000),
 });
@@ -39,6 +44,7 @@ const BUILT_IN: SiteProfile[] = [
     id: "perplexity",
     label: "Perplexity",
     newChatUrl: "https://www.perplexity.ai/",
+    prefillUrl: "https://www.perplexity.ai/search?q={q}",
     input: '#ask-input, textarea[placeholder], div[contenteditable="true"]',
     submit: 'button[aria-label="Submit"], button[data-testid="submit-button"]',
     response: '[id^="markdown-content"], div.prose',
@@ -51,6 +57,7 @@ const BUILT_IN: SiteProfile[] = [
     id: "chatgpt",
     label: "ChatGPT",
     newChatUrl: "https://chatgpt.com/",
+    prefillUrl: "https://chatgpt.com/?q={q}",
     input: '#prompt-textarea, div[contenteditable="true"]',
     submit: 'button[data-testid="send-button"], #composer-submit-button',
     response: '[data-message-author-role="assistant"]',
@@ -63,6 +70,7 @@ const BUILT_IN: SiteProfile[] = [
     id: "claude",
     label: "Claude",
     newChatUrl: "https://claude.ai/new",
+    prefillUrl: "https://claude.ai/new?q={q}",
     input: 'div[contenteditable="true"].ProseMirror, div[contenteditable="true"]',
     submit: 'button[aria-label="Send message"], button[aria-label="Send Message"]',
     response: ".font-claude-response, [data-is-streaming]",

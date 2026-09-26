@@ -69,7 +69,8 @@ function ModelSelect({
   className?: string;
 }) {
   const groups: [string, ClientModel[]][] = [
-    ["Via browser", models.filter((m) => m.transport === "browser")],
+    ["Via browser (automatisch)", models.filter((m) => m.transport === "browser")],
+    ["Handmatig (jij plakt het antwoord)", models.filter((m) => m.transport === "manual")],
     ["Via API", models.filter((m) => m.transport === "api")],
     ["Lokaal / test", models.filter((m) => m.transport === "local")],
   ];

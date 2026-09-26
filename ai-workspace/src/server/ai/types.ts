@@ -18,6 +18,8 @@ export interface ChatRequest {
   messages: ChatMessage[];
   maxOutputTokens: number;
   signal?: AbortSignal;
+  /** Who is asking; needed by engines that hand work to the user (manual bridge). */
+  context?: { userId: string };
 }
 
 export type FinishReason = "stop" | "length" | "refusal" | "content_filter" | "other";
@@ -42,7 +44,18 @@ export interface ChatResult {
   citations: Citation[];
 }
 
-export type ProviderEvent = { type: "text"; text: string } | { type: "done"; result: ChatResult };
+/** The user does this step by hand in their own browser (manual bridge). */
+export interface Handoff {
+  handoffId: string;
+  tool: string;
+  toolLabel: string;
+  prompt: string;
+  /** Opens the tool; with the question pre-filled when the tool supports that and it fits in a URL. */
+  openUrl: string;
+  prefilled: boolean;
+}
+
+export type ProviderEvent = { type: "text"; text: string } | { type: "handoff"; handoff: Handoff } | { type: "done"; result: ChatResult };
 
 export interface AIProvider {
   readonly id: string;

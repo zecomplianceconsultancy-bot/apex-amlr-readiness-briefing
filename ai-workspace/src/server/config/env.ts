@@ -31,6 +31,7 @@ const EnvSchema = z
     SESSION_TTL_HOURS: z.coerce.number().int().positive().max(24 * 30).default(12),
     ANTHROPIC_API_KEY: z.string().optional(),
     OPENAI_API_KEY: z.string().optional(),
+    PERPLEXITY_API_KEY: z.string().optional(),
     ENABLE_MOCK_PROVIDER: bool(false),
     DEFAULT_MODEL_ID: z.string().default("browser:perplexity"),
     MAX_UPLOAD_MB: z.coerce.number().positive().max(100).default(10),

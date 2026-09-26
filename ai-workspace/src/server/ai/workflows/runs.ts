@@ -10,7 +10,7 @@ import { buildChatContext, type BuiltContext } from "../context-builder";
 import { streamInvocation } from "../gateway";
 import { providerErrorMessage, startTurn } from "../orchestrator";
 import { findModel } from "../registry";
-import { ProviderError, type ChatMessage, type Citation } from "../types";
+import { ProviderError, type ChatMessage, type Citation, type Handoff } from "../types";
 import { mergeGenerators } from "./merge";
 import { draftPrompt, factcheckPrompt, finalPrompt, judgePrompt, parseVerdict, researchPrompt, reviewPrompt, type VerdictKey } from "./prompts";
 
@@ -38,6 +38,7 @@ export type RunEvent =
   | { type: "run"; runId: string; kind: RunKind; userMessageId: string; assistantMessageId: string; steps: RunStepInfo[]; warnings: string[] }
   | { type: "step-start"; stepId: string; invocationId: string }
   | { type: "step-delta"; stepId: string; text: string }
+  | { type: "step-handoff"; stepId: string; handoff: Handoff }
   | { type: "step-done"; stepId: string; status: "complete" | "error" | "cancelled" | "skipped"; text: string; verdict: string | null; citations: Citation[]; error: string | null }
   | { type: "done"; status: "complete" | "error" | "cancelled"; content: string };
 
@@ -154,6 +155,8 @@ async function* executeStep(
       } else if (ev.type === "text") {
         text += ev.text;
         yield { type: "step-delta", stepId: step.id, text: ev.text };
+      } else if (ev.type === "handoff") {
+        yield { type: "step-handoff", stepId: step.id, handoff: ev.handoff };
       } else {
         text = ev.result.text || text;
         citations = ev.result.citations;

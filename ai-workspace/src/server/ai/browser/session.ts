@@ -1,5 +1,5 @@
 import "server-only";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, type BrowserContext, type Page } from "playwright";
 import { env } from "@/server/config/env";
@@ -29,7 +29,27 @@ export interface SiteStatus {
 }
 
 const g = globalThis as unknown as { __aiwBrowser?: BrowserState };
-const state: BrowserState = (g.__aiwBrowser ??= { pages: new Map(), locks: new Map(), status: new Map() });
+const state: BrowserState = (g.__aiwBrowser ??= { pages: new Map(), locks: new Map(), status: loadStatuses() });
+
+// Last check results survive restarts, so a tool that is blocked stays marked as such.
+function statusFile(): string {
+  return path.join(env().DATA_DIR, "browser-status.json");
+}
+function loadStatuses(): Map<string, SiteStatus> {
+  try {
+    return new Map(Object.entries(JSON.parse(readFileSync(statusFile(), "utf8")) as Record<string, SiteStatus>));
+  } catch {
+    return new Map();
+  }
+}
+function saveStatuses(): void {
+  try {
+    mkdirSync(env().DATA_DIR, { recursive: true });
+    writeFileSync(statusFile(), JSON.stringify(Object.fromEntries(state.status), null, 2));
+  } catch {
+    // best effort
+  }
+}
 
 function launch(): Promise<BrowserContext> {
   const e = env();
@@ -114,6 +134,7 @@ export async function checkSite(siteId: string): Promise<SiteStatus> {
       if (!(await waitForHuman(page, 60_000))) {
         status = { state: "human_check", checkedAt: new Date().toISOString(), url: page.url(), detail: HUMAN_CHECK_MESSAGE(site.label) };
         state.status.set(siteId, status);
+        saveStatuses();
         return status;
       }
     }
@@ -131,6 +152,7 @@ export async function checkSite(siteId: string): Promise<SiteStatus> {
     release();
   }
   state.status.set(siteId, status);
+  saveStatuses();
   return status;
 }
 
@@ -140,6 +162,7 @@ export function siteStatuses(): Record<string, SiteStatus | null> {
 
 export function recordSiteStatus(siteId: string, status: SiteStatus): void {
   state.status.set(siteId, status);
+  saveStatuses();
 }
 
 export async function closeBrowser(): Promise<void> {

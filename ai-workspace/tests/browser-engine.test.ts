@@ -19,7 +19,7 @@ async function collect(gen: AsyncGenerator<ProviderEvent>) {
   const deltas: string[] = [];
   for await (const e of gen) {
     if (e.type === "text") deltas.push(e.text);
-    else return { deltas, result: e.result };
+    else if (e.type === "done") return { deltas, result: e.result };
   }
   throw new Error("no done event");
 }

@@ -11,7 +11,7 @@ import { buildChatContext, includedDocumentChars } from "./context-builder";
 import { streamInvocation } from "./gateway";
 import { findModel } from "./registry";
 import { router } from "./router";
-import { ProviderError, type Citation, type FinishReason } from "./types";
+import { ProviderError, type Citation, type FinishReason, type Handoff } from "./types";
 
 /**
  * Orchestrator — turns a user intent into one or more gateway invocations.
@@ -34,6 +34,7 @@ export type ChatTurnEvent =
       warnings: string[];
     }
   | { type: "delta"; text: string }
+  | { type: "handoff"; handoff: Handoff }
   | {
       type: "done";
       /** Final answer text; authoritative over the concatenated deltas. */
@@ -160,6 +161,8 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
       } else if (ev.type === "text") {
         text += ev.text;
         yield { type: "delta", text: ev.text };
+      } else if (ev.type === "handoff") {
+        yield { type: "handoff", handoff: ev.handoff };
       } else {
         text = ev.result.text || text;
         await saveAssistant("complete", invocationId);

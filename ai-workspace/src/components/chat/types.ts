@@ -1,3 +1,5 @@
+import type { UIHandoff } from "./handoff-card";
+
 export interface Citation {
   url?: string;
   title?: string;
@@ -30,6 +32,7 @@ export interface UIStep {
   error: string | null;
   invocationId: string | null;
   citations: Citation[];
+  handoff?: UIHandoff | null;
 }
 
 export interface UIRun {
@@ -47,4 +50,5 @@ export interface UIMessage {
   stats?: MessageStats;
   warnings?: string[];
   run?: UIRun;
+  handoff?: UIHandoff | null;
 }

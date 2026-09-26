@@ -3,8 +3,10 @@ import { env } from "@/server/config/env";
 import type { AIProvider } from "../types";
 import { AnthropicProvider } from "./anthropic";
 import { BrowserProvider } from "./browser";
+import { ManualProvider } from "./manual";
 import { MockProvider } from "./mock";
 import { OpenAIProvider } from "./openai";
+import { PerplexityProvider } from "./perplexity";
 
 /**
  * Provider registry. To add an engine (Gemini, Mistral, a self-hosted model, Perplexity, a
@@ -13,6 +15,8 @@ import { OpenAIProvider } from "./openai";
  */
 const providers: Record<string, AIProvider> = {
   browser: new BrowserProvider(),
+  manual: new ManualProvider(),
+  perplexity: new PerplexityProvider(),
   anthropic: new AnthropicProvider(),
   openai: new OpenAIProvider(),
   mock: new MockProvider(() => env().ENABLE_MOCK_PROVIDER),
