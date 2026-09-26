@@ -1,9 +1,7 @@
+/** Apply migrations (embedded DB in DATA_DIR, or DATABASE_URL). The app also does this on start. */
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { Pool } from "pg";
+import { closeDb, initDb } from "@/server/db/client";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-await migrate(drizzle(pool), { migrationsFolder: "./drizzle" });
-await pool.end();
+await initDb();
+await closeDb();
 console.log("Migrations applied.");

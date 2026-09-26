@@ -14,9 +14,10 @@ export interface SessionUser {
   role: "admin" | "member";
 }
 
-const isProd = () => env().NODE_ENV === "production";
+// Secure cookies need HTTPS. On the desktop the app runs on http://127.0.0.1 (local only).
+const isHttps = () => env().APP_ORIGIN.startsWith("https://");
 // "__Host-" cookies must be Secure, host-only and Path=/ — browsers enforce it.
-export const sessionCookieName = () => (isProd() ? "__Host-aiw_session" : "aiw_session");
+export const sessionCookieName = () => (isHttps() ? "__Host-aiw_session" : "aiw_session");
 
 export async function createSession(userId: string, meta: RequestMeta): Promise<void> {
   const token = randomToken();
@@ -26,7 +27,7 @@ export async function createSession(userId: string, meta: RequestMeta): Promise<
     .values({ tokenHash: sha256Hex(token), userId, expiresAt, ip: meta.ip, userAgent: meta.userAgent });
   (await cookies()).set(sessionCookieName(), token, {
     httpOnly: true,
-    secure: isProd(),
+    secure: isHttps(),
     sameSite: "lax",
     path: "/",
     expires: expiresAt,

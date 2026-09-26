@@ -26,25 +26,42 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
 - PII-masking (e-mail, IBAN, BSN, telefoon, kaartnummers) vóór verzending
 - Append-only, hash-chained audit trail + verificatie
 
-## Snel starten
+## Starten op je computer (geen GitHub, geen Docker nodig)
 
-Vereist: Node.js ≥ 20.9 en PostgreSQL 16 (lokaal of via Docker).
+Alles draait **op je eigen computer**. Je gegevens (database, bestanden, ingelogde
+AI-tools) staan in de map `data/` naast de app.
+
+1. Installeer eenmalig **Node.js LTS** via https://nodejs.org.
+   Op Windows installeert het startbestand dit ook zelf als het ontbreekt.
+2. Pak de ZIP uit naar een vaste plek, bijvoorbeeld `Documenten\ai-workspace`.
+3. Dubbelklik op het startbestand:
+   - **Windows:** `start-windows.bat`
+   - **Mac:** `start-mac.command`. Macs openen dit de eerste keer niet met een dubbelklik:
+     klik met rechts → *Open* → *Open*.
+4. De eerste keer installeert het de benodigde onderdelen en bereidt het de app voor
+   (enkele minuten, internet nodig). Daarna start het in enkele seconden.
+5. Je browser opent **http://127.0.0.1:3000**. Maak je account aan; je komt dan op
+   **Browser-tools**. Log daar per AI-tool één keer in en klik *Controleer*.
+
+Laat het zwarte venster open terwijl je werkt; sluit het om te stoppen.
+**Back-up:** kopieer de map `data/`. Die bevat ook de encryptiesleutel; zonder die sleutel
+zijn opgeslagen bestanden niet te openen.
+
+De app is alleen bereikbaar vanaf je eigen computer. Het netwerk wordt alleen gebruikt voor
+de AI-tools zelf en voor de eenmalige installatie van onderdelen.
+
+### Voor ontwikkelaars
 
 ```bash
-cd ai-workspace
 npm install
-docker compose up -d                      # of gebruik een eigen Postgres
-cp .env.example .env
-# Vul ENCRYPTION_KEY in:
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-# Browser-tools staan standaard aan. API-keys zijn optioneel (voor later).
-
-npm run db:migrate
-npm run user:create -- --email jij@example.com --name "Jouw naam" --admin
-npm run dev                               # http://localhost:3000
+npm run dev                  # http://localhost:3000, ingebouwde database in ./data
+npm test                     # tests op de ingebouwde database
+npm run test:postgres        # dezelfde tests tegen PostgreSQL (TEST_DATABASE_URL, wordt gewist!)
 ```
 
-Open daarna **Browser-tools** (rechtsboven), log per tool één keer in en klik *Controleer*.
+Team- of servergebruik: zet `DATABASE_URL` naar een PostgreSQL-server (zie
+`docker-compose.yml`). Maak gebruikers dan aan met
+`npm run user:create -- --email … --name … --admin`.
 
 ## Scripts
 
@@ -54,18 +71,10 @@ Open daarna **Browser-tools** (rechtsboven), log per tool één keer in en klik 
 | `npm run typecheck` | TypeScript-controle |
 | `npm test` | Unit- en integratietests (vereist testdatabase, zie hieronder) |
 | `npm run db:generate` | Nieuwe migratie genereren na schemawijziging |
-| `npm run db:migrate` | Migraties toepassen |
+| `npm run db:migrate` | Migraties toepassen (gebeurt ook automatisch bij het starten) |
+| `npm run start:desktop` | Het startprogramma zelf (wat de startbestanden aanroepen) |
 | `npm run user:create` | Gebruiker aanmaken (geen publieke registratie) |
 | `npm run audit:verify` | Hash-chain van de audit trail controleren |
-
-Tests draaien tegen een aparte database (standaard
-`postgres://workspace:workspace@localhost:5432/ai_workspace_test`, of `TEST_DATABASE_URL`).
-De test-suite **wist en herbouwt** die database bij elke run.
-
-```bash
-createdb -U workspace ai_workspace_test   # eenmalig
-npm test
-```
 
 ## Een provider toevoegen
 

@@ -10,3 +10,5 @@ storage/
 # Browser profile with logged-in AI tool sessions (cookies!)
 .browser-profile/
 browser-sites.json
+# Local data (embedded database, encrypted files, browser profile, encryption key)
+data/

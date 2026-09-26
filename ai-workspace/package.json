@@ -15,12 +15,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx scripts/migrate.ts",
+    "db:migrate": "tsx --conditions=react-server scripts/migrate.ts",
     "user:create": "tsx --conditions=react-server scripts/create-user.ts",
-    "audit:verify": "tsx --conditions=react-server scripts/verify-audit.ts"
+    "audit:verify": "tsx --conditions=react-server scripts/verify-audit.ts",
+    "start:desktop": "node scripts/launcher.mjs",
+    "test:postgres": "node -e \"process.env.TEST_DATABASE_URL||='postgres://workspace:workspace@localhost:5432/ai_workspace_test';require('child_process').execSync('npx vitest run',{stdio:'inherit',env:process.env})\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
+    "@electric-sql/pglite": "^0.5.8",
     "@node-rs/argon2": "^2.2.1",
     "drizzle-orm": "^0.45.3",
     "next": "^16.3.6",

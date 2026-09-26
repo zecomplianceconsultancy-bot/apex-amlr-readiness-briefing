@@ -8,7 +8,7 @@ import { createInterface } from "node:readline/promises";
 import { parseArgs } from "node:util";
 import { recordAudit } from "@/server/audit/audit";
 import { hashPassword, PASSWORD_MIN_LENGTH } from "@/server/auth/password";
-import { db, schema } from "@/server/db/client";
+import { closeDb, db, initDb, schema } from "@/server/db/client";
 
 const { values } = parseArgs({
   options: { email: { type: "string" }, name: { type: "string" }, admin: { type: "boolean", default: false } },
@@ -29,6 +29,7 @@ if (password.length < PASSWORD_MIN_LENGTH) {
   process.exit(1);
 }
 
+await initDb();
 const email = values.email.toLowerCase();
 const role = values.admin ? "admin" : "member";
 await db().transaction(async (tx) => {
@@ -41,5 +42,6 @@ await db().transaction(async (tx) => {
     tx,
   );
 });
+await closeDb();
 console.log(`Created ${role} ${email}`);
 process.exit(0);

@@ -2,8 +2,6 @@
  * End-to-end tests of the service layer against a real PostgreSQL database, using the
  * offline mock provider. Requires the test database (see tests/setup.ts).
  */
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { eq, sql } from "drizzle-orm";
 import { Pool } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -11,9 +9,9 @@ import { runChatTurn, type ChatTurnEvent } from "@/server/ai/orchestrator";
 import { PolicyBlockedError } from "@/server/ai/gateway";
 import { verifyAuditChain } from "@/server/audit/audit";
 import type { SessionUser } from "@/server/auth/session";
-import { resetEnvCache } from "@/server/config/env";
+import { env, resetEnvCache } from "@/server/config/env";
 import { createConversation } from "@/server/conversations/service";
-import { db, schema } from "@/server/db/client";
+import { closeDb, db, initDb, schema } from "@/server/db/client";
 import { downloadFile, uploadFile } from "@/server/files/service";
 import { HttpError } from "@/server/http/errors";
 import { createProject, saveContext, upsertMember } from "@/server/projects/service";
@@ -34,10 +32,13 @@ async function collect(gen: AsyncGenerator<ChatTurnEvent>) {
 }
 
 beforeAll(async () => {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  await pool.query("DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS drizzle CASCADE; CREATE SCHEMA public;");
-  await migrate(drizzle(pool), { migrationsFolder: "./drizzle" });
-  await pool.end();
+  if (process.env.DATABASE_URL) {
+    // Server mode: start from an empty schema.
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    await pool.query("DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS drizzle CASCADE; CREATE SCHEMA public;");
+    await pool.end();
+  }
+  await initDb();
   owner = await makeUser("owner@test.local");
   outsider = await makeUser("outsider@test.local");
 });
@@ -45,6 +46,7 @@ beforeAll(async () => {
 afterAll(async () => {
   const result = await verifyAuditChain();
   expect(result.ok).toBe(true);
+  await closeDb();
 });
 
 describe("chat turn through orchestrator → gateway → mock provider", () => {
@@ -98,7 +100,7 @@ describe("chat turn through orchestrator → gateway → mock provider", () => {
     const f = await uploadFile(owner, project.id, new File(["hallo wereld"], "a.md"), meta);
     const [row] = await db().select().from(schema.files).where(eq(schema.files.id, f.id));
     const fs = await import("node:fs/promises");
-    const raw = await fs.readFile(`${process.env.STORAGE_DIR}/${row!.storageKey}.bin`);
+    const raw = await fs.readFile(`${env().STORAGE_DIR}/${row!.storageKey}.bin`);
     expect(raw.toString()).not.toContain("hallo");
     const dl = await downloadFile(owner, project.id, f.id, meta);
     expect(dl.data.toString()).toBe("hallo wereld");

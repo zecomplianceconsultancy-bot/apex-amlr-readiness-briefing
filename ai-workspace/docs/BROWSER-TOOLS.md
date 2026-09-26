@@ -28,15 +28,13 @@ Workspace (chat) → Orchestrator → AI Gateway (policy, PII-masking, logging)
 
 ## Eerste keer instellen
 
-1. Draai de workspace **op je eigen computer**. Het browservenster opent op de machine waar de
-   server draait.
-2. Zet in `.env`: `ENABLE_BROWSER_PROVIDER=true`, `BROWSER_CHANNEL=chrome` (of `msedge`) en
-   `BROWSER_HEADLESS=false`. Heb je geen Chrome of Edge? Laat `BROWSER_CHANNEL` leeg en voer
-   `npx playwright install chromium` uit.
-3. Start de app en open **Browser-tools** (rechtsboven, alleen voor admins).
-4. Per tool: klik **Openen**, log in het venster in, en zet in de instellingen van de tool
+1. Start de workspace met het startbestand (`start-windows.bat` of `start-mac.command`). Het
+   browservenster opent op de computer waar de workspace draait. Het startbestand gebruikt
+   Chrome of Edge als die er is, en downloadt anders eenmalig een ingebouwde Chromium.
+2. Na het aanmaken van je account kom je vanzelf op **Browser-tools**.
+3. Per tool: klik **Openen**, log in het venster in, en zet in de instellingen van de tool
    "gebruik voor training / model verbeteren" uit. Klik daarna **Controleer**.
-5. Kies in een project met classificatie *Publiek* of *Intern* bijvoorbeeld
+4. Kies in een project met classificatie *Publiek* of *Intern* bijvoorbeeld
    "Perplexity (browser)" in de modelkiezer.
 
 Laat het browservenster open terwijl je werkt. Je kunt meekijken wat de workspace typt.

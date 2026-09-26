@@ -23,12 +23,13 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-  ...(isDev ? [] : [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" }]),
+  // HSTS only when the app is served over HTTPS (not on the local desktop http://127.0.0.1).
+  ...(process.env.APP_ORIGIN?.startsWith("https://") ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" }] : []),
 ];
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  serverExternalPackages: ["@node-rs/argon2", "pg", "playwright", "playwright-core"],
+  serverExternalPackages: ["@node-rs/argon2", "pg", "playwright", "playwright-core", "@electric-sql/pglite"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

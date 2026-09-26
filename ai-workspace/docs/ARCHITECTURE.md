@@ -34,7 +34,7 @@ Alles wat hier als "gebouwd" staat, zit in deze codebase en is getest.
 │     browser (fase 1): Perplexity · ChatGPT · Claude · Gemini web  │
 │     api: Anthropic · OpenAI · (Gemini, …)   ·   mock (offline)    │
 ├──────────────────────────────────────────────────────────────────┤
-│  PostgreSQL (data, provenance, append-only audit)                 │
+│  PostgreSQL: ingebouwd (desktop) of server (data, provenance, audit)│
 │  Blob storage (AES-256-GCM versleuteld; lokaal → later S3/Azure)  │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -77,7 +77,7 @@ Alles wat hier als "gebouwd" staat, zit in deze codebase en is getest.
 | Taal | **TypeScript** (strict) end-to-end | Eén taal voor UI en backend, sterke types over de provider-grens. |
 | Web/API | **Next.js 16** (App Router, route handlers) | UI + API in één deploy; server components lezen direct uit de servicelaag. |
 | UI | React 19 + **Tailwind CSS 4** | Snel, geen zware componentbibliotheek nodig in de MVP. |
-| Database | **PostgreSQL 16** | Transacties, JSONB voor provenance, triggers (append-only audit), row-level security later. |
+| Database | **PostgreSQL 16**, lokaal ingebouwd via **PGlite** | Op de desktop draait PostgreSQL ín de app (PGlite, map `data/db`): niets te installeren. Voor team- of servergebruik is het dezelfde code met `DATABASE_URL` naar een PostgreSQL-server. Transacties, JSONB, triggers (append-only audit) en straks row-level security. |
 | ORM/migraties | **Drizzle ORM** + drizzle-kit | SQL-dichtbij, typed, migraties als leesbare SQL-bestanden (auditbaar). |
 | Validatie | **zod 4** | Alle input en de environment worden gevalideerd. |
 | Auth | Eigen sessies + **Argon2id** | Volledige controle en auditbaarheid; SSO (OIDC/Entra ID) komt in fase 2. |
