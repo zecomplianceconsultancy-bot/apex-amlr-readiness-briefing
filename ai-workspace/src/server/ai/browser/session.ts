@@ -4,6 +4,7 @@ import path from "node:path";
 import { chromium, type BrowserContext, type Page } from "playwright";
 import { env } from "@/server/config/env";
 import { ProviderError } from "../types";
+import { HUMAN_CHECK_MESSAGE, isHumanCheck, waitForHuman } from "./challenge";
 import { getSite, listSites } from "./sites";
 
 /**
@@ -21,7 +22,7 @@ interface BrowserState {
 }
 
 export interface SiteStatus {
-  state: "ready" | "login_required" | "error";
+  state: "ready" | "login_required" | "human_check" | "error";
   checkedAt: string;
   url?: string;
   detail?: string;
@@ -108,6 +109,14 @@ export async function checkSite(siteId: string): Promise<SiteStatus> {
   try {
     const page = await pageFor(siteId);
     await page.goto(site.newChatUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    if (await isHumanCheck(page)) {
+      // Give the user time to complete the check in the window that is now in front.
+      if (!(await waitForHuman(page, 60_000))) {
+        status = { state: "human_check", checkedAt: new Date().toISOString(), url: page.url(), detail: HUMAN_CHECK_MESSAGE(site.label) };
+        state.status.set(siteId, status);
+        return status;
+      }
+    }
     const visible = await page
       .locator(site.input)
       .first()

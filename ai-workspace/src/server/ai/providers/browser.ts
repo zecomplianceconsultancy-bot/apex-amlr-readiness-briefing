@@ -54,8 +54,8 @@ export class BrowserProvider implements AIProvider {
         yield event;
       }
     } catch (err) {
-      if (err instanceof ProviderError && err.code === "auth") {
-        recordSiteStatus(site.id, { state: "login_required", checkedAt: new Date().toISOString(), detail: err.message });
+      if (err instanceof ProviderError && (err.code === "auth" || err.code === "human_check")) {
+        recordSiteStatus(site.id, { state: err.code === "auth" ? "login_required" : "human_check", checkedAt: new Date().toISOString(), detail: err.message });
       }
       if (err instanceof ProviderError) throw err;
       throw new ProviderError("browser", "unavailable", err instanceof Error ? err.message.split("\n")[0]! : String(err));

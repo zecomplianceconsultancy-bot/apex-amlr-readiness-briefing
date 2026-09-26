@@ -1,5 +1,6 @@
 import type { Page } from "playwright";
 import { ProviderError, type Citation, type ProviderEvent } from "../types";
+import { HUMAN_CHECK_MESSAGE, isHumanCheck, waitForHuman } from "./challenge";
 import type { SiteProfile } from "./sites";
 
 const POLL_MS = 400;
@@ -28,6 +29,8 @@ export interface EngineOptions {
   answerTimeoutMs: number;
   inputTimeoutMs?: number;
   firstResponseTimeoutMs?: number;
+  /** How long to wait for the user to complete a "verify you are human" check. */
+  humanCheckTimeoutMs?: number;
 }
 
 /**
@@ -43,6 +46,12 @@ export async function* runOnPage(page: Page, site: SiteProfile, prompt: string, 
   if (signal?.aborted) throw cancelled();
 
   await page.goto(site.newChatUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
+  // "Verify you are human": wait for the user to complete it in the window, never bypass it.
+  if (await isHumanCheck(page)) {
+    const passed = await waitForHuman(page, opts.humanCheckTimeoutMs ?? 90_000, signal);
+    if (signal?.aborted) throw cancelled();
+    if (!passed) throw new ProviderError("browser", "human_check", HUMAN_CHECK_MESSAGE(site.label));
+  }
   const input = page.locator(site.input).first();
   const waitInput = (timeout: number) => input.waitFor({ state: "visible", timeout }).then(() => true, () => false);
   let found = await waitInput(opts.inputTimeoutMs ?? 20_000);
@@ -51,6 +60,7 @@ export async function* runOnPage(page: Page, site: SiteProfile, prompt: string, 
     await page.reload({ waitUntil: "domcontentloaded", timeout: 30_000 }).catch(() => undefined);
     found = await waitInput(opts.inputTimeoutMs ?? 20_000);
   }
+  if (!found && (await isHumanCheck(page))) throw new ProviderError("browser", "human_check", HUMAN_CHECK_MESSAGE(site.label));
   if (!found) {
     throw new ProviderError("browser", "auth", `${site.label}: invoerveld niet gevonden. Log in via Browser-tools, of de pagina is gewijzigd (selectors bijwerken).`);
   }

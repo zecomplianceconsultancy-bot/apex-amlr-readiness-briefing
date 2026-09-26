@@ -20,7 +20,7 @@ export function checkModel(modelId: string, classification: Classification): Mod
   // Browser tools that failed their last check (not logged in / page changed) are not offered.
   if (model.transport === "browser") {
     const status = siteStatuses()[model.providerModel];
-    if (status && status.state !== "ready") return { model, available: false, reason: `${model.label}: ${status.state === "login_required" ? "inloggen nodig" : "fout bij laatste controle"} (zie Browser-tools).` };
+    if (status && status.state !== "ready") return { model, available: false, reason: `${model.label}: ${status.state === "login_required" ? "inloggen nodig" : status.state === "human_check" ? "menselijke controle nodig" : "fout bij laatste controle"} (zie Browser-tools).` };
   }
   const decision = evaluateEgress(classification, model.clearance);
   if (!decision.allowed) return { model, available: false, reason: decision.reason };

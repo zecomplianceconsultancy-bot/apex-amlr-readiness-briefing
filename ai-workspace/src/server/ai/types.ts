@@ -54,6 +54,7 @@ export interface AIProvider {
 
 export type ProviderErrorCode =
   | "auth"
+  | "human_check"
   | "rate_limit"
   | "bad_request"
   | "timeout"

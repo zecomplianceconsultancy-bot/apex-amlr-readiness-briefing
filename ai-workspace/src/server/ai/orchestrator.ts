@@ -58,6 +58,7 @@ export interface ChatTurnInput {
 
 const USER_FACING_PROVIDER_ERRORS: Record<string, string> = {
   auth: "De provider weigerde de API-key. Controleer de configuratie.",
+  human_check: "De site vraagt om een menselijke controle.",
   rate_limit: "De provider is tijdelijk overbelast (rate limit). Probeer het zo opnieuw.",
   timeout: "De provider reageerde niet op tijd.",
   unavailable: "De provider is tijdelijk niet bereikbaar.",

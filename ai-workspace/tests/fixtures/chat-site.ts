@@ -42,6 +42,9 @@ export async function startFixtureSite(): Promise<{ baseUrl: string; close: () =
   const server: Server = createServer((req, res) => {
     res.setHeader("content-type", "text/html; charset=utf-8");
     if (req.url?.startsWith("/login")) return res.end("<!doctype html><html><body><h1>Log in</h1></body></html>");
+    // Simulated "verify you are human" page; a person clicks the button to continue.
+    if (req.url?.startsWith("/challenge"))
+      return res.end('<!doctype html><html><head><title>Even geduld...</title></head><body><p>Verifieer dat u een mens bent</p><button id="human" onclick="location.href=\'/\'">Ik ben een mens</button></body></html>');
     res.end(page(req.url?.startsWith("/ce") ?? false));
   });
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));

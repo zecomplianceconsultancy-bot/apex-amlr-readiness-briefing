@@ -6,7 +6,7 @@ import { api } from "@/lib/api-client";
 import { formatDateTime } from "@/lib/format";
 
 interface Status {
-  state: "ready" | "login_required" | "error";
+  state: "ready" | "login_required" | "human_check" | "error";
   checkedAt: string;
   url?: string;
   detail?: string;
@@ -21,6 +21,7 @@ interface Site {
 const STATE_STYLE: Record<string, [string, string]> = {
   ready: ["Klaar", "bg-emerald-50 text-emerald-700"],
   login_required: ["Inloggen nodig", "bg-amber-50 text-amber-800"],
+  human_check: ["Menselijke controle nodig", "bg-amber-50 text-amber-800"],
   error: ["Fout", "bg-rose-50 text-rose-700"],
 };
 
@@ -56,6 +57,10 @@ export function BrowserTools({ enabled, sites: initial }: { enabled: boolean; si
           <li>Log daar zelf in (incl. 2FA/captcha). Zet in de tool het gebruik van je data voor training uit.</li>
           <li>
             Klik <b>Controleer</b>. Bij &quot;Klaar&quot; is de tool in elk project als model te kiezen.
+          </li>
+          <li>
+            Verschijnt er &quot;Verifieer dat u een mens bent&quot;? Rond die controle zelf af in het browservenster; de workspace wacht daarop
+            (maximaal een minuut) en gaat daarna verder.
           </li>
         </ol>
         <p className="mt-2 text-xs text-slate-500">

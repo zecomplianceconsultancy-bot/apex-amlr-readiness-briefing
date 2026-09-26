@@ -63,6 +63,24 @@ describe("browser engine", () => {
     });
   });
 
+  it("waits for the user to complete a 'verify you are human' check, then continues", { timeout: 30_000 }, async () => {
+    // The "user" completes the check after 1.5 s.
+    const human = (async () => {
+      await new Promise((r) => setTimeout(r, 1_500));
+      await page.click("#human");
+    })();
+    const { result } = await collect(runOnPage(page, profile("/challenge"), "Wat is KYC?", { answerTimeoutMs: 20_000, humanCheckTimeoutMs: 15_000 }));
+    await human;
+    expect(result.text).toContain("Antwoord op: Wat is KYC?");
+  });
+
+  it("reports a human check clearly when nobody completes it", { timeout: 30_000 }, async () => {
+    await expect(collect(runOnPage(page, profile("/challenge"), "x", { answerTimeoutMs: 5_000, humanCheckTimeoutMs: 1_500 }))).rejects.toMatchObject({
+      code: "human_check",
+      message: expect.stringContaining("menselijke controle"),
+    });
+  });
+
   it("clicks the tool's stop button when cancelled", { timeout: 20_000 }, async () => {
     const ac = new AbortController();
     const run = async () => {
