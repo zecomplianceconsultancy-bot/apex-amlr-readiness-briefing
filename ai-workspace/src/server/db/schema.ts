@@ -332,6 +332,17 @@ export const promptTemplates = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// Platform settings (e.g. permissions). Changes are audited.
+// ---------------------------------------------------------------------------
+
+export const appSettings = pgTable("app_settings", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedBy: uuid("updated_by").references(() => users.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
 // Audit trail: append-only and hash-chained (see drizzle/0001_audit_immutability.sql)
 // ---------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@ import { buildChatContext, includedDocumentChars } from "./context-builder";
 import { streamInvocation } from "./gateway";
 import { findModel } from "./registry";
 import { router } from "./router";
-import { ProviderError, type Citation, type FinishReason, type Handoff } from "./types";
+import { ProviderError, type Citation, type Approval, type FinishReason, type Handoff } from "./types";
 
 /**
  * Orchestrator — turns a user intent into one or more gateway invocations.
@@ -35,6 +35,7 @@ export type ChatTurnEvent =
     }
   | { type: "delta"; text: string }
   | { type: "handoff"; handoff: Handoff }
+  | { type: "approval"; approval: Approval }
   | {
       type: "done";
       /** Final answer text; authoritative over the concatenated deltas. */
@@ -60,6 +61,7 @@ export interface ChatTurnInput {
 const USER_FACING_PROVIDER_ERRORS: Record<string, string> = {
   auth: "De provider weigerde de API-key. Controleer de configuratie.",
   human_check: "De site vraagt om een menselijke controle.",
+  permission: "Geen toestemming voor browserbesturing.",
   rate_limit: "De provider is tijdelijk overbelast (rate limit). Probeer het zo opnieuw.",
   timeout: "De provider reageerde niet op tijd.",
   unavailable: "De provider is tijdelijk niet bereikbaar.",
@@ -163,6 +165,8 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
         yield { type: "delta", text: ev.text };
       } else if (ev.type === "handoff") {
         yield { type: "handoff", handoff: ev.handoff };
+      } else if (ev.type === "approval") {
+        yield { type: "approval", approval: ev.approval };
       } else {
         text = ev.result.text || text;
         await saveAssistant("complete", invocationId);

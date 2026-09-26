@@ -6,6 +6,7 @@ import type { ClientModel } from "@/server/ai/catalog";
 import { readSse, toApiError } from "@/lib/api-client";
 import { Composer, type SendPayload } from "./composer";
 import { CopyButton } from "./copy-button";
+import { ApprovalCard, type UIApproval } from "./approval-card";
 import { HandoffCard, type UIHandoff } from "./handoff-card";
 import { Markdown } from "./markdown";
 import { ProvenancePanel } from "./provenance-panel";
@@ -108,13 +109,19 @@ export function ChatView(props: Props) {
             break;
           }
           case "delta":
-            patch(assistantId, (m) => ({ content: m.content + (d.text as string), handoff: null }));
+            patch(assistantId, (m) => ({ content: m.content + (d.text as string), handoff: null, approval: null }));
             break;
           case "handoff":
-            patch(assistantId, () => ({ handoff: d.handoff as UIHandoff }));
+            patch(assistantId, () => ({ handoff: d.handoff as UIHandoff, approval: null }));
             break;
           case "step-handoff":
-            patchStep(assistantId, d.stepId as string, () => ({ handoff: d.handoff as UIHandoff }));
+            patchStep(assistantId, d.stepId as string, () => ({ handoff: d.handoff as UIHandoff, approval: null }));
+            break;
+          case "approval":
+            patch(assistantId, () => ({ approval: d.approval as UIApproval }));
+            break;
+          case "step-approval":
+            patchStep(assistantId, d.stepId as string, () => ({ approval: d.approval as UIApproval }));
             break;
 
           // ---- multi-model runs ----
@@ -147,11 +154,12 @@ export function ChatView(props: Props) {
             patchStep(assistantId, d.stepId as string, () => ({ status: "running", invocationId: d.invocationId as string }));
             break;
           case "step-delta":
-            patchStep(assistantId, d.stepId as string, (s) => ({ status: "running", text: s.text + (d.text as string), handoff: null }));
+            patchStep(assistantId, d.stepId as string, (s) => ({ status: "running", text: s.text + (d.text as string), handoff: null, approval: null }));
             break;
           case "step-done":
             patchStep(assistantId, d.stepId as string, (s) => ({
               handoff: null,
+              approval: null,
               status: d.status as UIStep["status"],
               text: (d.text as string) || s.text,
               verdict: d.verdict as string | null,
@@ -180,7 +188,7 @@ export function ChatView(props: Props) {
             );
             break;
           case "error":
-            patch(assistantId, () => ({ status: "error" }));
+            patch(assistantId, () => ({ status: "error", approval: null, handoff: null }));
             setError((d.message as string) ?? "Er ging iets mis.");
             break;
         }
@@ -294,7 +302,9 @@ function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMe
     <div className="max-w-3xl space-y-1.5">
       {warnings}
       <div className="rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-2 shadow-sm">
-        {m.handoff && !m.content && m.status === "streaming" ? (
+        {m.approval && !m.content && m.status === "streaming" ? (
+          <ApprovalCard approval={m.approval} />
+        ) : m.handoff && !m.content && m.status === "streaming" ? (
           <HandoffCard handoff={m.handoff} />
         ) : m.content ? (
           <Markdown>{m.content}</Markdown>

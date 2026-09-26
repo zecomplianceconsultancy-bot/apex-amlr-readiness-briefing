@@ -18,7 +18,7 @@ export function SetupForm() {
     setError(null);
     try {
       await api("/api/v1/setup", { method: "POST", json: { name: f.get("name"), email: f.get("email"), password: f.get("password") } });
-      router.replace("/tools");
+      router.replace("/projects");
       router.refresh();
     } catch (err) {
       setError(err instanceof ApiError && err.code === "bad_request" ? "Controleer de velden (wachtwoord minimaal 12 tekens)." : err instanceof Error ? err.message : "Mislukt.");

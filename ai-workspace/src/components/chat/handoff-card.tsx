@@ -50,20 +50,26 @@ export function HandoffCard({ handoff }: { handoff: UIHandoff }) {
       <p className="font-medium text-amber-900">Handmatige stap: {handoff.toolLabel}</p>
       <ol className="list-decimal space-y-1 pl-5 text-xs text-slate-700">
         <li>
-          <a
-            href={handoff.openUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => void copy()}
-            className="font-medium text-indigo-700 underline"
-          >
-            Open {handoff.toolLabel}
-          </a>{" "}
-          {handoff.prefilled ? "(de vraag staat al klaar; controleer en verstuur)." : "en plak de vraag met Ctrl+V (hij staat al op je klembord)."}
+          Klik op <b>Kopieer vraag en open {handoff.toolLabel}</b>. {handoff.prefilled ? "De vraag staat daar al klaar; controleer en verstuur." : "Plak de vraag daar met Ctrl+V en verstuur."}
         </li>
         <li>Wacht tot het antwoord klaar is en kopieer het volledige antwoord (met de bronnen).</li>
         <li>Plak het hieronder en klik op Verwerken.</li>
       </ol>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={async () => {
+            await copy();
+            window.open(handoff.openUrl, "_blank", "noopener,noreferrer");
+          }}
+          className="rounded-lg bg-amber-600 px-3 py-1 text-xs font-medium text-white"
+        >
+          Kopieer vraag en open {handoff.toolLabel}
+        </button>
+        <a href={handoff.openUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-700 underline">
+          Alleen openen
+        </a>
+      </div>
       <details className="text-xs">
         <summary className="cursor-pointer text-slate-600">Vraag bekijken / kopiëren {copied && <span className="text-emerald-700">(gekopieerd ✓)</span>}</summary>
         <pre className="mt-1 max-h-48 overflow-auto whitespace-pre-wrap rounded bg-white p-2 text-[11px]">{handoff.prompt}</pre>

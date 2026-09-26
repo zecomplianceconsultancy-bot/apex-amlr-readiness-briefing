@@ -9,6 +9,7 @@ import { createHash } from "node:crypto";
 import { cpSync, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import net from "node:net";
 import os from "node:os";
+import { createInterface } from "node:readline/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -91,6 +92,33 @@ function freePort(start) {
   });
 }
 
+// Opening the browser is also something we only do with the user's permission (asked once).
+const prefsFile = path.join(stampDir, "prefs.json");
+function readPrefs() {
+  try {
+    return JSON.parse(readFileSync(prefsFile, "utf8"));
+  } catch {
+    return {};
+  }
+}
+async function mayOpenBrowser(url) {
+  const prefs = readPrefs();
+  if (typeof prefs.openBrowser === "boolean") return prefs.openBrowser;
+  if (!process.stdin.isTTY) return false;
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const answer = (await rl.question(`\n[AI Workspace] Mag de workspace bij het starten voortaan zelf je browser openen op ${url}? (j/n) `)).trim().toLowerCase();
+  rl.close();
+  const allowed = answer.startsWith("j") || answer.startsWith("y");
+  writeFileSync(prefsFile, JSON.stringify({ ...prefs, openBrowser: allowed }, null, 2));
+  say(allowed ? "Onthouden: browser wordt voortaan automatisch geopend." : "Onthouden: browser wordt niet automatisch geopend.");
+  say(`Wijzigen kan door ${prefsFile} te verwijderen.`);
+  return allowed;
+}
+async function offerBrowser(url) {
+  if (await mayOpenBrowser(url)) openBrowser(url);
+  else say(`Open zelf je browser op ${url}`);
+}
+
 function openBrowser(url) {
   const [cmd, args] = isWin ? ["cmd", ["/c", "start", "", url]] : [process.platform === "darwin" ? "open" : "xdg-open", [url]];
   const p = spawn(cmd, args, { detached: true, stdio: "ignore" });
@@ -149,8 +177,8 @@ if (existsSync(lockFile)) {
     if (lock.pid && alive(lock.pid)) {
       const ok = await fetch(`${lock.url}/api/health`).then((r) => r.ok, () => false);
       if (ok) {
-        say(`AI Workspace draait al: ${lock.url} — browser wordt geopend.`);
-        openBrowser(lock.url);
+        say(`AI Workspace draait al: ${lock.url}`);
+        await offerBrowser(lock.url);
         process.exit(0);
       }
     }
@@ -253,7 +281,7 @@ for (let i = 0; i < 120; i++) {
   if (ok) break;
   await new Promise((r) => setTimeout(r, 500));
 }
-openBrowser(origin);
 say(`AI Workspace draait: ${origin}`);
+await offerBrowser(origin);
 say(`Je gegevens staan in: ${dataDir}  (automatische back-ups in data/backups)`);
 say("Laat dit venster open. Sluit het (of Ctrl+C) om te stoppen.");

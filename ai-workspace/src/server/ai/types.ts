@@ -55,7 +55,19 @@ export interface Handoff {
   prefilled: boolean;
 }
 
-export type ProviderEvent = { type: "text"; text: string } | { type: "handoff"; handoff: Handoff } | { type: "done"; result: ChatResult };
+/** The engine asks the user for permission before doing something on their computer. */
+export interface Approval {
+  approvalId: string;
+  tool: string;
+  toolLabel: string;
+  action: string;
+}
+
+export type ProviderEvent =
+  | { type: "text"; text: string }
+  | { type: "handoff"; handoff: Handoff }
+  | { type: "approval"; approval: Approval }
+  | { type: "done"; result: ChatResult };
 
 export interface AIProvider {
   readonly id: string;
@@ -68,6 +80,7 @@ export interface AIProvider {
 export type ProviderErrorCode =
   | "auth"
   | "human_check"
+  | "permission"
   | "rate_limit"
   | "bad_request"
   | "timeout"

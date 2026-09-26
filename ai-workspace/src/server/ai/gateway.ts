@@ -10,7 +10,7 @@ import { Redactor } from "@/server/security/redaction";
 import { getProvider } from "./providers";
 import { findModel, type ModelDefinition } from "./registry";
 import type { RoutingDecision } from "./router";
-import { ProviderError, type ChatMessage, type ChatResult, type Handoff } from "./types";
+import { ProviderError, type ChatMessage, type Approval, type ChatResult, type Handoff } from "./types";
 
 /**
  * AI Gateway — the single choke point between the platform and any AI provider.
@@ -46,6 +46,7 @@ export type GatewayEvent =
     }
   | { type: "text"; text: string }
   | { type: "handoff"; handoff: Handoff }
+  | { type: "approval"; approval: Approval }
   | { type: "completed"; invocationId: string; result: ChatResult; latencyMs: number };
 
 export class PolicyBlockedError extends HttpError {
@@ -178,7 +179,7 @@ export async function* streamInvocation(call: GatewayCall): AsyncGenerator<Gatew
       if (event.type === "text") {
         partial += event.text;
         yield event;
-      } else if (event.type === "handoff") {
+      } else if (event.type === "handoff" || event.type === "approval") {
         yield event;
       } else {
         const r = event.result;

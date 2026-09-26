@@ -4,7 +4,11 @@ import { runOnPage } from "@/server/ai/browser/engine";
 import { closeBrowser } from "@/server/ai/browser/session";
 import { registerSite, type SiteProfile } from "@/server/ai/browser/sites";
 import { BrowserProvider, flattenPrompt } from "@/server/ai/providers/browser";
+import { resolvePending } from "@/server/ai/pending";
 import { ProviderError, type ProviderEvent } from "@/server/ai/types";
+import type { SessionUser } from "@/server/auth/session";
+import { closeDb, db, initDb, schema } from "@/server/db/client";
+import { browserControlMode, loadPermissions, setBrowserControlMode } from "@/server/settings/permissions";
 import { fixtureSelectors, startFixtureSite } from "./fixtures/chat-site";
 
 const nonSpace = (s: string) => s.replace(/\s+/g, "").length;
@@ -94,6 +98,66 @@ describe("browser engine", () => {
 });
 
 describe("BrowserProvider", () => {
+  let admin: SessionUser;
+  const meta = { ip: null, userAgent: "vitest" };
+  beforeAll(async () => {
+    await initDb();
+    await loadPermissions();
+    const [u] = await db().insert(schema.users).values({ email: "admin@browser.test", name: "admin", passwordHash: "x", role: "admin" }).returning();
+    admin = { id: u!.id, email: u!.email, name: u!.name, role: "admin" };
+  });
+  afterAll(() => closeDb());
+
+  /** Runs a provider call, answering permission requests with `decision`. */
+  async function collectWithDecision(gen: AsyncGenerator<ProviderEvent>, decision: "once" | "session" | "deny") {
+    const deltas: string[] = [];
+    let asked = 0;
+    for await (const e of gen) {
+      if (e.type === "approval") {
+        asked++;
+        expect(resolvePending("approval", e.approval.approvalId, admin.id, decision)).toEqual({ tool: e.approval.tool });
+      } else if (e.type === "text") deltas.push(e.text);
+      else if (e.type === "done") return { asked, result: e.result };
+    }
+    throw new Error("no done event");
+  }
+  const ask = (provider: BrowserProvider, site: string, q: string) =>
+    provider.streamChat({ providerModel: site, messages: [{ role: "user", content: q }], maxOutputTokens: 1000, context: { userId: admin.id } });
+
+  it("does nothing while browser control is off (the default)", async () => {
+    expect(browserControlMode()).toBe("off");
+    registerSite(profile("/", "fixture-off"));
+    await expect(ask(new BrowserProvider(), "fixture-off", "x").next()).rejects.toMatchObject({ code: "permission" });
+  });
+
+  it("asks before every action; deny stops, once allows one call, session allows until restart", { timeout: 60_000 }, async () => {
+    await setBrowserControlMode(admin, "ask", meta);
+    registerSite(profile("/", "fixture-ask"));
+    const provider = new BrowserProvider();
+    await expect(collectWithDecision(ask(provider, "fixture-ask", "geweigerd"), "deny")).rejects.toMatchObject({ code: "permission" });
+    const once = await collectWithDecision(ask(provider, "fixture-ask", "eenmalig"), "once");
+    expect(once.asked).toBe(1);
+    const session = await collectWithDecision(ask(provider, "fixture-ask", "sessie"), "session");
+    expect(session.asked).toBe(1);
+    const again = await collectWithDecision(ask(provider, "fixture-ask", "zonder vraag"), "deny");
+    expect(again.asked).toBe(0); // granted for this session
+    expect(again.result.text).toContain("Antwoord op: zonder vraag");
+
+    // Turning it off again revokes session grants; the change is audited.
+    await setBrowserControlMode(admin, "off", meta);
+    await expect(ask(provider, "fixture-ask", "x").next()).rejects.toMatchObject({ code: "permission" });
+    const audits = await db().select().from(schema.auditEvents);
+    expect(audits.filter((a) => a.action === "permission.update").map((a) => a.details)).toEqual([
+      { from: "off", to: "ask" },
+      { from: "ask", to: "off" },
+    ]);
+    await setBrowserControlMode(admin, "ask", meta);
+  });
+
+  it("only admins can change the permission", async () => {
+    await expect(setBrowserControlMode({ ...admin, role: "member" }, "ask", meta)).rejects.toMatchObject({ status: 403 });
+  });
+
   it("flattens instructions and history into one prompt with the question last", () => {
     expect(
       flattenPrompt("Sys", [
@@ -108,15 +172,17 @@ describe("BrowserProvider", () => {
     registerSite(profile("/", "fixture-provider"));
     const provider = new BrowserProvider();
     expect(provider.isConfigured()).toBe(true);
-    const ask = (q: string) => collect(provider.streamChat({ providerModel: "fixture-provider", messages: [{ role: "user", content: q }], maxOutputTokens: 1000 }));
-    const [a, b] = await Promise.all([ask("eerste vraag"), ask("tweede vraag")]);
+    const [a, b] = await Promise.all([
+      collectWithDecision(ask(provider, "fixture-provider", "eerste vraag"), "session"),
+      collectWithDecision(ask(provider, "fixture-provider", "tweede vraag"), "session"),
+    ]);
     expect(a.result.text).toContain("Antwoord op: eerste vraag");
     expect(b.result.text).toContain("Antwoord op: tweede vraag");
   }, 30_000);
 
   it("refuses prompts longer than the tool accepts", async () => {
     registerSite({ ...profile("/", "fixture-small"), maxPromptChars: 10 });
-    const gen = new BrowserProvider().streamChat({ providerModel: "fixture-small", messages: [{ role: "user", content: "x".repeat(50) }], maxOutputTokens: 10 });
+    const gen = new BrowserProvider().streamChat({ providerModel: "fixture-small", messages: [{ role: "user", content: "x".repeat(50) }], maxOutputTokens: 10, context: { userId: admin.id } });
     await expect(gen.next()).rejects.toBeInstanceOf(ProviderError);
   });
 });

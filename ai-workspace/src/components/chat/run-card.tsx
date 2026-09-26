@@ -1,6 +1,7 @@
 "use client";
 
 import { CopyButton } from "./copy-button";
+import { ApprovalCard } from "./approval-card";
 import { HandoffCard } from "./handoff-card";
 import { Markdown } from "./markdown";
 import { Sources, uniqueCitations } from "./sources";
@@ -45,6 +46,7 @@ function Badge({ className, children }: { className: string; children: React.Rea
 function StepBody({ step, onProvenance }: { step: UIStep; onProvenance: (id: string) => void }) {
   return (
     <div className="space-y-2">
+      {step.approval && step.status === "running" && !step.text && <ApprovalCard approval={step.approval} />}
       {step.handoff && step.status === "running" && !step.text && <HandoffCard handoff={step.handoff} />}
       {step.text ? <Markdown>{step.text}</Markdown> : step.status === "running" ? <p className="animate-pulse text-sm text-slate-400">Bezig…</p> : null}
       {step.error && <p className="text-xs text-rose-600">{step.error}</p>}
@@ -126,7 +128,7 @@ function ResearchView({ run, content, onProvenance }: { run: UIRun; content: str
       <ol className="space-y-2">
         {steps.map((s, i) => (
           <li key={s.id}>
-            <details open={s.status === "running" || Boolean(s.handoff && !s.text)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+            <details open={s.status === "running" || Boolean((s.handoff || s.approval) && !s.text)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
               <summary className="cursor-pointer list-none">
                 <StepHeader step={s} index={i + 1} />
               </summary>

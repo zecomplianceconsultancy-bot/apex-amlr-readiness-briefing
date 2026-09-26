@@ -23,7 +23,9 @@ export type AuditAction =
   | "ai.invocation.blocked"
   | "ai.invocation.cancelled"
   | "browser.site.open"
-  | "browser.site.check";
+  | "browser.site.check"
+  | "permission.update"
+  | "permission.approval";
 
 export interface RequestMeta {
   ip: string | null;

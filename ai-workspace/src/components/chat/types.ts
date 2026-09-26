@@ -1,3 +1,4 @@
+import type { UIApproval } from "./approval-card";
 import type { UIHandoff } from "./handoff-card";
 
 export interface Citation {
@@ -33,6 +34,7 @@ export interface UIStep {
   invocationId: string | null;
   citations: Citation[];
   handoff?: UIHandoff | null;
+  approval?: UIApproval | null;
 }
 
 export interface UIRun {
@@ -51,4 +53,5 @@ export interface UIMessage {
   warnings?: string[];
   run?: UIRun;
   handoff?: UIHandoff | null;
+  approval?: UIApproval | null;
 }

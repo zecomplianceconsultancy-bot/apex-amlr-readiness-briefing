@@ -29,6 +29,13 @@
       "when": 1790457891305,
       "tag": "0003_runs_and_prompts",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790461981364,
+      "tag": "0004_app_settings",
+      "breakpoints": true
     }
   ]
 }

@@ -25,8 +25,11 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
   gesprekken, export naar Markdown, kopieerknoppen
 - Stabiel: dagelijkse automatische back-up (7 bewaard), automatisch herstarten, bescherming tegen
   dubbel starten, logbestanden in `data/logs`
-- Browser-tools: Perplexity, ChatGPT, Claude, Gemini via hun webinterface (live antwoord, bronnen,
-  thread-link), beheerscherm om in te loggen en te controleren
+- **Niets zonder toestemming:** browserbesturing staat standaard uit; aangezet vraagt de workspace
+  vóór elke actie om toestemming (eenmalig of tot afsluiten), en alles wordt geaudit. Het
+  startbestand vraagt één keer of het je browser automatisch mag openen.
+- Browser-tools (optioneel, met toestemming): Perplexity, ChatGPT, Claude, Gemini via hun
+  webinterface (live antwoord, bronnen, thread-link)
 - Handmatige brug voor tools die geautomatiseerde browsers blokkeren: de workspace zet de vraag
   klaar, jij verstuurt hem in je eigen browser en plakt het antwoord terug (met bronnen en audit)
 - Optioneel: Perplexity API (`PERPLEXITY_API_KEY`), naast de al ingebouwde Claude- en OpenAI-API
@@ -54,8 +57,10 @@ AI-tools) staan in de map `data/` naast de app.
      klik met rechts → *Open* → *Open*.
 4. De eerste keer installeert het de benodigde onderdelen en bereidt het de app voor
    (enkele minuten, internet nodig). Daarna start het in enkele seconden.
-5. Je browser opent **http://127.0.0.1:3000**. Maak je account aan; je komt dan op
-   **Browser-tools**. Log daar per AI-tool één keer in en klik *Controleer*.
+5. Het startbestand vraagt één keer of het je browser automatisch mag openen. Ga naar
+   **http://127.0.0.1:3000** en maak je account aan.
+6. Werk met de modellen "(handmatig)" (jij plakt) of met een API. Browserbesturing is optioneel
+   en staat uit tot je hem zelf aanzet onder **Browser-tools**.
 
 Laat het zwarte venster open terwijl je werkt; sluit het om te stoppen.
 **Back-up:** kopieer de map `data/`. Die bevat ook de encryptiesleutel; zonder die sleutel

@@ -3,6 +3,8 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { initDb, closeDb } = await import("@/server/db/client");
     await initDb();
+    const { loadPermissions } = await import("@/server/settings/permissions");
+    await loadPermissions();
     let closing = false;
     const shutdown = async (signal: string) => {
       if (closing) return;

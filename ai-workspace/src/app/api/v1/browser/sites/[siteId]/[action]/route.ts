@@ -4,6 +4,7 @@ import { getSite } from "@/server/ai/browser/sites";
 import { ProviderError } from "@/server/ai/types";
 import { recordAudit } from "@/server/audit/audit";
 import { env } from "@/server/config/env";
+import { browserControlMode } from "@/server/settings/permissions";
 import { authed } from "@/server/http/api";
 import { badRequest, forbidden, HttpError, notFound } from "@/server/http/errors";
 
@@ -13,6 +14,8 @@ type Params = { siteId: string; action: string };
 export const POST = authed<Params>(async (_req, { user, params, meta }) => {
   if (user.role !== "admin") throw forbidden();
   if (!env().ENABLE_BROWSER_PROVIDER) throw badRequest("Browser-tools staan uit (ENABLE_BROWSER_PROVIDER).");
+  // Explicit click by an admin, confirmed in the UI, and only when browser control is permitted.
+  if (browserControlMode() === "off") throw forbidden("Browserbesturing staat uit. Zet eerst toestemming aan.");
   const site = getSite(params.siteId);
   if (!site) throw notFound("Browser-tool");
   try {

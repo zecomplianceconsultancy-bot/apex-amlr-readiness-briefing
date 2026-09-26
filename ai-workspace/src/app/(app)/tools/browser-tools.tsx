@@ -25,12 +25,26 @@ const STATE_STYLE: Record<string, [string, string]> = {
   error: ["Fout", "bg-rose-50 text-rose-700"],
 };
 
-export function BrowserTools({ enabled, sites: initial }: { enabled: boolean; sites: Site[] }) {
+export function BrowserTools({ enabled, mode: initialMode, sites: initial }: { enabled: boolean; mode: "off" | "ask"; sites: Site[] }) {
   const [sites, setSites] = useState(initial);
+  const [mode, setMode] = useState(initialMode);
+
+  async function changeMode(next: "off" | "ask") {
+    if (next === "ask" && !confirm("Browserbesturing toestaan?\n\nDe workspace mag dan een apart Chrome-venster openen en daarin vragen typen en antwoorden uitlezen — maar alleen nadat je elke keer toestemming geeft.")) return;
+    setError(null);
+    try {
+      await api("/api/v1/settings/browser-control", { method: "PUT", json: { mode: next } });
+      setMode(next);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Wijzigen mislukt.");
+    }
+  }
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function act(id: string, action: "open" | "check") {
+    const label = sites.find((s) => s.id === id)?.label ?? id;
+    if (!confirm(`Mag de workspace ${label} openen in een apart, door de workspace bestuurd Chrome-venster?`)) return;
     setBusy(`${id}:${action}`);
     setError(null);
     try {
@@ -44,30 +58,57 @@ export function BrowserTools({ enabled, sites: initial }: { enabled: boolean; si
   }
 
   if (!enabled) {
-    return <ErrorText>Browser-tools staan uit. Zet ENABLE_BROWSER_PROVIDER=true in .env en herstart de app.</ErrorText>;
+    return <ErrorText>Browser-tools zijn uitgeschakeld in de configuratie (ENABLE_BROWSER_PROVIDER=false).</ErrorText>;
   }
 
   return (
     <div className="space-y-4">
-      <Card className="text-sm text-slate-600">
-        <ol className="list-decimal space-y-1 pl-5">
-          <li>
-            Klik <b>Openen</b>: er opent een browservenster (apart profiel) met de tool.
-          </li>
-          <li>Log daar zelf in (incl. 2FA/captcha). Zet in de tool het gebruik van je data voor training uit.</li>
-          <li>
-            Klik <b>Controleer</b>. Bij &quot;Klaar&quot; is de tool in elk project als model te kiezen.
-          </li>
-          <li>
-            Verschijnt er &quot;Verifieer dat u een mens bent&quot;? Rond die controle zelf af in het browservenster; de workspace wacht daarop
-            (maximaal een minuut) en gaat daarna verder.
-          </li>
-        </ol>
-        <p className="mt-2 text-xs text-slate-500">
-          Laat het browservenster open terwijl je werkt; de workspace typt prompts en leest antwoorden en bronnen terug. Browser-tools mogen alleen data
-          tot classificatie &quot;Intern&quot; ontvangen.
+      <Card>
+        <h2 className="mb-1 font-medium">Toestemming voor browserbesturing</h2>
+        <p className="mb-3 text-sm text-slate-600">
+          Standaard <b>uit</b>: de workspace opent en bestuurt dan nooit een browservenster. Met <b>Vragen per keer</b> vraagt de workspace vóór elke actie om je
+          toestemming (eenmalig, of tot je de workspace afsluit). Een &quot;altijd toestaan&quot; bestaat bewust niet. Elke keuze komt in de audit trail.
         </p>
+        <div className="inline-flex rounded-lg bg-slate-100 p-0.5">
+          {(
+            [
+              ["off", "Uit (aanbevolen)"],
+              ["ask", "Vragen per keer"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => mode !== value && void changeMode(value)}
+              className={`rounded-md px-3 py-1 text-sm font-medium ${mode === value ? "bg-white text-indigo-700 shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        {mode === "off" && (
+          <p className="mt-3 text-xs text-slate-500">
+            Werk intussen met de modellen &quot;(handmatig)&quot; in de chat: de workspace zet de vraag klaar, jij verstuurt hem in je eigen browser en plakt het
+            antwoord terug. Of vul een API-sleutel in (bijv. PERPLEXITY_API_KEY) voor volledig automatische, officiële koppelingen.
+          </p>
+        )}
       </Card>
+      {mode === "ask" && (
+        <Card className="text-sm text-slate-600">
+          <ol className="list-decimal space-y-1 pl-5">
+            <li>
+              Klik <b>Openen</b> en bevestig: er opent een apart Chrome-venster met de tool.
+            </li>
+            <li>Log daar zelf in. Zet in de tool het gebruik van je data voor training uit.</li>
+            <li>
+              Klik <b>Controleer</b>. Bij &quot;Klaar&quot; is de tool als model te kiezen; bij elk gebruik vraagt de workspace eerst toestemming.
+            </li>
+            <li>
+              Blijft &quot;Verifieer dat u een mens bent&quot; terugkomen? Dan blokkeert de site bestuurde browsers: gebruik de handmatige route of een API.
+            </li>
+          </ol>
+        </Card>
+      )}
       <ErrorText>{error}</ErrorText>
       <Card className="p-0">
         <ul className="divide-y divide-slate-100">
@@ -87,10 +128,10 @@ export function BrowserTools({ enabled, sites: initial }: { enabled: boolean; si
                   {s.status?.detail && <div className="text-xs text-slate-500">{s.status.detail}</div>}
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  <Button variant="secondary" disabled={busy !== null} onClick={() => void act(s.id, "open")}>
+                  <Button variant="secondary" disabled={busy !== null || mode === "off"} onClick={() => void act(s.id, "open")}>
                     {busy === `${s.id}:open` ? "Openen…" : "Openen"}
                   </Button>
-                  <Button disabled={busy !== null} onClick={() => void act(s.id, "check")}>
+                  <Button disabled={busy !== null || mode === "off"} onClick={() => void act(s.id, "check")}>
                     {busy === `${s.id}:check` ? "Controleren…" : "Controleer"}
                   </Button>
                 </div>

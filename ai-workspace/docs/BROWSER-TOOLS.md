@@ -1,5 +1,12 @@
 # Browser-tools: AI-tools bedienen zonder API
 
+> **Toestemming eerst.** Browserbesturing staat standaard **uit**. De workspace opent of bestuurt
+> dan nooit een browservenster. Een beheerder kan hem onder *Browser-tools* op **"Vragen per keer"**
+> zetten. Ook dan vraagt de workspace vóór elke actie om toestemming (*Eenmalig toestaan*,
+> *Toestaan tot ik de workspace afsluit* of *Weigeren*). Een "altijd toestaan" bestaat bewust niet.
+> Elke instellingswijziging en elke beslissing komt in de audit trail. Zonder browserbesturing
+> werk je met de **handmatige route** (zie hieronder) of met een **API**.
+
 Fase 1 van de workspace werkt **zonder API-koppelingen**. De workspace bedient Perplexity,
 ChatGPT, Claude en Gemini via hun gewone webinterface, in een browservenster op je eigen
 computer, met je eigen abonnementen. Pas als de workflows stabiel zijn, stap je over op API's.

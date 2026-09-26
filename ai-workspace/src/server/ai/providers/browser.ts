@@ -2,6 +2,8 @@ import "server-only";
 import { env } from "@/server/config/env";
 import { runOnPage } from "../browser/engine";
 import { acquireSite, pageFor, recordSiteStatus } from "../browser/session";
+import { openPending } from "../pending";
+import { addSessionGrant, browserControlMode, hasSessionGrant } from "@/server/settings/permissions";
 import { getSite } from "../browser/sites";
 import { ProviderError, type AIProvider, type ChatMessage, type ChatRequest, type ProviderEvent } from "../types";
 
@@ -56,6 +58,34 @@ export class BrowserProvider implements AIProvider {
         "bad_request",
         `Prompt (${prompt.length} tekens) is te lang voor ${site.label} via de browser (max ${site.maxPromptChars}). Zet minder bestanden in context.`,
       );
+    }
+
+    // Nothing happens on this computer without the user's permission.
+    const userId = req.context?.userId;
+    if (browserControlMode() === "off" || !userId) {
+      throw new ProviderError("browser", "permission", "Browserbesturing staat uit. Zet hem aan onder Browser-tools (toestemming), of kies de handmatige route.");
+    }
+    if (!hasSessionGrant(userId, site.id)) {
+      const { id, value } = openPending("approval", userId, {
+        signal: req.signal,
+        timeoutMs: 10 * 60_000,
+        timeoutMessage: "Geen toestemming gegeven binnen 10 minuten.",
+        meta: { tool: site.id },
+      });
+      yield {
+        type: "approval",
+        approval: {
+          approvalId: id,
+          tool: site.id,
+          toolLabel: site.label,
+          action: `De workspace wil ${site.label} openen in een apart Chrome-venster en daar je vraag typen en het antwoord uitlezen.`,
+        },
+      };
+      const decision = await value.catch((err: unknown) => {
+        throw err instanceof ProviderError && err.code === "cancelled" ? new ProviderError("browser", "cancelled", "Request cancelled") : err;
+      });
+      if (decision === "deny") throw new ProviderError("browser", "permission", `Geen toestemming gegeven om ${site.label} te bedienen.`);
+      if (decision === "session") addSessionGrant(userId, site.id);
     }
 
     const release = await acquireSite(site.id);

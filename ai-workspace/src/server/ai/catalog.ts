@@ -1,5 +1,6 @@
 import "server-only";
 import { evaluateEgress, type Classification } from "@/server/security/data-policy";
+import { browserControlMode } from "@/server/settings/permissions";
 import { siteStatuses } from "./browser/session";
 import { getProvider } from "./providers";
 import { findModel, MODEL_REGISTRY, type ModelDefinition } from "./registry";
@@ -19,6 +20,7 @@ export function checkModel(modelId: string, classification: Classification): Mod
   if (!provider.isConfigured()) return { model, available: false, reason: `${provider.displayName} is niet geconfigureerd (API-key ontbreekt).` };
   // Browser tools that failed their last check (not logged in / page changed) are not offered.
   if (model.transport === "browser") {
+    if (browserControlMode() === "off") return { model, available: false, reason: "Browserbesturing staat uit (zet aan onder Browser-tools)." };
     const status = siteStatuses()[model.providerModel];
     if (status && status.state !== "ready") return { model, available: false, reason: `${model.label}: ${status.state === "login_required" ? "inloggen nodig" : status.state === "human_check" ? "menselijke controle nodig" : "fout bij laatste controle"} (zie Browser-tools).` };
   }
