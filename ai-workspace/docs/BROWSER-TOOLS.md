@@ -39,6 +39,35 @@ Workspace (chat) → Orchestrator → AI Gateway (policy, PII-masking, logging)
 
 Laat het browservenster open terwijl je werkt. Je kunt meekijken wat de workspace typt.
 
+## "Verifieer dat u een mens bent" blijft terugkomen
+
+Sommige sites (zoals Perplexity, via Cloudflare) herkennen dat het browservenster door software
+wordt bestuurd ("Chrome wordt beheerd door geautomatiseerde testsoftware") en laten het dan niet
+door, hoe vaak je ook klikt. Dat is precies waar die beveiliging voor is; de workspace probeert
+dat bewust niet te omzeilen. De tool krijgt dan de status *Menselijke controle nodig* (dat blijft
+bewaard na een herstart) en wordt niet meer automatisch gekozen. Gebruik in plaats daarvan:
+
+### De handmatige brug (geen API, geen kosten)
+
+Kies in de modelkiezer bijvoorbeeld **"Perplexity (handmatig)"**. Dit werkt ook als stap in
+Vergelijk en Diep onderzoek. Is de automatische browserroute geblokkeerd, dan kiest de workspace
+de handmatige route vanzelf.
+
+1. De workspace zet de vraag klaar (met projectcontext, persoonsgegevens gemaskeerd).
+2. Klik **Open Perplexity**. Perplexity opent in je **gewone** browser, met de vraag ingevuld
+   (bij lange vragen staat de vraag op je klembord: plak met Ctrl+V).
+3. Verstuur de vraag daar, kopieer het volledige antwoord inclusief de bronnen, plak het in de
+   workspace en klik **Verwerken**.
+
+De workspace legt de vraag, het antwoord en de bronnen (URL's worden uit de geplakte tekst
+gehaald) vast met provenance en audit trail, net als bij de automatische routes.
+
+### De Perplexity API (later)
+
+Zet `PERPLEXITY_API_KEY=...` in `.env` en herstart. Dan verschijnen "Perplexity Sonar Pro (API)"
+en "Perplexity Sonar (API)": volledig automatisch en stabiel, met bronnen, tegen een klein bedrag
+per vraag. Bij gelijke sterke punten krijgt de API voorrang op de handmatige route.
+
 ## Als een tool niet meer werkt
 
 Webinterfaces veranderen zonder aankondiging. De workspace vindt het invoerveld, de

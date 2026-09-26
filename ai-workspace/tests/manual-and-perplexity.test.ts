@@ -28,6 +28,15 @@ describe("manual bridge", () => {
   });
   afterAll(() => closeDb());
 
+  it("gives web tools only the project's own context", async () => {
+    const { webContext } = await import("@/server/ai/providers/browser");
+    expect(webContext("Generic rules\nProject: x")).toBeUndefined();
+    const ctx = webContext('Generic\n<project_instructions version="2">\nWees kort\n</project_instructions>\n<project_documents>\n<document name="a">A</document>\n</project_documents>');
+    expect(ctx).toContain("Wees kort");
+    expect(ctx).toContain('<document name="a">A</document>');
+    expect(ctx).not.toContain("Generic");
+  });
+
   it("extracts sources from pasted text (plain and markdown links, deduplicated)", () => {
     expect(extractCitations("Zie https://eur-lex.europa.eu/x. En [AMLA](https://amla.europa.eu) en https://eur-lex.europa.eu/x")).toEqual([
       { url: "https://eur-lex.europa.eu/x", title: undefined },
@@ -44,7 +53,9 @@ describe("manual bridge", () => {
       if (e.type === "handoff") {
         expect(e.handoff.prompt).toContain("[EMAIL_1]"); // masked before it is shown to be pasted anywhere
         expect(e.handoff.prompt).not.toContain("jan@x.nl");
-        expect(e.handoff.openUrl).toMatch(/^https:\/\/www\.perplexity\.ai\//);
+        expect(e.handoff.openUrl).toMatch(/^https:\/\/www\.perplexity\.ai\/search\?q=/);
+        expect(e.handoff.prompt).not.toContain("You are the AI assistant"); // no generic instructions for web tools
+        expect(e.handoff.prefilled).toBe(true);
         expect(completeHandoff(e.handoff.handoffId, other.id, "nope")).toBe(false); // someone else cannot answer
         expect(completeHandoff(e.handoff.handoffId, user.id, "AMLA is de EU-antiwitwasautoriteit. Bron: https://amla.europa.eu")).toBe(true);
       }

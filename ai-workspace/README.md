@@ -27,6 +27,9 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
   dubbel starten, logbestanden in `data/logs`
 - Browser-tools: Perplexity, ChatGPT, Claude, Gemini via hun webinterface (live antwoord, bronnen,
   thread-link), beheerscherm om in te loggen en te controleren
+- Handmatige brug voor tools die geautomatiseerde browsers blokkeren: de workspace zet de vraag
+  klaar, jij verstuurt hem in je eigen browser en plakt het antwoord terug (met bronnen en audit)
+- Optioneel: Perplexity API (`PERPLEXITY_API_KEY`), naast de al ingebouwde Claude- en OpenAI-API
 - API-providers: Anthropic (Claude), OpenAI (Responses API), plus een offline mock, allemaal via
   één AI Gateway
 - Projectcontext met versiebeheer, hergebruikt in elk gesprek

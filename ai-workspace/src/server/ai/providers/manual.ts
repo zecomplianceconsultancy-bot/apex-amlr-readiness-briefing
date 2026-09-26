@@ -2,7 +2,7 @@ import "server-only";
 import { getSite } from "../browser/sites";
 import { openHandoff } from "../handoff";
 import { ProviderError, type AIProvider, type ChatRequest, type Citation, type ProviderEvent } from "../types";
-import { flattenPrompt } from "./browser";
+import { flattenPrompt, webContext } from "./browser";
 
 /** Longest question we put in a URL; longer ones are copied to the clipboard instead. */
 const MAX_PREFILL_CHARS = 1_500;
@@ -39,7 +39,7 @@ export class ManualProvider implements AIProvider {
     if (!site) throw new ProviderError("manual", "bad_request", `Onbekende tool: ${req.providerModel}`);
     if (!req.context?.userId) throw new ProviderError("manual", "bad_request", "Geen gebruiker bekend voor handmatige stap.");
 
-    const prompt = flattenPrompt(req.system, req.messages);
+    const prompt = flattenPrompt(webContext(req.system), req.messages);
     const prefilled = Boolean(site.prefillUrl) && prompt.length <= MAX_PREFILL_CHARS;
     const openUrl = prefilled ? site.prefillUrl!.replace("{q}", encodeURIComponent(prompt)) : site.newChatUrl;
 
