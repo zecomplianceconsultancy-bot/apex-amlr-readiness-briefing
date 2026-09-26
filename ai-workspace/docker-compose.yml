@@ -1,0 +1,15 @@
+# Local development database. Production: managed PostgreSQL with encryption at rest,
+# automated backups, TLS enforced and a separate least-privilege application role.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: workspace
+      POSTGRES_PASSWORD: workspace
+      POSTGRES_DB: ai_workspace
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
