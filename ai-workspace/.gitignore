@@ -5,10 +5,12 @@ out/
 next-env.d.ts
 .env
 .env.local
-# Encrypted uploads (local storage driver)
-storage/
+# Local runtime data. Anchored with a leading "/" so that source folders with the same name
+# (e.g. src/server/storage/) are never excluded.
+# Encrypted uploads (legacy local storage location)
+/storage/
 # Browser profile with logged-in AI tool sessions (cookies!)
-.browser-profile/
-browser-sites.json
-# Local data (embedded database, encrypted files, browser profile, encryption key)
-data/
+/.browser-profile/
+/browser-sites.json
+# Embedded database, encrypted files, browser profile, encryption key, backups, logs
+/data/
