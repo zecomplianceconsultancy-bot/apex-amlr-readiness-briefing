@@ -11,6 +11,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white">AI</span>
           AI Workspace
         </Link>
+        <form action="/search" className="mx-4 hidden max-w-sm flex-1 sm:block">
+          <input
+            name="q"
+            placeholder="Zoek in gesprekken…"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-sm focus:border-indigo-400 focus:bg-white focus:outline-none"
+          />
+        </form>
         <div className="flex items-center gap-3 text-sm">
           {user.role === "admin" && (
             <>

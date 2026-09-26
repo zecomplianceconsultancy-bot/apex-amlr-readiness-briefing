@@ -13,7 +13,18 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
 ## Wat zit erin
 
 - Login (Argon2id, serversessies), projecten met rollen (eigenaar / bewerker / lezer)
-- Centrale chat met live streaming, modelkiezer en "automatisch" (router)
+- **Drie werkwijzen in één invoerbalk:**
+  - **Chat**: "Automatisch" kiest per vraag het model met de beste sterke punten, en toont waarom.
+  - **Vergelijk**: dezelfde vraag aan 2–4 modellen tegelijk, plus een analyse van consensus,
+    verschillen en mogelijke fouten, met een overeenstemmingsscore.
+  - **Diep onderzoek**: onderzoek met bronnen (Perplexity) → uitwerking (ChatGPT) →
+    onafhankelijke controle (Claude) → feitencheck (Gemini) → eindantwoord. Het oordeel van de
+    controleur en de feitencheck is zichtbaar.
+- Sterke punten per model sturen de standaardrolverdeling (één klik: "Op sterke punten verdelen")
+- Promptbibliotheek (persoonlijk of gedeeld per project, met voorbeeldprompts), zoeken in alle
+  gesprekken, export naar Markdown, kopieerknoppen
+- Stabiel: dagelijkse automatische back-up (7 bewaard), automatisch herstarten, bescherming tegen
+  dubbel starten, logbestanden in `data/logs`
 - Browser-tools: Perplexity, ChatGPT, Claude, Gemini via hun webinterface (live antwoord, bronnen,
   thread-link), beheerscherm om in te loggen en te controleren
 - API-providers: Anthropic (Claude), OpenAI (Responses API), plus een offline mock, allemaal via

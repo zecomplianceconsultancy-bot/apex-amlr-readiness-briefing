@@ -7,7 +7,7 @@ import { env } from "@/server/config/env";
 import { DEFAULT_CONVERSATION_TITLE, getConversation } from "@/server/conversations/service";
 import { db, schema } from "@/server/db/client";
 import { HttpError } from "@/server/http/errors";
-import { buildChatContext } from "./context-builder";
+import { buildChatContext, includedDocumentChars } from "./context-builder";
 import { streamInvocation } from "./gateway";
 import { findModel } from "./registry";
 import { router } from "./router";
@@ -66,22 +66,17 @@ const USER_FACING_PROVIDER_ERRORS: Record<string, string> = {
   unknown: "Onbekende fout bij de provider.",
 };
 
-export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTurnEvent> {
+/**
+ * Common start of every turn (chat or multi-model run): access check (≥ editor), conversation
+ * belongs to the project, store the user message, bump the conversation (title on first turn).
+ */
+export async function startTurn(input: { user: SessionUser; projectId: string; conversationId: string; content: string }) {
   const { project } = await requireProjectRole(input.user, input.projectId, "editor");
   const conversation = await getConversation(project.id, input.conversationId);
-
-  const routing = router.route({
-    task: "chat",
-    requestedModelId: input.modelId,
-    projectDefaultModelId: project.defaultModelId,
-    classification: project.classification,
-  });
-
   const [userMessage] = await db()
     .insert(schema.messages)
     .values({ conversationId: conversation.id, projectId: project.id, role: "user", content: input.content, authorId: input.user.id })
     .returning({ id: schema.messages.id });
-
   const isFirstTurn = conversation.title === DEFAULT_CONVERSATION_TITLE;
   await db()
     .update(schema.conversations)
@@ -90,6 +85,27 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
       ...(isFirstTurn ? { title: input.content.replace(/\s+/g, " ").trim().slice(0, 60) || "Gesprek" } : {}),
     })
     .where(eq(schema.conversations.id, conversation.id));
+  return { project, conversation, userMessageId: userMessage!.id };
+}
+
+export function providerErrorMessage(err: ProviderError): string {
+  if (err.provider === "browser" && err.code !== "cancelled") return err.message;
+  return USER_FACING_PROVIDER_ERRORS[err.code] ?? err.message;
+}
+
+export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTurnEvent> {
+  // Route before storing anything, so an unknown model is rejected without side effects.
+  const { project: access } = await requireProjectRole(input.user, input.projectId, "editor");
+  const routing = router.route({
+    task: "chat",
+    requestedModelId: input.modelId,
+    projectDefaultModelId: access.defaultModelId,
+    classification: access.classification,
+    question: input.content,
+    contextChars: input.modelId ? 0 : await includedDocumentChars(access.id),
+  });
+  const { project, conversation, userMessageId } = await startTurn(input);
+  const userMessage = { id: userMessageId };
 
   // Browser tools accept far less input than APIs: size the context to the chosen engine.
   const model = findModel(routing.modelId);
@@ -120,7 +136,7 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
       routing,
       system: context.system,
       messages: context.history,
-      contextRefs: { ...context.refs, userMessageId: userMessage!.id },
+      contextRefs: { ...context.refs, userMessageId: userMessage.id },
       signal: input.signal,
     })) {
       if (ev.type === "started") {
@@ -132,7 +148,7 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
         assistantMessageId = assistant!.id;
         yield {
           type: "meta",
-          userMessageId: userMessage!.id,
+          userMessageId: userMessage.id,
           assistantMessageId,
           invocationId,
           model: { id: ev.model.id, label: ev.model.label },
@@ -161,7 +177,7 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
   } catch (err) {
     if (err instanceof ProviderError) {
       await saveAssistant(err.code === "cancelled" ? "cancelled" : "error", invocationId);
-      throw new HttpError(502, `provider_${err.code}`, USER_FACING_PROVIDER_ERRORS[err.code] ?? err.message);
+      throw new HttpError(502, `provider_${err.code}`, providerErrorMessage(err));
     }
     await saveAssistant("error", invocationId);
     throw err;

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { listModelsFor, toClientModel } from "@/server/ai/catalog";
+import { listRunsForConversation } from "@/server/ai/workflows/runs";
 import { isUuid, requirePageProject } from "@/server/auth/page-guards";
 import { getConversation, listMessages } from "@/server/conversations/service";
 import { HttpError } from "@/server/http/errors";
@@ -13,7 +14,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ p
     if (err instanceof HttpError && err.status === 404) notFound();
     throw err;
   });
-  const messages = await listMessages(conversation.id);
+  const [messages, runs] = await Promise.all([listMessages(conversation.id), listRunsForConversation(conversation.id)]);
   return (
     <ChatView
       key={conversation.id}
@@ -28,6 +29,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ p
         role: m.role,
         content: m.content,
         status: m.status,
+        run: m.runId ? runs[m.runId] : undefined,
         stats: m.invocationId
           ? {
               invocationId: m.invocationId,

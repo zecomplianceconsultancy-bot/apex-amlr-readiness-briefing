@@ -2,15 +2,21 @@ import "server-only";
 import { env } from "@/server/config/env";
 import type { Classification } from "@/server/security/data-policy";
 import { HttpError } from "@/server/http/errors";
+import { bestFor, classifyTask, scoreModel } from "@/lib/strengths";
 import { checkModel, listModelsFor } from "./catalog";
+import { findModel } from "./registry";
 
-export type RoutingStrategy = "manual" | "project-default" | "system-default" | "first-available";
+export type RoutingStrategy = "manual" | "project-default" | "auto" | "system-default" | "first-available" | "workflow";
 
 export interface RoutingInput {
   task: "chat";
   requestedModelId?: string | null;
   projectDefaultModelId?: string | null;
   classification: Classification;
+  /** The user's message; enables strength-based automatic routing. */
+  question?: string;
+  /** Size of the project documents that go into the context. */
+  contextChars?: number;
 }
 
 export interface RoutingDecision {
@@ -41,6 +47,16 @@ export class DefaultRouter implements ModelRouter {
     }
     if (input.projectDefaultModelId && checkModel(input.projectDefaultModelId, input.classification)?.available) {
       return { modelId: input.projectDefaultModelId, strategy: "project-default", reason: "Standaardmodel van het project." };
+    }
+    // Automatic: pick the engine whose strengths fit the task (lib/strengths.ts).
+    if (input.question) {
+      const { role, reason } = classifyTask(input.question, input.contextChars);
+      const candidates = listModelsFor(input.classification).map((a) => ({ id: a.model.id, tags: a.model.tags, available: a.available }));
+      const best = bestFor(role, candidates);
+      const model = best ? findModel(best) : undefined;
+      if (model && scoreModel({ id: model.id, tags: model.tags, available: true }, role) > 0) {
+        return { modelId: model.id, strategy: "auto", reason: `${reason} → ${model.label}: ${model.strengths}` };
+      }
     }
     const systemDefault = env().DEFAULT_MODEL_ID;
     if (checkModel(systemDefault, input.classification)?.available) {

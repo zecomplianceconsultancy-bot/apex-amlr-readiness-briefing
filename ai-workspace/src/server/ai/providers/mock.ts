@@ -9,6 +9,17 @@ const sleep = (ms: number, signal?: AbortSignal) =>
     });
   });
 
+const shorten = (s: string) => (s.length > 600 ? `${s.slice(0, 600)} …` : s);
+
+/** Workflow prompts ask for a verdict line; answer with a deterministic one per model. */
+function mockVerdict(prompt: string, model: string): string {
+  const critic = model.includes("critic");
+  if (prompt.includes("OORDEEL:")) return `\n\nOORDEEL: ${critic ? "AANPASSEN" : "AKKOORD"}`;
+  if (prompt.includes("FEITEN:")) return `\n\nFEITEN: ${critic ? "ONZEKER" : "CORRECT"}`;
+  if (prompt.includes("OVEREENSTEMMING:")) return `\n\nOVEREENSTEMMING: ${critic ? "LAAG" : "MIDDEL"}`;
+  return "";
+}
+
 /**
  * Offline provider for development, demos and tests. Streams back a description of exactly
  * what it received — handy to verify context assembly and PII masking without an API key.
@@ -36,8 +47,8 @@ export class MockProvider implements AIProvider {
       "",
       "Jouw laatste bericht, zoals het bij de provider aankwam (na eventuele PII-masking):",
       "",
-      `> ${(last?.content ?? "").split("\n").join("\n> ")}`,
-    ].join("\n");
+      `> ${shorten(last?.content ?? "").split("\n").join("\n> ")}`,
+    ].join("\n") + mockVerdict(last?.content ?? "", req.providerModel);
 
     let out = "";
     for (const token of text.match(/\S+\s*|\s+/g) ?? []) {

@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, isNull, or } from "drizzle-orm";
 import { recordAudit, type RequestMeta } from "@/server/audit/audit";
 import type { SessionUser } from "@/server/auth/session";
 import { db, schema } from "@/server/db/client";
@@ -72,6 +72,7 @@ export async function listMessages(conversationId: string) {
       status: messages.status,
       createdAt: messages.createdAt,
       invocationId: messages.invocationId,
+      runId: messages.runId,
       modelId: modelInvocations.modelId,
       modelReported: modelInvocations.modelReported,
       inputTokens: modelInvocations.inputTokens,
@@ -84,4 +85,29 @@ export async function listMessages(conversationId: string) {
     .leftJoin(modelInvocations, eq(modelInvocations.id, messages.invocationId))
     .where(eq(messages.conversationId, conversationId))
     .orderBy(asc(messages.createdAt));
+}
+
+/** Full-text-ish search over conversation titles and messages in the user's projects. */
+export async function searchConversations(userId: string, query: string, limit = 50) {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const pattern = `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%`;
+  return db()
+    .select({
+      projectId: schema.projects.id,
+      projectName: schema.projects.name,
+      conversationId: conversations.id,
+      title: conversations.title,
+      messageId: messages.id,
+      role: messages.role,
+      content: messages.content,
+      createdAt: messages.createdAt,
+    })
+    .from(messages)
+    .innerJoin(conversations, eq(conversations.id, messages.conversationId))
+    .innerJoin(schema.projects, eq(schema.projects.id, conversations.projectId))
+    .innerJoin(schema.projectMembers, and(eq(schema.projectMembers.projectId, schema.projects.id), eq(schema.projectMembers.userId, userId)))
+    .where(and(isNull(conversations.archivedAt), isNull(schema.projects.archivedAt), or(ilike(messages.content, pattern), ilike(conversations.title, pattern))))
+    .orderBy(desc(messages.createdAt))
+    .limit(limit);
 }

@@ -1,3 +1,4 @@
+import type { CapabilityTag } from "@/lib/strengths";
 import type { Classification } from "@/server/security/data-policy";
 
 /**
@@ -21,7 +22,10 @@ export interface ModelDefinition {
   contextWindowTokens: number;
   maxOutputTokens: number;
   clearance: Classification;
-  tags: ReadonlyArray<"reasoning" | "fast" | "long-context" | "writing" | "coding" | "offline" | "web-research">;
+  /** Capability tags; drive automatic routing and default role assignment (lib/strengths.ts). */
+  tags: ReadonlyArray<CapabilityTag>;
+  /** Plain-language strengths, shown in the model pickers. */
+  strengths: string;
   /** How the engine is reached: official API, or the tool's web UI in a desktop browser. */
   transport: "api" | "browser" | "local";
   /** Upper bound for the whole prompt in characters (browser UIs have input limits). */
@@ -33,7 +37,14 @@ export interface ModelDefinition {
  * or train on input depending on account settings, so client data (confidential/restricted
  * projects) never goes this way. Turn off "improve the model"/training in each tool.
  */
-const browserModel = (id: string, label: string, description: string, maxInputChars: number, tags: ModelDefinition["tags"]): ModelDefinition => ({
+const browserModel = (
+  id: string,
+  label: string,
+  description: string,
+  maxInputChars: number,
+  tags: ModelDefinition["tags"],
+  strengths: string,
+): ModelDefinition => ({
   id: `browser:${id}`,
   provider: "browser",
   providerModel: id,
@@ -43,15 +54,30 @@ const browserModel = (id: string, label: string, description: string, maxInputCh
   maxOutputTokens: 16_000,
   clearance: "internal",
   tags,
+  strengths,
   transport: "browser",
   maxInputChars,
 });
 
 export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
-  browserModel("perplexity", "Perplexity", "Webresearch met bronnen, via perplexity.ai in je browser.", 30_000, ["web-research"]),
-  browserModel("chatgpt", "ChatGPT", "chatgpt.com in je browser (model volgens je ChatGPT-instelling).", 60_000, ["reasoning", "writing"]),
-  browserModel("claude", "Claude", "claude.ai in je browser (model volgens je Claude-instelling).", 100_000, ["reasoning", "writing", "long-context"]),
-  browserModel("gemini", "Gemini", "gemini.google.com in je browser.", 60_000, ["reasoning", "writing"]),
+  browserModel("perplexity", "Perplexity", "perplexity.ai in je browser.", 30_000, ["sources", "web-research"], "Actueel webonderzoek met bronvermelding"),
+  browserModel("chatgpt", "ChatGPT", "chatgpt.com in je browser (model volgens je ChatGPT-instelling).", 60_000, ["structure", "writing", "reasoning"], "Gestructureerd uitwerken en schrijven"),
+  browserModel(
+    "claude",
+    "Claude",
+    "claude.ai in je browser (model volgens je Claude-instelling).",
+    100_000,
+    ["critical-review", "reasoning", "long-context", "writing"],
+    "Kritische analyse, nuance en lange documenten",
+  ),
+  browserModel(
+    "gemini",
+    "Gemini",
+    "gemini.google.com in je browser.",
+    60_000,
+    ["fact-check", "web-research", "long-context", "reasoning"],
+    "Feitencheck met Google Zoeken, zeer lange context",
+  ),
   {
     id: "anthropic:claude-opus-5",
     provider: "anthropic",
@@ -61,7 +87,8 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     contextWindowTokens: 1_000_000,
     maxOutputTokens: 64_000,
     clearance: "confidential",
-    tags: ["reasoning", "long-context", "writing", "coding"],
+    tags: ["critical-review", "reasoning", "long-context", "writing", "coding"],
+    strengths: "Diepgaande analyse, kritische review, lange documenten",
     transport: "api",
   },
   {
@@ -73,7 +100,8 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     contextWindowTokens: 1_000_000,
     maxOutputTokens: 64_000,
     clearance: "confidential",
-    tags: ["reasoning", "long-context", "writing", "coding"],
+    tags: ["reasoning", "writing", "long-context", "coding"],
+    strengths: "Snel en sterk in analyse en schrijven",
     transport: "api",
   },
   {
@@ -86,6 +114,7 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     maxOutputTokens: 32_000,
     clearance: "confidential",
     tags: ["fast"],
+    strengths: "Snel en goedkoop voor eenvoudige taken",
     transport: "api",
   },
   {
@@ -98,7 +127,8 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     contextWindowTokens: 400_000,
     maxOutputTokens: 64_000,
     clearance: "confidential",
-    tags: ["reasoning", "writing", "coding"],
+    tags: ["structure", "writing", "reasoning", "coding"],
+    strengths: "Gestructureerd uitwerken, schrijven en redeneren",
     transport: "api",
   },
   {
@@ -111,18 +141,33 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     maxOutputTokens: 32_000,
     clearance: "confidential",
     tags: ["fast"],
+    strengths: "Snel en goedkoop voor eenvoudige taken",
     transport: "api",
   },
   {
     id: "mock:echo",
     provider: "mock",
     providerModel: "mock-echo-1",
-    label: "Mock (offline echo)",
+    label: "Mock A (offline)",
     description: "Lokale testprovider zonder API-key. Stuurt niets naar buiten.",
     contextWindowTokens: 1_000_000,
     maxOutputTokens: 4_000,
     clearance: "restricted",
     tags: ["offline", "fast"],
+    strengths: "Offline test",
+    transport: "local",
+  },
+  {
+    id: "mock:critic",
+    provider: "mock",
+    providerModel: "mock-critic-1",
+    label: "Mock B (offline)",
+    description: "Tweede lokale testprovider, om vergelijken en workflows offline te proberen.",
+    contextWindowTokens: 1_000_000,
+    maxOutputTokens: 4_000,
+    clearance: "restricted",
+    tags: ["offline", "critical-review"],
+    strengths: "Offline test (rol: criticus)",
     transport: "local",
   },
 ];

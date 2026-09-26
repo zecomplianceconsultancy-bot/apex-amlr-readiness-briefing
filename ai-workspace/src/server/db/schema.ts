@@ -164,6 +164,8 @@ export const messages = pgTable(
     authorId: uuid("author_id").references(() => users.id),
     /** Set for assistant messages: the invocation that produced this output. */
     invocationId: uuid("invocation_id").references(() => modelInvocations.id),
+    /** Set when the message is the result of a multi-model run (compare / research). */
+    runId: uuid("run_id").references(() => runs.id),
     createdAt: createdAt(),
   },
   (t) => [index("messages_conversation_idx").on(t.conversationId, t.createdAt)],
@@ -250,6 +252,83 @@ export const modelInvocations = pgTable(
     index("model_invocations_project_idx").on(t.projectId, t.startedAt),
     index("model_invocations_conversation_idx").on(t.conversationId),
   ],
+);
+
+// ---------------------------------------------------------------------------
+// Multi-model runs: several engines work on one question (compare, research pipeline).
+// Every step is a normal model invocation, so provenance and audit apply per step.
+// ---------------------------------------------------------------------------
+
+export const runKind = pgEnum("run_kind", ["compare", "research"]);
+export const runStatus = pgEnum("run_status", ["running", "complete", "error", "cancelled"]);
+export const stepStatus = pgEnum("step_status", ["pending", "running", "complete", "error", "cancelled", "skipped"]);
+
+export const runs = pgTable(
+  "runs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    kind: runKind("kind").notNull(),
+    status: runStatus("status").notNull().default("running"),
+    question: text("question").notNull(),
+    /** Models per role as chosen by the user. */
+    config: jsonb("config").notNull(),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id),
+    error: text("error"),
+    createdAt: createdAt(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (t) => [index("runs_conversation_idx").on(t.conversationId)],
+);
+
+export const runSteps = pgTable(
+  "run_steps",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    runId: uuid("run_id")
+      .notNull()
+      .references(() => runs.id, { onDelete: "cascade" }),
+    position: integer("position").notNull(),
+    /** compare: "answer" | "judge"; research: "research" | "draft" | "review" | "final" */
+    role: text("role").notNull(),
+    modelId: text("model_id").notNull(),
+    status: stepStatus("status").notNull().default("pending"),
+    invocationId: uuid("invocation_id").references(() => modelInvocations.id),
+    output: text("output").notNull().default(""),
+    /** Parsed verdict from review/judge steps, e.g. "AKKOORD" or "LAAG". */
+    verdict: text("verdict"),
+    error: text("error"),
+    startedAt: timestamp("started_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (t) => [index("run_steps_run_idx").on(t.runId, t.position)],
+);
+
+// ---------------------------------------------------------------------------
+// Prompt library: reusable prompts, per project (shared with members) or personal.
+// ---------------------------------------------------------------------------
+
+export const promptTemplates = pgTable(
+  "prompt_templates",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** null = personal prompt, visible only to its owner in every project. */
+    projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+    ownerId: uuid("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [index("prompt_templates_project_idx").on(t.projectId), index("prompt_templates_owner_idx").on(t.ownerId)],
 );
 
 // ---------------------------------------------------------------------------

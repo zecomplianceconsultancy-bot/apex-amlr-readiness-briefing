@@ -6,7 +6,7 @@
  */
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
@@ -15,7 +15,8 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 process.chdir(root);
 const isWin = process.platform === "win32";
-const stampDir = path.join(root, "data", ".launcher");
+const dataDir = path.resolve(root, process.env.DATA_DIR ?? "data");
+const stampDir = path.join(dataDir, ".launcher");
 mkdirSync(stampDir, { recursive: true });
 
 const say = (msg) => console.log(`\x1b[36m[AI Workspace]\x1b[0m ${msg}`);
@@ -132,7 +133,56 @@ if (userEnv.BROWSER_CHANNEL === undefined) {
   }
 }
 
-// 3. Build
+// 3. Only one instance per data folder: two servers on one embedded database would corrupt it.
+const lockFile = path.join(stampDir, "running.json");
+const alive = (pid) => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+};
+if (existsSync(lockFile)) {
+  try {
+    const lock = JSON.parse(readFileSync(lockFile, "utf8"));
+    if (lock.pid && alive(lock.pid)) {
+      const ok = await fetch(`${lock.url}/api/health`).then((r) => r.ok, () => false);
+      if (ok) {
+        say(`AI Workspace draait al: ${lock.url} — browser wordt geopend.`);
+        openBrowser(lock.url);
+        process.exit(0);
+      }
+    }
+  } catch {
+    // stale or unreadable lock: continue
+  }
+}
+
+// 4. Daily backup of the data folder (database, files, key) while nothing is running.
+function backup() {
+  const dir = path.join(dataDir, "backups");
+  mkdirSync(dir, { recursive: true });
+  const existing = readdirSync(dir).filter((d) => /^\d{4}-\d{2}-\d{2}_\d{4}$/.test(d)).sort();
+  const newest = existing.at(-1);
+  if (newest && Date.now() - statSync(path.join(dir, newest)).mtimeMs < 20 * 3600_000) return;
+  if (!existsSync(path.join(dataDir, "db"))) return; // nothing to back up yet
+  const stamp = new Date().toISOString().slice(0, 16).replace("T", "_").replace(":", "");
+  const target = path.join(dir, stamp);
+  say("Back-up maken van je gegevens…");
+  for (const item of ["db", "files", "encryption.key"]) {
+    const src = path.join(dataDir, item);
+    if (existsSync(src)) cpSync(src, path.join(target, item), { recursive: true });
+  }
+  for (const old of [...existing, stamp].slice(0, -7)) rmSync(path.join(dir, old), { recursive: true, force: true });
+}
+try {
+  backup();
+} catch (err) {
+  say(`Waarschuwing: back-up mislukt (${err.message}). De workspace start gewoon.`);
+}
+
+// 5. Build when sources changed
 const port = await freePort(Number(userEnv.PORT) || 3000);
 const origin = `http://127.0.0.1:${port}`;
 extraEnv.APP_ORIGIN = userEnv.APP_ORIGIN ?? origin;
@@ -144,26 +194,66 @@ if (!existsSync(path.join(root, ".next", "BUILD_ID")) || build.read() !== buildH
   build.write(buildHash);
 }
 
-// 4. Start (only reachable from this computer) and open the browser
+// 6. Start (only reachable from this computer), log to data/logs, restart after a crash.
+const logDir = path.join(dataDir, "logs");
+mkdirSync(logDir, { recursive: true });
+for (const f of readdirSync(logDir)) {
+  const p = path.join(logDir, f);
+  if (Date.now() - statSync(p).mtimeMs > 14 * 86400_000) unlinkSync(p);
+}
+const log = createWriteStream(path.join(logDir, `server-${new Date().toISOString().slice(0, 10)}.log`), { flags: "a" });
+
+let child;
+let stopping = false;
+const crashes = [];
+function startServer() {
+  child = spawn("npx", ["next", "start", "-H", "127.0.0.1", "-p", String(port)], {
+    stdio: ["ignore", "pipe", "pipe"],
+    shell: isWin,
+    env: { ...process.env, ...extraEnv, NODE_ENV: "production", NEXT_TELEMETRY_DISABLED: "1" },
+  });
+  for (const stream of [child.stdout, child.stderr]) {
+    stream.on("data", (chunk) => {
+      process.stdout.write(chunk);
+      log.write(chunk);
+    });
+  }
+  child.on("exit", (code) => {
+    if (stopping) return;
+    const now = Date.now();
+    crashes.push(now);
+    const recent = crashes.filter((t) => now - t < 10 * 60_000);
+    if (recent.length > 3) {
+      rmSync(lockFile, { force: true });
+      fail(`De workspace stopte ${recent.length} keer binnen 10 minuten (laatste code ${code}). Zie ${logDir}`);
+    }
+    say(`Server gestopt (code ${code}); automatisch herstarten…`);
+    setTimeout(startServer, 1500);
+  });
+}
+
+function shutdown() {
+  if (stopping) return;
+  stopping = true;
+  say("Afsluiten…");
+  rmSync(lockFile, { force: true });
+  child?.kill("SIGTERM");
+  setTimeout(() => process.exit(0), 5000).unref();
+  child?.on("exit", () => process.exit(0));
+}
+for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"]) process.on(sig, shutdown);
+process.on("exit", () => rmSync(lockFile, { force: true }));
+
 say(`Starten op ${origin} …`);
-const child = spawn("npx", ["next", "start", "-H", "127.0.0.1", "-p", String(port)], {
-  stdio: ["ignore", "inherit", "inherit"],
-  shell: isWin,
-  env: { ...process.env, ...extraEnv, NODE_ENV: "production", NEXT_TELEMETRY_DISABLED: "1" },
-});
-child.on("exit", (code) => process.exit(code ?? 0));
-for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => child.kill(sig));
+startServer();
+writeFileSync(lockFile, JSON.stringify({ pid: process.pid, url: origin }));
 
 for (let i = 0; i < 120; i++) {
-  try {
-    const res = await fetch(`${origin}/login`, { redirect: "manual" });
-    if (res.status < 500) break;
-  } catch {
-    // not up yet
-  }
+  const ok = await fetch(`${origin}/api/health`).then((r) => r.ok, () => false);
+  if (ok) break;
   await new Promise((r) => setTimeout(r, 500));
 }
 openBrowser(origin);
 say(`AI Workspace draait: ${origin}`);
-say(`Je gegevens staan in: ${path.join(root, "data")}  (maak hier back-ups van)`);
+say(`Je gegevens staan in: ${dataDir}  (automatische back-ups in data/backups)`);
 say("Laat dit venster open. Sluit het (of Ctrl+C) om te stoppen.");

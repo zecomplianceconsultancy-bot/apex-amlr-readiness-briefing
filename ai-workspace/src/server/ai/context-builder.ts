@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, isNull, sql } from "drizzle-orm";
 import { db, schema } from "@/server/db/client";
 import { getLatestContext } from "@/server/projects/service";
 import type { ProjectRow } from "@/server/authz/project-access";
@@ -82,7 +82,8 @@ export async function buildChatContext(project: ProjectRow, conversationId: stri
     .from(schema.messages)
     .where(eq(schema.messages.conversationId, conversationId))
     .orderBy(asc(schema.messages.createdAt));
-  const usable = rows.filter((r) => r.status === "complete" && r.content.trim());
+  // A zero history budget means "no conversation history" (e.g. research runs): no warning.
+  const usable = budget.history > 0 ? rows.filter((r) => r.status === "complete" && r.content.trim()) : [];
   const history: ChatMessage[] = [];
   let historyBudget = budget.history;
   for (let i = usable.length - 1; i >= 0; i--) {
@@ -98,4 +99,13 @@ export async function buildChatContext(project: ProjectRow, conversationId: stri
   refs.history.messages = history.length;
 
   return { system: parts.join("\n"), history, refs, warnings };
+}
+
+/** Total characters of project documents marked "in context" (for routing decisions). */
+export async function includedDocumentChars(projectId: string): Promise<number> {
+  const [row] = await db()
+    .select({ n: sql<number>`coalesce(sum(length(${schema.files.extractedText})), 0)` })
+    .from(schema.files)
+    .where(and(eq(schema.files.projectId, projectId), eq(schema.files.includeInContext, true), isNull(schema.files.deletedAt)));
+  return Number(row?.n ?? 0);
 }

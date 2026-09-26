@@ -148,7 +148,7 @@ describe("access control", () => {
   it("hides projects from non-members and enforces roles", async () => {
     const project = await createProject(owner, { name: "Geheim", classification: "internal", piiRedaction: true }, meta);
     const conv = await createConversation(owner, project.id, "Nieuw gesprek", meta);
-    const attempt = () => collect(runChatTurn({ user: outsider, meta, projectId: project.id, conversationId: conv.id, content: "hoi" }));
+    const attempt = () => collect(runChatTurn({ user: outsider, meta, projectId: project.id, conversationId: conv.id, content: "hoi", modelId: "mock:echo" }));
     await expect(attempt()).rejects.toMatchObject({ status: 404 });
 
     await upsertMember(owner, project.id, outsider.email, "viewer", meta);

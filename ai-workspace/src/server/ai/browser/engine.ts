@@ -44,7 +44,13 @@ export async function* runOnPage(page: Page, site: SiteProfile, prompt: string, 
 
   await page.goto(site.newChatUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
   const input = page.locator(site.input).first();
-  const found = await input.waitFor({ state: "visible", timeout: opts.inputTimeoutMs ?? 20_000 }).then(() => true, () => false);
+  const waitInput = (timeout: number) => input.waitFor({ state: "visible", timeout }).then(() => true, () => false);
+  let found = await waitInput(opts.inputTimeoutMs ?? 20_000);
+  if (!found && !signal?.aborted) {
+    // Slow or half-loaded page: one reload before concluding we are logged out.
+    await page.reload({ waitUntil: "domcontentloaded", timeout: 30_000 }).catch(() => undefined);
+    found = await waitInput(opts.inputTimeoutMs ?? 20_000);
+  }
   if (!found) {
     throw new ProviderError("browser", "auth", `${site.label}: invoerveld niet gevonden. Log in via Browser-tools, of de pagina is gewijzigd (selectors bijwerken).`);
   }
