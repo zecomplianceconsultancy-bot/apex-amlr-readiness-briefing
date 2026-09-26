@@ -32,7 +32,14 @@ const BASE_INSTRUCTIONS = `You are the AI assistant inside a private project wor
  * the project documents marked "include in context", and the conversation history.
  * Everything that is included (or left out) is described in `refs` for provenance.
  */
-export async function buildChatContext(project: ProjectRow, conversationId: string, maxChars: number): Promise<BuiltContext> {
+export interface ContextBudget {
+  /** Characters available for project documents. */
+  documents: number;
+  /** Characters available for conversation history (incl. the new message). */
+  history: number;
+}
+
+export async function buildChatContext(project: ProjectRow, conversationId: string, budget: ContextBudget): Promise<BuiltContext> {
   const warnings: string[] = [];
   const refs: ContextRefs = { projectContext: null, files: [], excludedFiles: [], history: { messages: 0, droppedOldest: 0 } };
   const parts = [BASE_INSTRUCTIONS, `\nProject: "${project.name}"${project.description ? ` — ${project.description}` : ""}`];
@@ -49,19 +56,19 @@ export async function buildChatContext(project: ProjectRow, conversationId: stri
     .where(and(eq(schema.files.projectId, project.id), eq(schema.files.includeInContext, true), isNull(schema.files.deletedAt)))
     .orderBy(asc(schema.files.createdAt));
 
-  let budget = maxChars;
+  let docBudget = budget.documents;
   const docParts: string[] = [];
   for (const d of docs) {
     const text = d.text ?? "";
     if (!text) continue;
-    if (budget <= 0) {
+    if (docBudget <= 0) {
       refs.excludedFiles.push({ id: d.id, filename: d.filename, reason: "context budget exhausted" });
       warnings.push(`Document "${d.filename}" is niet meegestuurd: contextbudget op.`);
       continue;
     }
-    const truncated = text.length > budget;
-    const body = truncated ? text.slice(0, budget) : text;
-    budget -= body.length;
+    const truncated = text.length > docBudget;
+    const body = truncated ? text.slice(0, docBudget) : text;
+    docBudget -= body.length;
     if (truncated) warnings.push(`Document "${d.filename}" is ingekort tot ${body.length} van ${text.length} tekens.`);
     refs.files.push({ id: d.id, filename: d.filename, sha256: d.sha256, chars: body.length, truncated });
     const name = d.filename.replace(/"/g, "'");
@@ -77,7 +84,7 @@ export async function buildChatContext(project: ProjectRow, conversationId: stri
     .orderBy(asc(schema.messages.createdAt));
   const usable = rows.filter((r) => r.status === "complete" && r.content.trim());
   const history: ChatMessage[] = [];
-  let historyBudget = maxChars;
+  let historyBudget = budget.history;
   for (let i = usable.length - 1; i >= 0; i--) {
     const m = usable[i]!;
     if (historyBudget - m.content.length < 0 && history.length > 0) {

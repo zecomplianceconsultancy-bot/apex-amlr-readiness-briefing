@@ -7,6 +7,7 @@ export interface MessageStats {
   latencyMs: number | null;
   finishReason: string | null;
   redactions?: number;
+  citations?: { url?: string; title?: string }[];
   routing?: { strategy: string; reason: string };
 }
 

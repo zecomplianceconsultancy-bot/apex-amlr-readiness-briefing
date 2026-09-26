@@ -9,8 +9,9 @@ import { db, schema } from "@/server/db/client";
 import { HttpError } from "@/server/http/errors";
 import { buildChatContext } from "./context-builder";
 import { streamInvocation } from "./gateway";
+import { findModel } from "./registry";
 import { router } from "./router";
-import { ProviderError, type FinishReason } from "./types";
+import { ProviderError, type Citation, type FinishReason } from "./types";
 
 /**
  * Orchestrator — turns a user intent into one or more gateway invocations.
@@ -35,6 +36,9 @@ export type ChatTurnEvent =
   | { type: "delta"; text: string }
   | {
       type: "done";
+      /** Final answer text; authoritative over the concatenated deltas. */
+      text: string;
+      citations: Citation[];
       finishReason: FinishReason;
       modelReported: string | null;
       inputTokens: number | null;
@@ -87,7 +91,13 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
     })
     .where(eq(schema.conversations.id, conversation.id));
 
-  const context = await buildChatContext(project, conversation.id, env().MAX_CONTEXT_CHARS);
+  // Browser tools accept far less input than APIs: size the context to the chosen engine.
+  const model = findModel(routing.modelId);
+  const total = Math.min(env().MAX_CONTEXT_CHARS, model?.maxInputChars ?? Number.POSITIVE_INFINITY);
+  const context = await buildChatContext(project, conversation.id, {
+    documents: Math.floor(total * 0.55),
+    history: Math.floor(total * 0.3),
+  });
 
   let assistantMessageId: string | undefined;
   let text = "";
@@ -138,6 +148,8 @@ export async function* runChatTurn(input: ChatTurnInput): AsyncGenerator<ChatTur
         await saveAssistant("complete", invocationId);
         yield {
           type: "done",
+          text,
+          citations: ev.result.citations,
           finishReason: ev.result.finishReason,
           modelReported: ev.result.modelReported,
           inputTokens: ev.result.usage.inputTokens,

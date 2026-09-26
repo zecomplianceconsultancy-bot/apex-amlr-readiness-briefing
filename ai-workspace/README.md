@@ -1,8 +1,12 @@
 # AI Workspace — MVP
 
-Eigen AI Master Workspace / Orchestrator: één webapp waarin je projecten beheert en waarachter
-meerdere AI-modellen (Claude, OpenAI, later Gemini/research-providers) als verwisselbare engines
-draaien — met provenance, audit trail en datapolicy vanaf dag één.
+Eigen AI Master Workspace / Orchestrator: één webapp waarin je projecten beheert en van waaruit
+je Perplexity, ChatGPT, Claude en Gemini aanstuurt, als verwisselbare engines. Provenance,
+audit trail en datapolicy zitten er vanaf dag één in.
+
+**Fase 1 werkt zonder API's.** De workspace bedient de tools via hun webinterface in een
+browservenster op je desktop ([docs/BROWSER-TOOLS.md](docs/BROWSER-TOOLS.md)). API-koppelingen
+voor Claude en OpenAI zijn al ingebouwd en worden actief zodra je een API-key invult.
 
 Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
@@ -10,7 +14,10 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
 
 - Login (Argon2id, serversessies), projecten met rollen (eigenaar / bewerker / lezer)
 - Centrale chat met live streaming, modelkiezer en "automatisch" (router)
-- Providers: Anthropic (Claude), OpenAI (Responses API), offline mock — via één AI Gateway
+- Browser-tools: Perplexity, ChatGPT, Claude, Gemini via hun webinterface (live antwoord, bronnen,
+  thread-link), beheerscherm om in te loggen en te controleren
+- API-providers: Anthropic (Claude), OpenAI (Responses API), plus een offline mock, allemaal via
+  één AI Gateway
 - Projectcontext met versiebeheer, hergebruikt in elk gesprek
 - File upload (txt, md, csv, json, pdf) — versleuteld opgeslagen, tekst optioneel in context
 - Provenance per antwoord: model + gerapporteerde versie, routing, exacte payload, context- en
@@ -30,12 +37,14 @@ docker compose up -d                      # of gebruik een eigen Postgres
 cp .env.example .env
 # Vul ENCRYPTION_KEY in:
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-# Optioneel: ANTHROPIC_API_KEY en/of OPENAI_API_KEY. Zonder keys werkt de offline mock.
+# Browser-tools staan standaard aan. API-keys zijn optioneel (voor later).
 
 npm run db:migrate
 npm run user:create -- --email jij@example.com --name "Jouw naam" --admin
 npm run dev                               # http://localhost:3000
 ```
+
+Open daarna **Browser-tools** (rechtsboven), log per tool één keer in en klik *Controleer*.
 
 ## Scripts
 

@@ -2,6 +2,7 @@ import "server-only";
 import { env } from "@/server/config/env";
 import type { AIProvider } from "../types";
 import { AnthropicProvider } from "./anthropic";
+import { BrowserProvider } from "./browser";
 import { MockProvider } from "./mock";
 import { OpenAIProvider } from "./openai";
 
@@ -11,6 +12,7 @@ import { OpenAIProvider } from "./openai";
  * models to ../registry.ts. Nothing else in the application changes.
  */
 const providers: Record<string, AIProvider> = {
+  browser: new BrowserProvider(),
   anthropic: new AnthropicProvider(),
   openai: new OpenAIProvider(),
   mock: new MockProvider(() => env().ENABLE_MOCK_PROVIDER),

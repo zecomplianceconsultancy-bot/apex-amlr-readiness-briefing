@@ -31,6 +31,7 @@ export function toClientModel(a: ModelAvailability) {
     id: a.model.id,
     label: a.model.label,
     provider: a.model.provider,
+    transport: a.model.transport,
     description: a.model.description,
     clearance: a.model.clearance,
     available: a.available,

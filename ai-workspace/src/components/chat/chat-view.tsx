@@ -19,6 +19,12 @@ interface Props {
   initialMessages: UIMessage[];
 }
 
+const MODEL_GROUPS = [
+  { transport: "browser", label: "Via browser (desktop)" },
+  { transport: "api", label: "Via API" },
+  { transport: "local", label: "Lokaal / test" },
+] as const;
+
 const FINISH_LABELS: Record<string, string> = {
   length: "Afgekapt: maximale lengte bereikt",
   refusal: "Het model weigerde dit verzoek",
@@ -99,7 +105,9 @@ export function ChatView(props: Props) {
         } else if (event === "done") {
           patchAssistant(assistantId, (m) => ({
             status: "complete",
+            content: (d.text as string) || m.content,
             stats: m.stats && {
+              citations: d.citations as MessageStats["citations"],
               ...m.stats,
               modelReported: d.modelReported as string | null,
               inputTokens: d.inputTokens as number | null,
@@ -136,12 +144,20 @@ export function ChatView(props: Props) {
             <span className="text-xs text-slate-500">Model</span>
             <Select value={modelId} onChange={(e) => setModelId(e.target.value)} className="w-64 py-1" disabled={streaming}>
               <option value="">Automatisch{defaultLabel ? ` (${defaultLabel})` : " (router)"}</option>
-              {props.models.map((m) => (
-                <option key={m.id} value={m.id} disabled={!m.available} title={m.reason ?? m.description}>
-                  {m.label}
-                  {!m.available ? " — niet beschikbaar" : ""}
-                </option>
-              ))}
+              {MODEL_GROUPS.map((group) => {
+                const items = props.models.filter((m) => m.transport === group.transport);
+                if (!items.length) return null;
+                return (
+                  <optgroup key={group.transport} label={group.label}>
+                    {items.map((m) => (
+                      <option key={m.id} value={m.id} disabled={!m.available} title={m.reason ?? m.description}>
+                        {m.label}
+                        {!m.available ? " — niet beschikbaar" : ""}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
             </Select>
           </div>
         </div>
@@ -219,6 +235,20 @@ function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMe
         {m.status === "error" && <p className="mt-2 text-xs text-rose-600">— fout tijdens genereren</p>}
         {s?.finishReason && FINISH_LABELS[s.finishReason] && <p className="mt-2 text-xs text-amber-700">⚠ {FINISH_LABELS[s.finishReason]}</p>}
       </div>
+      {!!s?.citations?.length && (
+        <details className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs">
+          <summary className="cursor-pointer font-medium text-slate-600">Bronnen ({s.citations.length})</summary>
+          <ol className="mt-1 list-decimal space-y-0.5 pl-5">
+            {s.citations.map((c) => (
+              <li key={c.url}>
+                <a href={c.url} target="_blank" rel="noopener noreferrer" className="break-all text-indigo-600 hover:underline">
+                  {c.title || c.url}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
       {s && (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-xs text-slate-500">
           <span className="font-medium text-slate-600">{modelLabel ?? s.modelId}</span>

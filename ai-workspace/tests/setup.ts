@@ -10,3 +10,7 @@ process.env.ENABLE_MOCK_PROVIDER = "true";
 process.env.DEFAULT_MODEL_ID = "mock:echo";
 process.env.ANTHROPIC_API_KEY = "";
 process.env.OPENAI_API_KEY = "";
+process.env.ENABLE_BROWSER_PROVIDER = "true";
+process.env.BROWSER_HEADLESS = "true";
+process.env.BROWSER_CHANNEL = "";
+process.env.BROWSER_PROFILE_DIR = path.join(tmpdir(), `aiw-test-browser-${process.pid}`);

@@ -234,6 +234,8 @@ export const modelInvocations = pgTable(
     policy: jsonb("policy").notNull(),
     status: invocationStatus("status").notNull(),
     responseText: text("response_text"),
+    /** Sources the engine cited (web research tools); part of the provenance record. */
+    citations: jsonb("citations").notNull().default([]),
     finishReason: text("finish_reason"),
     inputTokens: integer("input_tokens"),
     outputTokens: integer("output_tokens"),

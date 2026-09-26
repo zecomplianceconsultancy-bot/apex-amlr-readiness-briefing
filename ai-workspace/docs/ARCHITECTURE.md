@@ -30,7 +30,9 @@ Alles wat hier als "gebouwd" staat, zit in deze codebase en is getest.
 │   AI Gateway ─ ENIGE toegang tot providers:                       │
 │      egress-policy → PII-masking → request vastleggen → stream →  │
 │      resultaat, modelversie, tokens, latency → audit event        │
-│   Provider adapters: Anthropic · OpenAI · Mock · (Gemini, …)      │
+│   Provider adapters:                                              │
+│     browser (fase 1): Perplexity · ChatGPT · Claude · Gemini web  │
+│     api: Anthropic · OpenAI · (Gemini, …)   ·   mock (offline)    │
 ├──────────────────────────────────────────────────────────────────┤
 │  PostgreSQL (data, provenance, append-only audit)                 │
 │  Blob storage (AES-256-GCM versleuteld; lokaal → later S3/Azure)  │
@@ -146,6 +148,14 @@ interface AIProvider {
   gebruikerskeuze wordt gehonoreerd of geweigerd — nooit stil vervangen door een ander model.
 - **Gateway** is de enige plek die `provider.streamChat` aanroept.
 
+**Twee transports achter dezelfde interface.** Een engine is bereikbaar via `api` (officiële
+SDK) of via `browser`. De browservariant bedient de webinterface van de tool op de desktop via
+Playwright. Zie [BROWSER-TOOLS.md](BROWSER-TOOLS.md). Beide leveren dezelfde `ProviderEvent`s,
+dus de overstap van browser naar API is een andere keuze in de modelkiezer en verder niets.
+De browser-engine is generiek. Wat per site verschilt, staat als selectors in
+`browser/sites.ts` en is zonder codewijziging te overschrijven. Browser-tools hebben clearance
+*Intern*: klantdata gaat er nooit doorheen.
+
 **Een provider toevoegen (bijv. Gemini):**
 
 1. `src/server/ai/providers/gemini.ts` — implementeer `AIProvider` (map de SDK-stream naar
@@ -246,9 +256,16 @@ de backend later zonder Next.js draaien (bijv. als losse API-service).
 ## 7. MVP-roadmap
 
 **Fase 1 — MVP (deze versie)** ✅
-Login · projecten · rollen · centrale chat met streaming · Claude + OpenAI + mock · provider
-abstraction · modelkiezer · projectcontext met versies · file upload (txt/md/csv/json/pdf) ·
-provenance per antwoord · hash-chained audit trail · egress-policy · PII-masking.
+Login · projecten · rollen · centrale chat met streaming · **browser-tools (Perplexity, ChatGPT,
+Claude, Gemini via hun webinterface, zonder API)** · API-adapters Claude + OpenAI (klaar voor
+later) · provider abstraction · modelkiezer · projectcontext met versies · file upload
+(txt/md/csv/json/pdf) · provenance per antwoord incl. bronnen · hash-chained audit trail ·
+egress-policy · PII-masking.
+
+**Fase 1b — Stabiliseren op browser-tools**
+Selectors per tool valideren en bijhouden · multi-tool vergelijking (zelfde vraag naar meerdere
+tools) · eerste pipeline: research (Perplexity) → uitwerking (ChatGPT/Claude) → QA door een
+andere tool → consolidatie · daarna formeel naar API-koppelingen.
 
 **Fase 2 — Hardening & gemak**
 SSO/MFA · Gemini-adapter · admin-UI voor gebruikers en model-clearance · kostenoverzicht
@@ -274,6 +291,9 @@ Media-provider-interface (video/beeld, bijv. Higgsfield) achter dezelfde gateway
 ## Bekende beperkingen van deze versie
 
 - Rate limiter is in-memory (één instantie).
+- Browser-tools: selectors zijn getest tegen een nagebootste chatpagina. Tegen de echte sites
+  moeten ze op de desktop gevalideerd worden (knop *Controleer*); webinterfaces veranderen
+  zonder aankondiging. Geen modelversie of tokens beschikbaar via de webinterface.
 - Bestanden alleen als tekst in de context (geen afbeeldingen/visuele PDF-analyse); geen OCR.
 - Contextbudget in tekens, niet in tokens.
 - Invocaties bewaren de volledige payload per aanroep (bewust, voor traceerbaarheid); bij groei

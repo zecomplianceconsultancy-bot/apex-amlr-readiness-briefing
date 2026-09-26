@@ -37,6 +37,7 @@ export default async function ConversationPage({ params }: { params: Promise<{ p
               outputTokens: m.outputTokens,
               latencyMs: m.latencyMs,
               finishReason: m.finishReason,
+              citations: (m.citations as { url?: string; title?: string }[] | null) ?? [],
             }
           : undefined,
       }))}

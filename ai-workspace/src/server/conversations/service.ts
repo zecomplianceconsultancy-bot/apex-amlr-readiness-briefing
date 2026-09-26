@@ -78,6 +78,7 @@ export async function listMessages(conversationId: string) {
       outputTokens: modelInvocations.outputTokens,
       latencyMs: modelInvocations.latencyMs,
       finishReason: modelInvocations.finishReason,
+      citations: modelInvocations.citations,
     })
     .from(messages)
     .leftJoin(modelInvocations, eq(modelInvocations.id, messages.invocationId))

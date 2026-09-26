@@ -19,6 +19,15 @@ const EnvSchema = z.object({
   ANTHROPIC_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   ENABLE_MOCK_PROVIDER: boolFromString,
+  // Browser transport: drive the web UIs of AI tools in a desktop browser window.
+  ENABLE_BROWSER_PROVIDER: boolFromString,
+  BROWSER_PROFILE_DIR: z.string().default("./.browser-profile"),
+  /** "chrome" / "msedge" use the installed browser; empty uses Playwright's bundled Chromium. */
+  BROWSER_CHANNEL: z.string().default("chrome"),
+  BROWSER_HEADLESS: boolFromString,
+  BROWSER_ANSWER_TIMEOUT_SEC: z.coerce.number().int().positive().default(300),
+  /** Optional JSON file with selector overrides per site (see docs/BROWSER-TOOLS.md). */
+  BROWSER_SITES_FILE: z.string().optional(),
   DEFAULT_MODEL_ID: z.string().default("anthropic:claude-opus-5"),
   MAX_UPLOAD_MB: z.coerce.number().positive().max(100).default(10),
   MAX_CONTEXT_CHARS: z.coerce.number().int().positive().default(200_000),

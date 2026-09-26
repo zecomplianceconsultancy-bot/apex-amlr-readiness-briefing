@@ -1,0 +1,1 @@
+ALTER TABLE "model_invocations" ADD COLUMN "citations" jsonb DEFAULT '[]'::jsonb NOT NULL;

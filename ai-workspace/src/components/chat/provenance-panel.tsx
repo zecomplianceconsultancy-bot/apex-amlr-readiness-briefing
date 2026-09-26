@@ -24,6 +24,7 @@ interface Invocation {
   };
   policy: { egress?: { allowed: boolean; projectClassification: string; modelClearance: string }; piiRedaction?: boolean; redaction?: { total: number; byType: Record<string, number> } };
   finishReason: string | null;
+  citations: { url?: string; title?: string }[];
   inputTokens: number | null;
   outputTokens: number | null;
   latencyMs: number | null;
@@ -74,7 +75,18 @@ export function ProvenancePanel({ projectId, invocationId, onClose }: { projectI
               <Row k="Latency" v={inv.latencyMs != null ? `${inv.latencyMs} ms` : "—"} />
               <Row k="Tokens in / uit" v={`${inv.inputTokens ?? "—"} / ${inv.outputTokens ?? "—"}`} />
               <Row k="Finish reason" v={inv.finishReason ?? "—"} />
-              <Row k="Provider request id" v={inv.providerRequestId ?? "—"} mono />
+              {inv.provider === "browser" && inv.providerRequestId?.startsWith("http") ? (
+                <div className="grid grid-cols-[130px_1fr] gap-2">
+                  <dt className="text-slate-500">Originele thread</dt>
+                  <dd className="break-all">
+                    <a href={inv.providerRequestId} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                      {inv.providerRequestId}
+                    </a>
+                  </dd>
+                </div>
+              ) : (
+                <Row k="Provider request id" v={inv.providerRequestId ?? "—"} mono />
+              )}
               {inv.errorCode && <Row k="Fout" v={`${inv.errorCode}: ${inv.errorMessage ?? ""}`} />}
             </Section>
             <Section title="Datapolicy">
@@ -103,6 +115,16 @@ export function ProvenancePanel({ projectId, invocationId, onClose }: { projectI
                 <Row key={f.filename} k={f.filename} v={`niet meegestuurd: ${f.reason}`} />
               ))}
               <Row k="Request hash" v={inv.requestHash} mono />
+            </Section>
+            <Section title={`Bronnen (${inv.citations.length})`}>
+              {inv.citations.length === 0 && <p className="text-slate-400">Geen bronnen gerapporteerd.</p>}
+              {inv.citations.map((c) => (
+                <p key={c.url} className="break-all">
+                  <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                    {c.title || c.url}
+                  </a>
+                </p>
+              ))}
             </Section>
             <details className="rounded-lg border border-slate-200">
               <summary className="cursor-pointer px-3 py-2 font-medium">Exact verzonden payload</summary>

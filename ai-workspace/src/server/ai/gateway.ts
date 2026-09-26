@@ -182,13 +182,14 @@ export async function* streamInvocation(call: GatewayCall): AsyncGenerator<Gatew
           "success",
           {
             responseText: r.text,
+            citations: r.citations,
             modelReported: r.modelReported,
             finishReason: r.finishReason,
             inputTokens: r.usage.inputTokens,
             outputTokens: r.usage.outputTokens,
             providerRequestId: r.providerRequestId,
           },
-          { finishReason: r.finishReason, inputTokens: r.usage.inputTokens, outputTokens: r.usage.outputTokens },
+          { finishReason: r.finishReason, inputTokens: r.usage.inputTokens, outputTokens: r.usage.outputTokens, citations: r.citations.length },
         );
         yield { type: "completed", invocationId, result: r, latencyMs };
       }

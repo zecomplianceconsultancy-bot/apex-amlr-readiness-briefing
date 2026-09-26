@@ -7,3 +7,6 @@ next-env.d.ts
 .env.local
 # Encrypted uploads (local storage driver)
 storage/
+# Browser profile with logged-in AI tool sessions (cookies!)
+.browser-profile/
+browser-sites.json
