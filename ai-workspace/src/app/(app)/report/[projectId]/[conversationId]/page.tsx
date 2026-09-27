@@ -12,6 +12,9 @@ import { CLASSIFICATION_LABELS, formatDateTime } from "@/lib/format";
 
 type Citation = { url?: string; title?: string };
 
+/** Questions sent by the "Tweede mening" button start with this. */
+const SECOND_OPINION_MARKER = "🔍 Tweede mening:";
+
 const ROLE_NAMES: Record<string, string> = {
   answer: "Antwoord",
   judge: "Vergelijkende analyse",
@@ -129,6 +132,13 @@ export default async function ReportPage({ params }: { params: Promise<{ project
 
         {shown.map((m) => {
           if (m.role === "user") {
+            if (m.content.startsWith(SECOND_OPINION_MARKER)) {
+              return (
+                <section key={m.id} className="mt-4 break-inside-avoid">
+                  <h2 className="text-xs font-semibold uppercase tracking-wide text-indigo-700">Tweede mening op het vorige antwoord</h2>
+                </section>
+              );
+            }
             q++;
             return (
               <section key={m.id} className="mt-8 break-inside-avoid">

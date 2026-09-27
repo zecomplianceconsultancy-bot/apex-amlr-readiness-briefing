@@ -25,7 +25,13 @@ export default async function SourcesPage({ params, searchParams }: { params: Pr
       <PageHeader
         title="Bronnenbibliotheek"
         description="Alle bronnen die de tools in dit project hebben aangehaald, ontdubbeld. Hoe vaker een bron terugkomt, hoe hoger hij staat. Handig voor dossiervorming en om te zien waar je antwoorden op gebaseerd zijn."
-        actions={shown.length > 0 ? <CopyButton text={bibliography} label="Kopieer als bronnenlijst" /> : undefined}
+        actions={
+          shown.length > 0 ? (
+            <span className="shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm ring-1 ring-slate-300">
+              <CopyButton text={bibliography} label="Kopieer als bronnenlijst" />
+            </span>
+          ) : undefined
+        }
       />
 
       {all.length === 0 ? (
