@@ -15,4 +15,4 @@ if ! command -v node >/dev/null 2>&1; then
     exit 1
   fi
 fi
-node scripts/launcher.mjs || read -n 1 -s -r -p "Er ging iets mis. Druk op een toets om te sluiten"
+node scripts/launcher.mjs "$@" || read -n 1 -s -r -p "Er ging iets mis. Druk op een toets om te sluiten"
