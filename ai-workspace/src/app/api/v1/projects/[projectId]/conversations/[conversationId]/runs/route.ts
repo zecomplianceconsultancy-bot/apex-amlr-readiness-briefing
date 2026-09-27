@@ -18,9 +18,9 @@ const runSchema = z.discriminatedUnion("kind", [
     question: z.string().trim().min(1).max(100_000),
     research: modelId,
     draft: modelId,
-    review: modelId,
+    review: modelId.nullable().optional(),
     factcheck: modelId.nullable().optional(),
-    final: modelId,
+    final: modelId.nullable().optional(),
   }),
 ]);
 

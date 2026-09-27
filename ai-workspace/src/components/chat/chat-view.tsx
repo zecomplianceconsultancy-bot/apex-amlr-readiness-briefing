@@ -311,7 +311,7 @@ function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMe
         ) : (
           <span className="animate-pulse text-sm text-slate-400">Denkt na…</span>
         )}
-        {m.status === "cancelled" && <p className="mt-2 text-xs text-slate-500">— geannuleerd</p>}
+        {m.status === "cancelled" && <p className="mt-2 text-xs text-slate-500">— overgeslagen of geannuleerd</p>}
         {m.status === "error" && <p className="mt-2 text-xs text-rose-600">— fout tijdens genereren</p>}
         {s?.finishReason && FINISH_LABELS[s.finishReason] && <p className="mt-2 text-xs text-amber-700">⚠ {FINISH_LABELS[s.finishReason]}</p>}
       </div>

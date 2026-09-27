@@ -57,12 +57,12 @@ export function FileManager({ projectId, canEdit, maxMb, files }: { projectId: s
         <Card>
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm text-slate-600">
-              Toegestaan: .txt, .md, .csv, .json, .pdf — max {maxMb} MB per bestand.
+              Toegestaan: .txt, .md, .csv, .json, .pdf en afbeeldingen (.png, .jpg, .webp) — max {maxMb} MB per bestand.
             </p>
             <Button onClick={() => inputRef.current?.click()} disabled={busy}>
               {busy ? "Bezig…" : "Bestand uploaden"}
             </Button>
-            <input ref={inputRef} type="file" multiple hidden accept=".txt,.md,.csv,.json,.pdf" onChange={(e) => void upload(e.target.files)} />
+            <input ref={inputRef} type="file" multiple hidden accept=".txt,.md,.csv,.json,.pdf,.png,.jpg,.jpeg,.webp" onChange={(e) => void upload(e.target.files)} />
           </div>
         </Card>
       )}
@@ -91,7 +91,15 @@ export function FileManager({ projectId, canEdit, maxMb, files }: { projectId: s
                 </td>
                 <td className="px-4 py-2 text-slate-600">{formatBytes(f.sizeBytes)}</td>
                 <td className="px-4 py-2 text-slate-600">
-                  {f.extractionError ? <span className="text-rose-600" title={f.extractionError}>extractie mislukt</span> : `${f.extractedChars.toLocaleString("nl-NL")} tekens`}
+                  {f.mimeType.startsWith("image/") ? (
+                    "afbeelding"
+                  ) : f.extractionError ? (
+                    <span className="text-rose-600" title={f.extractionError}>
+                      extractie mislukt
+                    </span>
+                  ) : (
+                    `${f.extractedChars.toLocaleString("nl-NL")} tekens`
+                  )}
                 </td>
                 <td className="px-4 py-2">
                   <input

@@ -3,7 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ClientModel } from "@/server/ai/catalog";
 import { Button } from "@/components/ui";
-import { suggestCompareTeam, suggestResearchTeam, type ResearchAssignment } from "@/lib/strengths";
+import {
+  applyPreset,
+  bestFor,
+  classifyTask,
+  RESEARCH_PRESETS,
+  suggestCompareTeam,
+  suggestResearchTeam,
+  TASK_LABELS,
+  type ResearchAssignment,
+  type ResearchPreset,
+  type Role,
+} from "@/lib/strengths";
 import { PromptLibrary } from "./prompt-library";
 
 export type Mode = "chat" | "compare" | "research";
@@ -31,9 +42,9 @@ const MODES: { id: Mode; label: string; hint: string }[] = [
 const RESEARCH_ROLES: { key: keyof ResearchAssignment; label: string; optional?: boolean }[] = [
   { key: "research", label: "1. Onderzoek" },
   { key: "draft", label: "2. Uitwerking" },
-  { key: "review", label: "3. Controle" },
+  { key: "review", label: "3. Controle", optional: true },
   { key: "factcheck", label: "4. Feitencheck", optional: true },
-  { key: "final", label: "5. Eindredactie" },
+  { key: "final", label: "5. Eindredactie", optional: true },
 ];
 
 interface Saved {
@@ -130,9 +141,33 @@ export function Composer({ projectId, models, projectDefaultModelId, busy, onSen
   const problems: string[] = [];
   if (mode === "compare" && compare.length < 2) problems.push("Kies minimaal 2 modellen.");
   if (mode === "research" && !research) problems.push("Geen beschikbare modellen voor diep onderzoek.");
-  if (mode === "research" && research && research.review === research.draft)
+  if (mode === "research" && research?.review && research.review === research.draft)
     problems.push("Tip: laat de controle door een ander model doen dan de uitwerking, voor een onafhankelijk oordeel.");
   const blocking = problems.filter((p) => !p.startsWith("Tip"));
+
+  // Live advice while typing: which engine fits this question best (same rules as the router).
+  const advice = useMemo(() => {
+    if (mode !== "chat" || chatModel || projectDefaultModelId || text.trim().length < 8) return null;
+    const { role, reason } = classifyTask(text);
+    const id = bestFor(role, rankable);
+    const model = id ? byId.get(id) : undefined;
+    return model ? { model, reason } : null;
+  }, [mode, chatModel, projectDefaultModelId, text, rankable, byId]);
+
+  const usePreset = (preset: ResearchPreset) => {
+    const suggested = suggestResearchTeam(rankable);
+    if (!suggested) return;
+    // Keep the user's own choices where set; fill the rest from the strength-based team.
+    const current = research ?? suggested;
+    const base: ResearchAssignment = {
+      research: current.research,
+      draft: current.draft,
+      review: current.review ?? suggested.review,
+      factcheck: current.factcheck ?? suggested.factcheck,
+      final: current.final ?? suggested.final,
+    };
+    setResearch(applyPreset(base, preset));
+  };
 
   function send() {
     const t = text.trim();
@@ -197,6 +232,7 @@ export function Composer({ projectId, models, projectDefaultModelId, busy, onSen
         )}
 
         <div className="ml-auto flex items-center gap-2">
+          <ToolGuide models={models} rankable={rankable} />
           <PromptLibrary projectId={projectId} currentText={text} onInsert={(body) => setText((t) => (t.trim() ? `${t}\n\n${body}` : body))} />
         </div>
       </div>
@@ -216,6 +252,13 @@ export function Composer({ projectId, models, projectDefaultModelId, busy, onSen
               />
             </label>
           ))}
+          <span className="flex items-center gap-1 text-xs text-slate-500">
+            {(Object.keys(RESEARCH_PRESETS) as ResearchPreset[]).map((p) => (
+              <button key={p} type="button" onClick={() => usePreset(p)} className="rounded-full px-2 py-0.5 ring-1 ring-slate-300 hover:bg-white">
+                {RESEARCH_PRESETS[p].label}
+              </button>
+            ))}
+          </span>
           <button type="button" className="text-xs text-indigo-600 hover:underline" onClick={() => setResearch(suggestResearchTeam(rankable))}>
             Op sterke punten verdelen
           </button>
@@ -223,6 +266,15 @@ export function Composer({ projectId, models, projectDefaultModelId, busy, onSen
       )}
 
       {problems.length > 0 && <p className={`text-xs ${blocking.length ? "text-rose-600" : "text-amber-700"}`}>{problems.join(" ")}</p>}
+      {advice && (
+        <p className="text-xs text-slate-600">
+          <span className="font-medium text-indigo-700">Advies: {advice.model.label}</span> — {advice.model.strengths}
+          <span className="text-slate-400"> ({advice.reason.toLowerCase()})</span>
+          <button type="button" className="ml-2 text-indigo-600 hover:underline" onClick={() => setChatModel(advice.model.id)}>
+            vastzetten
+          </button>
+        </p>
+      )}
 
       <div className="flex items-end gap-2">
         <textarea
@@ -254,6 +306,39 @@ export function Composer({ projectId, models, projectDefaultModelId, busy, onSen
           </Button>
         )}
       </div>
+    </div>
+  );
+}
+
+/** "Which tool for what": the best available engine per kind of task, from the strength profiles. */
+function ToolGuide({ models, rankable }: { models: ClientModel[]; rankable: { id: string; tags: readonly string[]; available: boolean }[] }) {
+  const [open, setOpen] = useState(false);
+  const byId = new Map(models.map((m) => [m.id, m]));
+  const rows = (Object.entries(TASK_LABELS) as [Role, string][]).map(([role, label]) => {
+    const id = bestFor(role, rankable);
+    return { label, model: id ? byId.get(id) : undefined };
+  });
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => setOpen((o) => !o)} className="rounded-md px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50">
+        Welke tool? ▾
+      </button>
+      {open && (
+        <div className="absolute right-0 bottom-9 z-20 w-[26rem] rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-lg">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">Welke tool waarvoor</p>
+          <table className="w-full text-xs">
+            <tbody className="divide-y divide-slate-100">
+              {rows.map((r) => (
+                <tr key={r.label}>
+                  <td className="py-1.5 pr-2 text-slate-600">{r.label}</td>
+                  <td className="py-1.5 font-medium text-slate-800">{r.model?.label ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="mt-2 text-xs text-slate-400">Op &quot;Automatisch&quot; volgt de workspace dit advies zelf. Je ziet het advies ook terwijl je typt.</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,13 +16,17 @@ export const CAPABILITY_TAGS = [
   "reasoning",
   "long-context",
   "coding",
+  "images",
+  /** Preferred engine for image generation when several can make images. */
+  "images-pro",
+  "data-analysis",
   "fast",
   "offline",
   "manual",
 ] as const;
 export type CapabilityTag = (typeof CAPABILITY_TAGS)[number];
 
-export type Role = "research" | "draft" | "review" | "factcheck" | "final" | "judge" | "general" | "longdoc";
+export type Role = "research" | "draft" | "review" | "factcheck" | "final" | "judge" | "general" | "longdoc" | "image" | "data";
 
 export const ROLE_PREFERENCES: Record<Role, CapabilityTag[]> = {
   research: ["sources", "web-research"],
@@ -33,6 +37,20 @@ export const ROLE_PREFERENCES: Record<Role, CapabilityTag[]> = {
   judge: ["critical-review", "reasoning", "long-context"],
   general: ["reasoning", "writing"],
   longdoc: ["long-context", "reasoning"],
+  image: ["images", "images-pro"],
+  data: ["data-analysis", "reasoning"],
+};
+
+/** Plain-language task names, for the "which tool for what" guidance. */
+export const TASK_LABELS: Partial<Record<Role, string>> = {
+  research: "Zoeken en actuele informatie met bronnen",
+  factcheck: "Feiten controleren",
+  review: "Kritisch beoordelen, risico's, tweede lijn",
+  draft: "Schrijven en uitwerken (mail, memo, rapport, samenvatting)",
+  longdoc: "Lange documenten analyseren",
+  image: "Afbeeldingen maken (illustratie, logo, infographic)",
+  data: "Data en Excel/CSV analyseren, berekeningen, grafieken",
+  general: "Algemene vragen",
 };
 
 export interface RankableModel {
@@ -61,9 +79,28 @@ export function bestFor(role: Role, models: RankableModel[], exclude: string[] =
 export interface ResearchAssignment {
   research: string;
   draft: string;
-  review: string;
+  review: string | null;
   factcheck: string | null;
-  final: string;
+  final: string | null;
+}
+
+/** Fewer steps = fewer copy/paste rounds when working manually. */
+export const RESEARCH_PRESETS = {
+  full: { label: "Volledig (5 stappen)", keep: ["review", "factcheck", "final"] },
+  quick: { label: "Snel (3 stappen)", keep: ["review"] },
+  minimal: { label: "Minimaal (2 stappen)", keep: [] },
+} as const;
+export type ResearchPreset = keyof typeof RESEARCH_PRESETS;
+
+export function applyPreset(team: ResearchAssignment, preset: ResearchPreset): ResearchAssignment {
+  const keep: readonly string[] = RESEARCH_PRESETS[preset].keep;
+  return {
+    research: team.research,
+    draft: team.draft,
+    review: keep.includes("review") ? team.review : null,
+    factcheck: keep.includes("factcheck") ? team.factcheck : null,
+    final: keep.includes("final") ? team.final : null,
+  };
 }
 
 /** Strength-based default team for the research pipeline. */
@@ -89,6 +126,16 @@ export function suggestCompareTeam(models: RankableModel[]): { modelIds: string[
 }
 
 const PATTERNS: [Role, RegExp, string][] = [
+  [
+    "image",
+    /\b(afbeelding(en)?|plaatje|image|foto|logo|illustratie|infographic|tekening|poster|banner|visual|genereer\s+een\s+beeld)\b/i,
+    "Vraag om een afbeelding",
+  ],
+  [
+    "data",
+    /\b(excel|csv|spreadsheet|draaitabel|grafiek|diagram|bereken|berekening|statistiek|data[- ]?analyse|dataset|formule)\b/i,
+    "Data- of rekenopdracht",
+  ],
   [
     "factcheck",
     /\b(klopt\s+(het|dit|dat)|controleer\s+(of|de\s+feiten)|verifieer|feitencheck|fact[- ]?check|is\s+het\s+waar)\b/i,

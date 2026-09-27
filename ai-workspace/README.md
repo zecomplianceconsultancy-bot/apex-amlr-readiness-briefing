@@ -30,8 +30,13 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
   startbestand vraagt één keer of het je browser automatisch mag openen.
 - Browser-tools (optioneel, met toestemming): Perplexity, ChatGPT, Claude, Gemini via hun
   webinterface (live antwoord, bronnen, thread-link)
-- Handmatige brug voor tools die geautomatiseerde browsers blokkeren: de workspace zet de vraag
-  klaar, jij verstuurt hem in je eigen browser en plakt het antwoord terug (met bronnen en audit)
+- **Handmatige werkwijze (standaard, geen API nodig):** de workspace adviseert per vraag welke
+  tool het sterkst is (Perplexity: zoeken met bronnen, ChatGPT: schrijven en data/Excel,
+  Claude: kritische review en lange documenten, Gemini: feitencheck en afbeeldingen), zet de
+  vraag klaar, en jij doet per tool twee klikken: *Kopieer vraag & open* en *Plak antwoord &
+  verwerk*. Bronnen worden uit het antwoord gehaald; alles komt in provenance en audit trail.
+  Diep onderzoek heeft snelkeuzes (Volledig 5 / Snel 3 / Minimaal 2 stappen) voor minder plakwerk.
+  Afbeeldingen die je in een tool maakt, sla je op onder Bestanden.
 - Optioneel: Perplexity API (`PERPLEXITY_API_KEY`), naast de al ingebouwde Claude- en OpenAI-API
 - API-providers: Anthropic (Claude), OpenAI (Responses API), plus een offline mock, allemaal via
   één AI Gateway

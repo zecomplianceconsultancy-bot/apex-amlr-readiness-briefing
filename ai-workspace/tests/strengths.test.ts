@@ -3,9 +3,9 @@ import { bestFor, classifyTask, suggestCompareTeam, suggestResearchTeam } from "
 
 const tools = [
   { id: "browser:perplexity", tags: ["sources", "web-research"], available: true },
-  { id: "browser:chatgpt", tags: ["structure", "writing", "reasoning"], available: true },
+  { id: "browser:chatgpt", tags: ["structure", "writing", "reasoning", "data-analysis", "images"], available: true },
   { id: "browser:claude", tags: ["critical-review", "reasoning", "long-context", "writing"], available: true },
-  { id: "browser:gemini", tags: ["fact-check", "web-research", "long-context", "reasoning"], available: true },
+  { id: "browser:gemini", tags: ["fact-check", "images", "images-pro", "web-research", "long-context", "reasoning"], available: true },
   { id: "mock:echo", tags: ["offline", "fast"], available: true },
 ];
 
@@ -18,6 +18,14 @@ describe("strength-based assignment", () => {
       factcheck: "browser:gemini",
       final: "browser:chatgpt",
     });
+  });
+
+  it("presets drop optional steps for fewer copy/paste rounds", async () => {
+    const { applyPreset } = await import("@/lib/strengths");
+    const team = suggestResearchTeam(tools)!;
+    expect(applyPreset(team, "quick")).toEqual({ ...team, factcheck: null, final: null });
+    expect(applyPreset(team, "minimal")).toEqual({ research: team.research, draft: team.draft, review: null, factcheck: null, final: null });
+    expect(applyPreset(team, "full")).toEqual(team);
   });
 
   it("keeps the review independent from the draft and degrades gracefully", () => {
@@ -43,6 +51,8 @@ describe("strength-based assignment", () => {
     expect(pick("Beoordeel de risico's van dit beleid")).toBe("browser:claude");
     expect(pick("Schrijf een e-mail aan de klant")).toBe("browser:chatgpt");
     expect(pick("Hoi", 100_000)).toBe("browser:claude");
+    expect(pick("Maak een infographic over de AMLR-tijdlijn")).toBe("browser:gemini");
+    expect(pick("Analyseer deze Excel met transacties en maak een grafiek")).toBe("browser:chatgpt");
     expect(classifyTask("Hoi")).toEqual({ role: "general", reason: "Algemene vraag" });
   });
 });

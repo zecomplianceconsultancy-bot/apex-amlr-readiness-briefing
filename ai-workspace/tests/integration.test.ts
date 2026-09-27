@@ -106,6 +106,11 @@ describe("chat turn through orchestrator → gateway → mock provider", () => {
     expect(dl.data.toString()).toBe("hallo wereld");
     await expect(uploadFile(owner, project.id, new File(["MZ..."], "evil.exe"), meta)).rejects.toThrow(/niet toegestaan/);
     await expect(uploadFile(owner, project.id, new File(["not a pdf"], "fake.pdf"), meta)).rejects.toThrow(/niet toegestaan/);
+    await expect(uploadFile(owner, project.id, new File(["not a png"], "fake.png"), meta)).rejects.toThrow(/niet toegestaan/);
+    const png = Buffer.from("89504e470d0a1a0a0000000d49484452", "hex");
+    const img = await uploadFile(owner, project.id, new File([png], "grafiek.png"), meta);
+    const [imgRow] = await db().select().from(schema.files).where(eq(schema.files.id, img.id));
+    expect(imgRow).toMatchObject({ mimeType: "image/png", extractedText: null, extractionError: null, includeInContext: false });
   });
 
   it("blocks and audits a call when the project is more sensitive than the model's clearance", async () => {

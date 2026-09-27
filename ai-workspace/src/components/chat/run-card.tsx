@@ -115,8 +115,9 @@ function CompareView({ run, onProvenance }: { run: UIRun; onProvenance: (id: str
 }
 
 function ResearchView({ run, content, onProvenance }: { run: UIRun; content: string; onProvenance: (id: string) => void }) {
-  const steps = run.steps.filter((s) => s.role !== "final");
-  const final = run.steps.find((s) => s.role === "final");
+  // Without a final-edit step (quick/minimal presets) the draft is the answer.
+  const final = run.steps.find((s) => s.role === "final") ?? run.steps.find((s) => s.role === "draft");
+  const steps = run.steps.filter((s) => s !== final);
   const review = run.steps.find((s) => s.role === "review");
   const factcheck = run.steps.find((s) => s.role === "factcheck");
   const allSources = uniqueCitations(run.steps.map((s) => s.citations));
@@ -141,7 +142,7 @@ function ResearchView({ run, content, onProvenance }: { run: UIRun; content: str
       </ol>
       {final && (
         <div className="rounded-xl border-2 border-emerald-200 bg-white p-4 shadow-sm">
-          <StepHeader step={final} index={run.steps.length} />
+          <StepHeader step={final} index={final.position + 1} />
           {disagreement && final.status === "complete" && (
             <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
               ⚠ De controle{factcheck ? " of feitencheck" : ""} vond punten van aandacht. Het eindantwoord verwerkt die; resterende twijfels staan onder

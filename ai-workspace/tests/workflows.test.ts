@@ -132,6 +132,17 @@ describe("multi-model runs (mock engines)", () => {
     expect(events.at(-1)).toMatchObject({ type: "done", status: "complete" });
   });
 
+  it("research with only research + draft (minimal preset): the draft is the answer", { timeout: 60_000 }, async () => {
+    const { conv, input } = await setup();
+    const events = await collect(runResearch({ ...input, question: "Kort?" }, { research: "mock:echo", draft: "mock:critic" }));
+    const run = events.find((e) => e.type === "run")!;
+    expect(run.type === "run" && run.steps.map((s) => s.role)).toEqual(["research", "draft"]);
+    const end = events.at(-1)!;
+    expect(end).toMatchObject({ type: "done", status: "complete", content: expect.stringContaining("mock-critic-1") });
+    const [msg] = await db().select().from(schema.messages).where(eq(schema.messages.conversationId, conv.id)).orderBy(schema.messages.createdAt).offset(1);
+    expect(msg!.status).toBe("complete");
+  });
+
   it("marks the run cancelled when the client disconnects", { timeout: 60_000 }, async () => {
     const { conv, input } = await setup();
     const ac = new AbortController();

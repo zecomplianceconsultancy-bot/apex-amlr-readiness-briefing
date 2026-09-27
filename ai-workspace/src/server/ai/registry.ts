@@ -80,7 +80,14 @@ const manualModel = (id: string, label: string, maxInputChars: number, tags: Mod
 
 export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
   browserModel("perplexity", "Perplexity", "perplexity.ai in je browser.", 30_000, ["sources", "web-research"], "Actueel webonderzoek met bronvermelding"),
-  browserModel("chatgpt", "ChatGPT", "chatgpt.com in je browser (model volgens je ChatGPT-instelling).", 60_000, ["structure", "writing", "reasoning"], "Gestructureerd uitwerken en schrijven"),
+  browserModel(
+    "chatgpt",
+    "ChatGPT",
+    "chatgpt.com in je browser (model volgens je ChatGPT-instelling).",
+    60_000,
+    ["structure", "writing", "reasoning", "data-analysis", "images"],
+    "Gestructureerd uitwerken en schrijven, data/Excel-analyse, afbeeldingen",
+  ),
   browserModel(
     "claude",
     "Claude",
@@ -94,13 +101,13 @@ export const MODEL_REGISTRY: ReadonlyArray<ModelDefinition> = [
     "Gemini",
     "gemini.google.com in je browser.",
     60_000,
-    ["fact-check", "web-research", "long-context", "reasoning"],
-    "Feitencheck met Google Zoeken, zeer lange context",
+    ["fact-check", "images", "images-pro", "web-research", "long-context", "reasoning"],
+    "Feitencheck met Google Zoeken, afbeeldingen maken, zeer lange context",
   ),
   manualModel("perplexity", "Perplexity", 30_000, ["sources", "web-research"], "Actueel webonderzoek met bronvermelding"),
-  manualModel("chatgpt", "ChatGPT", 60_000, ["structure", "writing", "reasoning"], "Gestructureerd uitwerken en schrijven"),
+  manualModel("chatgpt", "ChatGPT", 60_000, ["structure", "writing", "reasoning", "data-analysis", "images"], "Uitwerken en schrijven, data/Excel-analyse, afbeeldingen"),
   manualModel("claude", "Claude", 100_000, ["critical-review", "reasoning", "long-context", "writing"], "Kritische analyse en nuance"),
-  manualModel("gemini", "Gemini", 60_000, ["fact-check", "web-research", "long-context", "reasoning"], "Feitencheck met Google Zoeken"),
+  manualModel("gemini", "Gemini", 60_000, ["fact-check", "images", "images-pro", "web-research", "long-context", "reasoning"], "Feitencheck met Google Zoeken, afbeeldingen maken"),
   {
     // Clearance "internal" until the Perplexity API data-processing terms are reviewed.
     id: "perplexity:sonar-pro",

@@ -50,10 +50,11 @@ export interface CompareInput {
 export interface ResearchInput {
   research: string;
   draft: string;
-  review: string;
+  /** Optional steps: fewer steps = fewer hand-offs when working manually. */
+  review?: string | null;
   /** Optional independent fact check (e.g. Gemini with Google Search). */
   factcheck?: string | null;
-  final: string;
+  final?: string | null;
 }
 
 export interface RunInput {
@@ -280,15 +281,17 @@ export async function* runCompare(input: RunInput, cfg: CompareInput): AsyncGene
 // ---------------------------------------------------------------------------
 
 export async function* runResearch(input: RunInput, cfg: ResearchInput): AsyncGenerator<RunEvent> {
+  const optional = (role: StepRole, modelId?: string | null): [StepRole, string][] => (modelId ? [[role, modelId]] : []);
   const roles: [StepRole, string][] = [
     ["research", cfg.research],
     ["draft", cfg.draft],
-    ["review", cfg.review],
-    ...(cfg.factcheck ? ([["factcheck", cfg.factcheck]] as [StepRole, string][]) : []),
-    ["final", cfg.final],
+    ...optional("review", cfg.review),
+    ...optional("factcheck", cfg.factcheck),
+    ...optional("final", cfg.final),
   ];
   assertModels(roles.map(([, m]) => m));
-  const run = await createRun(input, "research", { ...cfg, factcheck: cfg.factcheck ?? null }, roles.map(([role, modelId]) => ({ role, modelId })));
+  const config = { research: cfg.research, draft: cfg.draft, review: cfg.review ?? null, factcheck: cfg.factcheck ?? null, final: cfg.final ?? null };
+  const run = await createRun(input, "research", config, roles.map(([role, modelId]) => ({ role, modelId })));
 
   // Leave room for quoted earlier-step output: documents get a smaller share here.
   const total = inputBudget(roles.map(([, m]) => m));
@@ -312,6 +315,10 @@ export async function* runResearch(input: RunInput, cfg: ResearchInput): AsyncGe
         await finishRun(run.runId, run.assistantMessageId, status, content, content ? undefined : reason);
         yield { type: "done", status, content };
       };
+      const finish = async function* (content: string): AsyncGenerator<RunEvent> {
+        await finishRun(run.runId, run.assistantMessageId, "complete", content);
+        yield { type: "done", status: "complete", content };
+      };
 
       const research = yield* executeStep(ctx, step("research")!, ask(researchPrompt(q)));
       if (!research.ok) return yield* stop("research", "Onderzoeksstap mislukt.", research);
@@ -319,22 +326,32 @@ export async function* runResearch(input: RunInput, cfg: ResearchInput): AsyncGe
       const draft = yield* executeStep(ctx, step("draft")!, ask(draftPrompt(q, research.text)));
       if (!draft.ok) return yield* stop("draft", "Uitwerking mislukt.", draft, research.text);
 
-      const review = yield* executeStep(ctx, step("review")!, ask(reviewPrompt(q, research.text, draft.text)), "OORDEEL");
-      if (!review.ok) return yield* stop("review", "Controle mislukt; concept zonder review.", review, draft.text);
+      let review: StepResult | null = null;
+      if (step("review")) {
+        review = yield* executeStep(ctx, step("review")!, ask(reviewPrompt(q, research.text, draft.text)), "OORDEEL");
+        if (!review.ok) return yield* stop("review", "Controle mislukt; concept zonder review.", review, draft.text);
+      }
 
       let factcheck: StepResult | null = null;
-      const fcStep = step("factcheck");
-      if (fcStep) {
-        factcheck = yield* executeStep(ctx, fcStep, ask(factcheckPrompt(q, draft.text)), "FEITEN");
+      if (step("factcheck")) {
+        factcheck = yield* executeStep(ctx, step("factcheck")!, ask(factcheckPrompt(q, draft.text)), "FEITEN");
         if (factcheck.cancelled) return yield* stop("factcheck", "Afgebroken.", factcheck);
         // A failed fact check does not block the answer; the final step simply runs without it.
       }
 
-      const final = yield* executeStep(ctx, step("final")!, ask(finalPrompt(q, draft.text, review.text, factcheck?.ok ? factcheck.text : null)));
-      const content = final.cancelled ? "" : final.ok ? final.text : draft.text;
-      const status: "complete" | "cancelled" = final.cancelled ? "cancelled" : "complete";
-      await finishRun(run.runId, run.assistantMessageId, status, content);
-      yield { type: "done", status, content };
+      // Without a final edit the draft is the answer; review/fact check stay visible next to it.
+      if (!step("final")) return yield* finish(draft.text);
+      const final = yield* executeStep(
+        ctx,
+        step("final")!,
+        ask(finalPrompt(q, draft.text, review?.text ?? "(geen controle uitgevoerd)", factcheck?.ok ? factcheck.text : null)),
+      );
+      if (final.cancelled) {
+        await finishRun(run.runId, run.assistantMessageId, "cancelled", "");
+        yield { type: "done", status: "cancelled", content: "" };
+        return;
+      }
+      return yield* finish(final.ok ? final.text : draft.text);
     })(),
   );
 }
