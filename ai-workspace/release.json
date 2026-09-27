@@ -1,10 +1,11 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "date": "2026-09-27",
   "notes": [
-    "Browserbesturing alleen in de browser die jij kiest (standaard Microsoft Edge); de workspace start nooit een andere browser.",
-    "Het bestuurde venster heeft een eigen werkprofiel: je gewone vensters, tabbladen, geschiedenis, wachtwoorden en extensies blijven erbuiten.",
-    "In dat venster zijn alleen de AI-tools en hun inlogpagina's toegestaan; andere websites worden geblokkeerd en gelogd.",
-    "Geen downloads, camera, microfoon, locatie, meldingen of synchronisatie in het bestuurde venster."
+    "Icoon 'AI Workspace' op je bureaublad en in je map 'Apex tools' (het startbestand vraagt het één keer; later via snelkoppeling-maken.bat).",
+    "Eigen icoon, ook in je browsertabblad.",
+    "Na een update start meteen de nieuwe versie; draait de workspace al, dan kun je hem met het icoon direct openen.",
+    "In de modellijst staat nu waarom een tool niet beschikbaar is.",
+    "Browserkeuze: de oude automatische keuze van het startbestand wordt genegeerd; Edge is de standaard tot je zelf kiest."
   ]
 }

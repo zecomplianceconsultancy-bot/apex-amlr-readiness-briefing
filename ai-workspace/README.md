@@ -80,11 +80,17 @@ AI-tools) staan in de map `data/` naast de app.
 6. Werk met de modellen "(handmatig)" (jij plakt) of met een API. Browserbesturing is optioneel
    en staat uit tot je hem zelf aanzet onder **Browser-tools**.
 
+**Icoon:** op Windows vraagt het startbestand één keer of het een icoon "AI Workspace" op je
+bureaublad en in je map "Apex tools" mag zetten (bestaat die map nog niet, dan komt hij op je
+bureaublad). Later alsnog: dubbelklik `snelkoppeling-maken.bat`, of sleep je eigen map
+"Apex tools" op dat bestand.
+
 Laat het zwarte venster open terwijl je werkt; sluit het om te stoppen.
 
-**Bijwerken:** download de nieuwe ZIP (laat hem in Downloads staan) en start zoals altijd. Het
-startbestand ziet de nieuwere versie, vraagt of het mag bijwerken en behoudt je gegevens en login.
-Je kunt de ZIP ook op het startbestand slepen.
+**Bijwerken:** download de nieuwe ZIP (laat hem in Downloads staan) en start zoals altijd, bijv.
+via het icoon. Het startbestand ziet de nieuwere versie, vraagt of het mag bijwerken (`j`),
+behoudt je gegevens en login, en start daarna meteen de nieuwe versie. Je kunt de ZIP ook op het
+startbestand slepen.
 **Back-up:** kopieer de map `data/`. Die bevat ook de encryptiesleutel; zonder die sleutel
 zijn opgeslagen bestanden niet te openen.
 

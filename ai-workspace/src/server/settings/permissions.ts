@@ -22,14 +22,9 @@ const g = globalThis as unknown as { __aiwBrowserMode?: BrowserControlMode; __ai
 
 const isChoice = (v: unknown): v is BrowserChoice => (BROWSER_CHOICES as readonly unknown[]).includes(v);
 
-function defaultChoice(): BrowserChoice {
-  const c = env().BROWSER_CHANNEL.trim();
-  return c === "" ? "chromium" : isChoice(c) ? c : "msedge";
-}
-
-/** The browser chosen by the admin; the configured default until one is chosen. */
+/** The browser chosen by the admin; the configured default (Edge) until one is chosen. */
 export function browserChoice(): BrowserChoice {
-  return g.__aiwBrowserChoice ?? defaultChoice();
+  return g.__aiwBrowserChoice ?? env().BROWSER_DEFAULT;
 }
 
 export async function setBrowserChoice(user: SessionUser, choice: BrowserChoice, meta: RequestMeta): Promise<void> {

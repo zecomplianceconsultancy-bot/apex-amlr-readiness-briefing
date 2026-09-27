@@ -10,6 +10,7 @@ import { chmodSync, cpSync, createWriteStream, existsSync, mkdirSync, readdirSyn
 import net from "node:net";
 import os from "node:os";
 import { createInterface } from "node:readline/promises";
+import { createShortcuts } from "./lib/shortcut.mjs";
 import { readZip } from "./lib/zip.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -124,6 +125,22 @@ async function mayOpenBrowser(url) {
 async function offerBrowser(url) {
   if (await mayOpenBrowser(url)) openBrowser(url);
   else say(`Open zelf je browser op ${url}`);
+}
+
+/** Windows: offer once to put the "AI Workspace" icon on the desktop and in "Apex tools". */
+async function offerShortcut() {
+  const prefs = readPrefs();
+  if (!isWin || typeof prefs.shortcut === "boolean" || !process.stdin.isTTY) return;
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const answer = (await rl.question(`\n[AI Workspace] Icoon "AI Workspace" op je bureaublad en in je map "Apex tools" zetten? (j/n) `)).trim().toLowerCase();
+  rl.close();
+  const wanted = answer.startsWith("j") || answer.startsWith("y");
+  writeFileSync(prefsFile, JSON.stringify({ ...readPrefs(), shortcut: wanted }, null, 2));
+  if (!wanted) return say("Geen icoon. Later alsnog? Dubbelklik op snelkoppeling-maken.bat.");
+  const r = createShortcuts(root);
+  if (!r.ok) return say(`Icoon maken lukte niet (${r.error}). Probeer snelkoppeling-maken.bat.`);
+  if (r.created) say(`Map aangemaakt: ${r.created}`);
+  for (const dir of r.placed) say(`Icoon geplaatst in: ${dir}`);
 }
 
 function openBrowser(url) {
@@ -258,7 +275,9 @@ if (existsSync(lockFile)) {
       if (ok) {
         if (update) say(`Er staat een update klaar (versie ${update.version}). Sluit eerst het andere zwarte venster en start dan opnieuw om te installeren.`);
         say(`AI Workspace draait al: ${lock.url}`);
-        await offerBrowser(lock.url);
+        if (readPrefs().openBrowser === true) openBrowser(lock.url);
+        else if (await ask(`[AI Workspace] Nu openen in je browser? (j/n) `)) openBrowser(lock.url);
+        else say(`Open zelf je browser op ${lock.url}`);
         process.exit(0);
       }
     }
@@ -278,10 +297,16 @@ if (update) {
   if (go) {
     const { written, removed } = applyUpdate(update);
     say(`Update geïnstalleerd: versie ${update.version} (${written} bestanden bijgewerkt, ${removed} oude bestanden opgeruimd).`);
+    // Continue with the new version of this launcher, not the old code still in memory.
+    const args = process.argv.slice(2).filter((a) => !a.toLowerCase().endsWith(".zip"));
+    const next = spawnSync(process.execPath, [path.join(root, "scripts", "launcher.mjs"), ...args], { stdio: "inherit" });
+    process.exit(next.status ?? 1);
   } else {
     say("Update overgeslagen; je kunt hem later installeren door opnieuw te starten.");
   }
 }
+
+await offerShortcut();
 
 // 1. Dependencies
 const deps = stamp("deps");
@@ -296,7 +321,7 @@ if (!existsSync(path.join(root, "node_modules")) || deps.read() !== depsHash) {
 // 2. Browser for the AI tools. Which browser may be controlled is the user's choice in the app
 //    (Browser-tools, default Microsoft Edge); the launcher never picks one. Only when neither
 //    Edge nor Chrome exists is the built-in Chromium fetched, so there is something to choose.
-if (userEnv.BROWSER_CHANNEL === undefined && !findChromeChannel()) {
+if (userEnv.BROWSER_DEFAULT === "chromium" || !findChromeChannel()) {
   const pw = stamp("playwright-chromium");
   if (pw.read() !== "ok") {
     say("Geen Edge of Chrome gevonden: ingebouwde Chromium downloaden (eenmalig)…");

@@ -41,9 +41,10 @@ const EnvSchema = z
     BROWSER_PROFILE_DIR: z.string().optional(),
     /**
      * Default browser the workspace may control until an admin picks one under Browser-tools:
-     * "msedge", "chrome", or empty for Playwright's bundled Chromium.
+     * "msedge", "chrome" or "chromium" (Playwright's bundled build). BROWSER_CHANNEL, which
+     * launchers before 1.3 set to whatever browser they found, is deliberately ignored.
      */
-    BROWSER_CHANNEL: z.string().default("msedge"),
+    BROWSER_DEFAULT: z.enum(["msedge", "chrome", "chromium"]).default("msedge"),
     BROWSER_HEADLESS: bool(false),
     BROWSER_ANSWER_TIMEOUT_SEC: z.coerce.number().int().positive().default(300),
     /** Optional JSON file with selector overrides per site (see docs/BROWSER-TOOLS.md). */

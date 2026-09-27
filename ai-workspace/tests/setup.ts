@@ -15,7 +15,7 @@ process.env.ANTHROPIC_API_KEY = "";
 process.env.OPENAI_API_KEY = "";
 process.env.ENABLE_BROWSER_PROVIDER = "true";
 process.env.BROWSER_HEADLESS = "true";
-process.env.BROWSER_CHANNEL = "";
+process.env.BROWSER_DEFAULT = "chromium";
 delete process.env.STORAGE_DIR;
 delete process.env.BROWSER_PROFILE_DIR;
 delete process.env.BROWSER_SITES_FILE;

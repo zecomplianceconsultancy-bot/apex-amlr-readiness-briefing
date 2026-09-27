@@ -127,7 +127,7 @@ describe("multi-model runs (mock engines)", () => {
     const done = events.filter((e) => e.type === "step-done");
     const byStatus = Object.fromEntries(done.map((d) => (d.type === "step-done" ? [d.status, d.error] : ["", ""])));
     expect(byStatus.complete).toBeNull();
-    expect(byStatus.error).toContain("Project is classified");
+    expect(byStatus.error).toContain("dit model mag alleen gegevens tot en met");
     expect(byStatus.skipped).toContain("Te weinig geslaagde");
     expect(events.at(-1)).toMatchObject({ type: "done", status: "complete" });
   });

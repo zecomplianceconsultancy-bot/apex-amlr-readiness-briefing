@@ -19,6 +19,8 @@ export type PolicyDecision =
   | { allowed: true; projectClassification: Classification; modelClearance: Classification }
   | { allowed: false; projectClassification: Classification; modelClearance: Classification; reason: string };
 
+const LABELS: Record<Classification, string> = { public: "Publiek", internal: "Intern", confidential: "Vertrouwelijk", restricted: "Strikt vertrouwelijk" };
+
 export function evaluateEgress(projectClassification: Classification, modelClearance: Classification): PolicyDecision {
   if (classificationRank(projectClassification) <= classificationRank(modelClearance)) {
     return { allowed: true, projectClassification, modelClearance };
@@ -27,6 +29,6 @@ export function evaluateEgress(projectClassification: Classification, modelClear
     allowed: false,
     projectClassification,
     modelClearance,
-    reason: `Project is classified "${projectClassification}" but this model is only cleared up to "${modelClearance}".`,
+    reason: `Project is "${LABELS[projectClassification]}"; dit model mag alleen gegevens tot en met "${LABELS[modelClearance]}" krijgen (de classificatie staat onder Instellingen van het project).`,
   };
 }

@@ -98,7 +98,7 @@ function ModelSelect({
             {items.map((m) => (
               <option key={m.id} value={m.id} disabled={!m.available} title={m.available ? m.strengths : (m.reason ?? "")}>
                 {m.label}
-                {m.available ? ` — ${m.strengths}` : " (niet beschikbaar)"}
+                {m.available ? ` — ${m.strengths}` : ` (niet beschikbaar${m.reason ? `: ${m.reason.replace(/\.$/, "")}` : ""})`}
               </option>
             ))}
           </optgroup>
