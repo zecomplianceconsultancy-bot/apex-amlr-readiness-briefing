@@ -30,6 +30,9 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
   startbestand vraagt één keer of het je browser automatisch mag openen.
 - Browser-tools (optioneel, met toestemming): Perplexity, ChatGPT, Claude, Gemini via hun
   webinterface (live antwoord, bronnen, thread-link)
+- **Alleen de browser die jij kiest** (standaard Edge, nooit een andere), in een apart werkprofiel:
+  je gewone vensters, tabbladen, geschiedenis en wachtwoorden blijven erbuiten, en het bestuurde
+  venster mag alleen de AI-tools en hun inlogpagina's openen
 - **Handmatige werkwijze (standaard, geen API nodig):** de workspace adviseert per vraag welke
   tool het sterkst is (Perplexity: zoeken met bronnen, ChatGPT: schrijven en data/Excel,
   Claude: kritische review en lange documenten, Gemini: feitencheck en afbeeldingen), zet de

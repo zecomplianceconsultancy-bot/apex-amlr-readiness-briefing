@@ -86,6 +86,7 @@ function findChromeChannel() {
       : [
           ["chrome", "/opt/google/chrome/chrome"],
           ["chrome", "/usr/bin/google-chrome"],
+          ["msedge", "/opt/microsoft/msedge/msedge"],
         ];
   return candidates.find(([, p]) => existsSync(p))?.[0];
 }
@@ -292,20 +293,15 @@ if (!existsSync(path.join(root, "node_modules")) || deps.read() !== depsHash) {
   deps.write(depsHash);
 }
 
-// 2. Browser for the AI tools
-if (userEnv.BROWSER_CHANNEL === undefined) {
-  const channel = findChromeChannel();
-  if (channel) {
-    extraEnv.BROWSER_CHANNEL = channel;
-    say(`Browser voor AI-tools: ${channel === "chrome" ? "Google Chrome" : "Microsoft Edge"}`);
-  } else {
-    extraEnv.BROWSER_CHANNEL = "";
-    const pw = stamp("playwright-chromium");
-    if (pw.read() !== "ok") {
-      say("Geen Chrome/Edge gevonden: ingebouwde Chromium downloaden (eenmalig)…");
-      if (!run("npx", ["playwright", "install", "chromium"])) fail("Chromium downloaden mislukt.");
-      pw.write("ok");
-    }
+// 2. Browser for the AI tools. Which browser may be controlled is the user's choice in the app
+//    (Browser-tools, default Microsoft Edge); the launcher never picks one. Only when neither
+//    Edge nor Chrome exists is the built-in Chromium fetched, so there is something to choose.
+if (userEnv.BROWSER_CHANNEL === undefined && !findChromeChannel()) {
+  const pw = stamp("playwright-chromium");
+  if (pw.read() !== "ok") {
+    say("Geen Edge of Chrome gevonden: ingebouwde Chromium downloaden (eenmalig)…");
+    if (!run("npx", ["playwright", "install", "chromium"])) fail("Chromium downloaden mislukt.");
+    pw.write("ok");
   }
 }
 

@@ -1,14 +1,21 @@
 import "server-only";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, type BrowserContext, type Page } from "playwright";
 import { env } from "@/server/config/env";
+import { browserChoice } from "@/server/settings/permissions";
 import { ProviderError } from "../types";
 import { HUMAN_CHECK_MESSAGE, isHumanCheck, waitForHuman } from "./challenge";
+import { BROWSER_LABELS, prepareWorkProfile, restrictToAllowedSites, type BrowserChoice } from "./isolation";
 import { getSite, listSites } from "./sites";
 
 /**
- * One persistent browser profile for the whole app, with one tab per AI tool.
+ * One persistent work profile for the whole app, with one tab per AI tool.
+ *
+ * Only the browser the admin chose is started (never another one as fallback), in its own
+ * work profile under DATA_DIR: the user's normal browser windows, tabs, history, passwords
+ * and extensions stay out of reach, and the window may only open the AI tools and their
+ * login pages (./isolation.ts).
  *
  * The user logs in to each tool once, by hand, in this window (2FA/captcha included); the
  * profile keeps the session. The app never sees or stores passwords. Deliberately no
@@ -16,6 +23,9 @@ import { getSite, listSites } from "./sites";
  */
 interface BrowserState {
   context?: Promise<BrowserContext>;
+  /** Browser the running context was started with. */
+  choice?: BrowserChoice;
+  live?: BrowserContext;
   pages: Map<string, Page>;
   locks: Map<string, Promise<void>>;
   status: Map<string, SiteStatus>;
@@ -51,18 +61,46 @@ function saveStatuses(): void {
   }
 }
 
-function launch(): Promise<BrowserContext> {
+/** Work profile folder of one browser; profiles of different browsers are not compatible. */
+export function workProfileDir(choice: BrowserChoice): string {
   const e = env();
-  const profileDir = path.resolve(e.BROWSER_PROFILE_DIR);
-  mkdirSync(profileDir, { recursive: true, mode: 0o700 });
-  return chromium
-    .launchPersistentContext(profileDir, {
-      headless: e.BROWSER_HEADLESS,
-      channel: e.BROWSER_CHANNEL || undefined,
-      viewport: null,
+  const dir = path.join(path.resolve(e.BROWSER_PROFILE_DIR), choice);
+  // Before 1.3 there was one shared folder (used with Chrome): keep those logins.
+  const legacy = path.join(e.DATA_DIR, "browser-profile");
+  if (choice === "chrome" && !existsSync(dir) && existsSync(legacy)) {
+    mkdirSync(path.dirname(dir), { recursive: true });
+    renameSync(legacy, dir);
+  }
+  return dir;
+}
+
+function launch(choice: BrowserChoice): Promise<BrowserContext> {
+  const e = env();
+  const label = BROWSER_LABELS[choice];
+  return Promise.resolve()
+    .then(() => {
+      const profileDir = workProfileDir(choice);
+      try {
+        prepareWorkProfile(profileDir, e.DATA_DIR);
+      } catch (err) {
+        throw new ProviderError("browser", "unavailable", err instanceof Error ? err.message : String(err));
+      }
+      return chromium.launchPersistentContext(profileDir, {
+        headless: e.BROWSER_HEADLESS,
+        // Exactly the chosen browser. Playwright fails rather than silently using another one.
+        channel: choice === "chromium" ? undefined : choice,
+        viewport: null,
+        acceptDownloads: false,
+        permissions: [], // no camera, microphone, location, notifications or clipboard
+        args: ["--disable-sync"], // extensions are already disabled by Playwright
+      });
     })
-    .then((ctx) => {
+    .then(async (ctx) => {
+      await restrictToAllowedSites(ctx);
+      state.live = ctx;
       ctx.on("close", () => {
+        if (state.live !== ctx) return; // an older window closing after a browser switch
+        state.live = undefined;
         state.context = undefined;
         state.pages.clear();
       });
@@ -70,17 +108,25 @@ function launch(): Promise<BrowserContext> {
     })
     .catch((err: Error) => {
       state.context = undefined;
+      if (err instanceof ProviderError) throw err;
+      const reason = err.message.split("\n")[0];
       throw new ProviderError(
         "browser",
         "unavailable",
-        `Browser kon niet starten (${err.message.split("\n")[0]}). Is ${e.BROWSER_CHANNEL || "Chromium"} geïnstalleerd? ` +
-          `Zet anders BROWSER_CHANNEL leeg en voer "npx playwright install chromium" uit.`,
+        choice === "chromium"
+          ? `Chromium kon niet starten (${reason}). Voer eenmalig "npx playwright install chromium" uit, of kies onder Browser-tools een andere browser.`
+          : `${label} kon niet starten (${reason}). Is ${label} geïnstalleerd? De workspace gebruikt bewust alleen de gekozen browser en valt niet terug op een andere; kies anders onder Browser-tools een andere browser.`,
       );
     });
 }
 
 export function browserContext(): Promise<BrowserContext> {
-  state.context ??= launch();
+  const choice = browserChoice();
+  if (state.context && state.choice !== choice) void closeBrowser(); // the admin switched browsers
+  if (!state.context) {
+    state.choice = choice;
+    state.context = launch(choice);
+  }
   return state.context;
 }
 
@@ -168,6 +214,7 @@ export function recordSiteStatus(siteId: string, status: SiteStatus): void {
 export async function closeBrowser(): Promise<void> {
   const ctx = state.context;
   state.context = undefined;
+  state.live = undefined;
   state.pages.clear();
   if (ctx) await (await ctx.catch(() => undefined))?.close();
 }

@@ -7,6 +7,32 @@
 > Elke instellingswijziging en elke beslissing komt in de audit trail. Zonder browserbesturing
 > werk je met de **handmatige route** (zie hieronder) of met een **API**.
 
+## Eén gekozen browser, apart werkprofiel
+
+Onder *Browser-tools* kies je **welke browser** de workspace mag besturen: Microsoft Edge
+(standaard), Google Chrome of de ingebouwde Chromium. De workspace start alleen die browser en
+valt nooit terug op een andere. Staat de gekozen browser niet op de computer, dan gebeurt er niets
+en meldt de workspace dat.
+
+Wat de workspace wel en niet kan zien:
+
+- **Alleen het eigen venster.** De workspace start een apart venster van de gekozen browser met
+  een eigen werkprofiel in `data/browser-profiles/<browser>`. Je gewone browservensters,
+  tabbladen, geschiedenis, wachtwoorden, favorieten, cookies en extensies blijven erbuiten. Een map
+  die op een gewoon browserprofiel lijkt (bijv. `...\Microsoft\Edge\User Data`) weigert de
+  workspace als werkprofiel.
+- **Geen synchronisatie en geen extensies** in het werkprofiel. Log in dat venster alleen in op de
+  AI-tools, niet op je Microsoft- of Google-browseraccount.
+- **Alleen de AI-tools.** Het venster mag alleen perplexity.ai, chatgpt.com (en openai.com),
+  claude.ai (en claude.com, anthropic.com), gemini.google.com en de inlogpagina's van Google,
+  Microsoft en Apple openen. Andere websites, ook in pop-ups, worden geblokkeerd; dat komt in de
+  audit trail (`browser.navigation.blocked`).
+- **Geen downloads, camera, microfoon, locatie of meldingen.** Geen besturing van je scherm,
+  muis of toetsenbord buiten dit venster.
+
+Een andere browser kiezen of de toestemming uitzetten sluit een open bestuurd venster. Ingelogde
+sessies blijven per browser in het werkprofiel bewaard.
+
 Fase 1 van de workspace werkt **zonder API-koppelingen**. De workspace bedient Perplexity,
 ChatGPT, Claude en Gemini via hun gewone webinterface, in een browservenster op je eigen
 computer, met je eigen abonnementen. Pas als de workflows stabiel zijn, stap je over op API's.
@@ -22,8 +48,9 @@ Workspace (chat) → Orchestrator → AI Gateway (policy, PII-masking, logging)
    ← antwoord live uitgelezen + bronlinks + URL van de thread
 ```
 
-- Eén apart browserprofiel (`BROWSER_PROFILE_DIR`) met één tabblad per tool. Je logt per tool
-  **één keer zelf** in, inclusief 2FA of captcha. De workspace ziet of bewaart geen wachtwoorden.
+- Eén apart werkprofiel per browser (`data/browser-profiles/<browser>`) met één tabblad per tool.
+  Je logt per tool **één keer zelf** in, inclusief 2FA of captcha. De workspace ziet of bewaart
+  geen wachtwoorden.
 - Per vraag start de workspace een **nieuw gesprek** in de tool. De prompt bevat de
   projectinstructies, de documenten en de gespreksgeschiedenis uit de workspace. De workspace
   is dus de bron van waarheid, niet de chatgeschiedenis in de tool.
@@ -36,8 +63,9 @@ Workspace (chat) → Orchestrator → AI Gateway (policy, PII-masking, logging)
 ## Eerste keer instellen
 
 1. Start de workspace met het startbestand (`start-windows.bat` of `start-mac.command`). Het
-   browservenster opent op de computer waar de workspace draait. Het startbestand gebruikt
-   Chrome of Edge als die er is, en downloadt anders eenmalig een ingebouwde Chromium.
+   browservenster opent op de computer waar de workspace draait. Welke browser dat is kies je
+   zelf onder Browser-tools (standaard Edge). Staan Edge en Chrome er allebei niet op, dan
+   downloadt het startbestand eenmalig de ingebouwde Chromium, zodat je die kunt kiezen.
 2. Na het aanmaken van je account kom je vanzelf op **Browser-tools**.
 3. Per tool: klik **Openen**, log in het venster in, en zet in de instellingen van de tool
    "gebruik voor training / model verbeteren" uit. Klik daarna **Controleer**.
@@ -49,7 +77,7 @@ Laat het browservenster open terwijl je werkt. Je kunt meekijken wat de workspac
 ## "Verifieer dat u een mens bent" blijft terugkomen
 
 Sommige sites (zoals Perplexity, via Cloudflare) herkennen dat het browservenster door software
-wordt bestuurd ("Chrome wordt beheerd door geautomatiseerde testsoftware") en laten het dan niet
+wordt bestuurd ("... wordt beheerd door geautomatiseerde testsoftware") en laten het dan niet
 door, hoe vaak je ook klikt. Dat is precies waar die beveiliging voor is; de workspace probeert
 dat bewust niet te omzeilen. De tool krijgt dan de status *Menselijke controle nodig* (dat blijft
 bewaard na een herstart) en wordt niet meer automatisch gekozen. Gebruik in plaats daarvan:

@@ -24,6 +24,7 @@ export type AuditAction =
   | "ai.invocation.cancelled"
   | "browser.site.open"
   | "browser.site.check"
+  | "browser.navigation.blocked"
   | "permission.update"
   | "permission.approval";
 

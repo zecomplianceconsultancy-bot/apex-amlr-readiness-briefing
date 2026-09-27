@@ -1,12 +1,10 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "date": "2026-09-27",
   "notes": [
-    "Tweede mening: één klik onder een antwoord en een andere tool (gekozen op sterke punten) beoordeelt het kritisch, met oordeelsbadge.",
-    "Bewaar als kennis: zet een goed antwoord in de projectdocumenten, zodat volgende gesprekken erop voortbouwen.",
-    "Bronnenbibliotheek per project: alle aangehaalde bronnen ontdubbeld, doorzoekbaar, per website te filteren en als bronnenlijst te kopiëren.",
-    "Rapport (PDF): een net, afdrukbaar rapport van een gesprek met vragen, antwoorden, controlestappen, bronnen en verantwoording.",
-    "Kosten & gebruik: abonnementen en API-prijzen per tool naast je eigen gebruik deze maand.",
-    "Het startbestand herkent gewijzigde onderdelen nu op inhoud; updates installeren sneller en betrouwbaarder."
+    "Browserbesturing alleen in de browser die jij kiest (standaard Microsoft Edge); de workspace start nooit een andere browser.",
+    "Het bestuurde venster heeft een eigen werkprofiel: je gewone vensters, tabbladen, geschiedenis, wachtwoorden en extensies blijven erbuiten.",
+    "In dat venster zijn alleen de AI-tools en hun inlogpagina's toegestaan; andere websites worden geblokkeerd en gelogd.",
+    "Geen downloads, camera, microfoon, locatie, meldingen of synchronisatie in het bestuurde venster."
   ]
 }

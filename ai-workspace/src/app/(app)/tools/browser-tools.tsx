@@ -17,6 +17,22 @@ interface Site {
   url: string;
   status: Status | null;
 }
+type BrowserId = "msedge" | "chrome" | "chromium";
+interface BrowserOption {
+  id: BrowserId;
+  label: string;
+  installed: boolean;
+}
+interface Props {
+  enabled: boolean;
+  mode: "off" | "ask";
+  browser: BrowserId;
+  browsers: BrowserOption[];
+  profileDir: string;
+  allowedDomains: string[];
+  loginProviders: string;
+  sites: Site[];
+}
 
 const STATE_STYLE: Record<string, [string, string]> = {
   ready: ["Klaar", "bg-emerald-50 text-emerald-700"],
@@ -25,12 +41,26 @@ const STATE_STYLE: Record<string, [string, string]> = {
   error: ["Fout", "bg-rose-50 text-rose-700"],
 };
 
-export function BrowserTools({ enabled, mode: initialMode, sites: initial }: { enabled: boolean; mode: "off" | "ask"; sites: Site[] }) {
+export function BrowserTools({ enabled, mode: initialMode, browser: initialBrowser, browsers, profileDir, allowedDomains, loginProviders, sites: initial }: Props) {
   const [sites, setSites] = useState(initial);
   const [mode, setMode] = useState(initialMode);
+  const [browser, setBrowser] = useState(initialBrowser);
+  const browserLabel = browsers.find((b) => b.id === browser)?.label ?? browser;
+
+  async function changeBrowser(next: BrowserId) {
+    const label = browsers.find((b) => b.id === next)?.label ?? next;
+    if (!confirm(`Alleen ${label} gebruiken voor browserbesturing?\n\nDe workspace start dan uitsluitend ${label}, in een eigen werkprofiel, en nooit een andere browser. Een open bestuurd venster wordt gesloten.`)) return;
+    setError(null);
+    try {
+      const res = await api<{ browser: BrowserId }>("/api/v1/settings/browser-control", { method: "PUT", json: { browser: next } });
+      setBrowser(res.browser);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Wijzigen mislukt.");
+    }
+  }
 
   async function changeMode(next: "off" | "ask") {
-    if (next === "ask" && !confirm("Browserbesturing toestaan?\n\nDe workspace mag dan een apart Chrome-venster openen en daarin vragen typen en antwoorden uitlezen — maar alleen nadat je elke keer toestemming geeft.")) return;
+    if (next === "ask" && !confirm(`Browserbesturing toestaan?\n\nDe workspace mag dan een apart ${browserLabel}-venster (eigen werkprofiel) openen en daarin vragen typen en antwoorden uitlezen — maar alleen nadat je elke keer toestemming geeft.`)) return;
     setError(null);
     try {
       await api("/api/v1/settings/browser-control", { method: "PUT", json: { mode: next } });
@@ -44,7 +74,7 @@ export function BrowserTools({ enabled, mode: initialMode, sites: initial }: { e
 
   async function act(id: string, action: "open" | "check") {
     const label = sites.find((s) => s.id === id)?.label ?? id;
-    if (!confirm(`Mag de workspace ${label} openen in een apart, door de workspace bestuurd Chrome-venster?`)) return;
+    if (!confirm(`Mag de workspace ${label} openen in het aparte, door de workspace bestuurde ${browserLabel}-venster?`)) return;
     setBusy(`${id}:${action}`);
     setError(null);
     try {
@@ -93,13 +123,62 @@ export function BrowserTools({ enabled, mode: initialMode, sites: initial }: { e
           </p>
         )}
       </Card>
+      <Card>
+        <h2 className="mb-1 font-medium">Welke browser mag de workspace besturen?</h2>
+        <p className="mb-3 text-sm text-slate-600">
+          De workspace start alleen de browser die je hier kiest, en valt nooit terug op een andere. Staat die browser niet op deze computer, dan gebeurt er niets.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {browsers.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => b.id !== browser && void changeBrowser(b.id)}
+              className={`rounded-lg border p-3 text-left ${b.id === browser ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500" : "border-slate-200 hover:bg-slate-50"}`}
+            >
+              <span className="flex items-center gap-2 text-sm font-medium">
+                <span className={`h-3.5 w-3.5 rounded-full border ${b.id === browser ? "border-4 border-indigo-600" : "border-slate-400"}`} />
+                {b.label}
+              </span>
+              <span className={`mt-1 block text-xs ${b.installed ? "text-emerald-700" : "text-slate-500"}`}>
+                {b.installed ? "Gevonden op deze computer" : "Niet gevonden op deze computer"}
+                {b.id === "msedge" && " · aanbevolen"}
+              </span>
+            </button>
+          ))}
+        </div>
+        {!browsers.find((b) => b.id === browser)?.installed && (
+          <p className="mt-2 text-xs text-amber-800">{browserLabel} is niet gevonden. Installeer hem, of kies een andere browser.</p>
+        )}
+      </Card>
+
+      <Card>
+        <h2 className="mb-2 font-medium">Wat de workspace wel en niet kan zien</h2>
+        <ul className="space-y-1.5 text-sm text-slate-700">
+          <li>
+            ✅ Alleen het aparte {browserLabel}-venster dat de workspace zelf opent, met een eigen werkprofiel in <code className="text-xs">{profileDir}</code>.
+          </li>
+          <li>🚫 Niet je gewone browservensters en tabbladen, geschiedenis, wachtwoorden, favorieten, cookies of extensies.</li>
+          <li>🚫 Geen andere browsers{browser === "msedge" ? " (dus geen Chrome)" : ""}. Geen synchronisatie met je browseraccount.</li>
+          <li>
+            🔒 In het venster alleen deze websites: <b>{allowedDomains.join(", ")}</b> en de {loginProviders}. Andere websites worden geblokkeerd en in de audit trail
+            vastgelegd.
+          </li>
+          <li>🚫 Geen downloads, camera, microfoon, locatie of meldingen. Geen schermbesturing buiten dit venster.</li>
+          <li>✋ Niets zonder toestemming: elke actie vraagt eerst om jouw akkoord.</li>
+        </ul>
+      </Card>
+
       {mode === "ask" && (
         <Card className="text-sm text-slate-600">
           <ol className="list-decimal space-y-1 pl-5">
             <li>
-              Klik <b>Openen</b> en bevestig: er opent een apart Chrome-venster met de tool.
+              Klik <b>Openen</b> en bevestig: er opent een apart {browserLabel}-venster met de tool.
             </li>
-            <li>Log daar zelf in. Zet in de tool het gebruik van je data voor training uit.</li>
+            <li>
+              Log daar zelf in op de AI-tool, <b>niet</b> op je {browser === "msedge" ? "Microsoft-/Edge" : browser === "chrome" ? "Google-/Chrome" : "browser"}
+              profiel: dan blijven je persoonlijke gegevens buiten dit venster. Zet in de tool het gebruik van je data voor training uit.
+            </li>
             <li>
               Klik <b>Controleer</b>. Bij &quot;Klaar&quot; is de tool als model te kiezen; bij elk gebruik vraagt de workspace eerst toestemming.
             </li>

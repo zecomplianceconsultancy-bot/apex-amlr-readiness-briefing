@@ -3,7 +3,8 @@ import { env } from "@/server/config/env";
 import { runOnPage } from "../browser/engine";
 import { acquireSite, pageFor, recordSiteStatus } from "../browser/session";
 import { openPending } from "../pending";
-import { addSessionGrant, browserControlMode, hasSessionGrant } from "@/server/settings/permissions";
+import { addSessionGrant, browserChoice, browserControlMode, hasSessionGrant } from "@/server/settings/permissions";
+import { BROWSER_LABELS } from "../browser/isolation";
 import { getSite } from "../browser/sites";
 import { ProviderError, type AIProvider, type ChatMessage, type ChatRequest, type ProviderEvent } from "../types";
 
@@ -78,7 +79,7 @@ export class BrowserProvider implements AIProvider {
           approvalId: id,
           tool: site.id,
           toolLabel: site.label,
-          action: `De workspace wil ${site.label} openen in een apart Chrome-venster en daar je vraag typen en het antwoord uitlezen.`,
+          action: `De workspace wil ${site.label} openen in een apart ${BROWSER_LABELS[browserChoice()]}-venster met een eigen werkprofiel, en daar je vraag typen en het antwoord uitlezen. Je gewone browser blijft erbuiten.`,
         },
       };
       const decision = await value.catch((err: unknown) => {

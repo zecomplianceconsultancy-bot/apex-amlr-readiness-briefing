@@ -39,8 +39,11 @@ const EnvSchema = z
     // Browser transport: drive the web UIs of AI tools in a desktop browser window.
     ENABLE_BROWSER_PROVIDER: bool(true),
     BROWSER_PROFILE_DIR: z.string().optional(),
-    /** "chrome" / "msedge" use the installed browser; empty uses Playwright's bundled Chromium. */
-    BROWSER_CHANNEL: z.string().default("chrome"),
+    /**
+     * Default browser the workspace may control until an admin picks one under Browser-tools:
+     * "msedge", "chrome", or empty for Playwright's bundled Chromium.
+     */
+    BROWSER_CHANNEL: z.string().default("msedge"),
     BROWSER_HEADLESS: bool(false),
     BROWSER_ANSWER_TIMEOUT_SEC: z.coerce.number().int().positive().default(300),
     /** Optional JSON file with selector overrides per site (see docs/BROWSER-TOOLS.md). */
@@ -52,7 +55,8 @@ const EnvSchema = z
       ...e,
       DATA_DIR: dataDir,
       STORAGE_DIR: e.STORAGE_DIR ?? path.join(dataDir, "files"),
-      BROWSER_PROFILE_DIR: e.BROWSER_PROFILE_DIR ?? path.join(dataDir, "browser-profile"),
+      /** Base folder of the work profiles; each browser gets its own subfolder. */
+      BROWSER_PROFILE_DIR: e.BROWSER_PROFILE_DIR ?? path.join(dataDir, "browser-profiles"),
       /** True when running on the embedded database (single-user desktop mode). */
       LOCAL_MODE: !e.DATABASE_URL,
     };
