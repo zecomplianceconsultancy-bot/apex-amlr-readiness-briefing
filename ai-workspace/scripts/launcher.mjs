@@ -340,10 +340,10 @@ if (!existsSync(path.join(root, "node_modules")) || deps.read() !== depsHash) {
   deps.write(depsHash);
 }
 
-// 2. Browser for the AI tools. Which browser may be controlled is the user's choice in the app
-//    (Browser-tools, default Microsoft Edge); the launcher never picks one. Only when neither
-//    Edge nor Chrome exists is the built-in Chromium fetched, so there is something to choose.
-if (userEnv.BROWSER_DEFAULT === "chromium" || !findChromeChannel()) {
+// 2. Browser control is off by default (sites block controlled browsers). Only when it is
+//    switched on in .env and neither Edge nor Chrome exists is the built-in Chromium fetched.
+const browserControl = String(userEnv.ENABLE_BROWSER_PROVIDER ?? "").toLowerCase() === "true";
+if (browserControl && (userEnv.BROWSER_DEFAULT === "chromium" || !findChromeChannel())) {
   const pw = stamp("playwright-chromium");
   if (pw.read() !== "ok") {
     say("Geen Edge of Chrome gevonden: ingebouwde Chromium downloaden (eenmalig)…");

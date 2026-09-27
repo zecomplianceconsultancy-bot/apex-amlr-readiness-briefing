@@ -5,6 +5,10 @@ export async function register() {
     await initDb();
     const { loadPermissions } = await import("@/server/settings/permissions");
     await loadPermissions();
+    const { API_PROVIDERS, loadApiSettings } = await import("@/server/settings/api-keys");
+    await loadApiSettings();
+    const { apiSpendThisMonth } = await import("@/server/usage/api-spend");
+    await Promise.all(API_PROVIDERS.map((p) => apiSpendThisMonth(p).catch(() => 0)));
     let closing = false;
     const shutdown = async (signal: string) => {
       if (closing) return;

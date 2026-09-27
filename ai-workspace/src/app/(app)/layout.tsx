@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requirePageUser } from "@/server/auth/page-guards";
+import { env } from "@/server/config/env";
 import { appVersion } from "@/server/version";
 import { LogoutButton } from "@/components/logout-button";
 
@@ -26,9 +27,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </Link>
           {user.role === "admin" && (
             <>
-              <Link href="/tools" className="text-slate-600 hover:text-slate-900">
-                Browser-tools
+              <Link href="/settings/api" className="text-slate-600 hover:text-slate-900">
+                API-koppelingen
               </Link>
+              {env().ENABLE_BROWSER_PROVIDER && (
+                <Link href="/tools" className="text-slate-600 hover:text-slate-900">
+                  Browser-tools
+                </Link>
+              )}
               <Link href="/admin/audit" className="text-slate-600 hover:text-slate-900">
                 Audit (admin)
               </Link>

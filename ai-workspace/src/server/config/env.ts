@@ -33,11 +33,12 @@ const EnvSchema = z
     OPENAI_API_KEY: z.string().optional(),
     PERPLEXITY_API_KEY: z.string().optional(),
     ENABLE_MOCK_PROVIDER: bool(false),
-    DEFAULT_MODEL_ID: z.string().default("browser:perplexity"),
+    DEFAULT_MODEL_ID: z.string().default("manual:perplexity"),
     MAX_UPLOAD_MB: z.coerce.number().positive().max(100).default(10),
     MAX_CONTEXT_CHARS: z.coerce.number().int().positive().default(200_000),
     // Browser transport: drive the web UIs of AI tools in a desktop browser window.
-    ENABLE_BROWSER_PROVIDER: bool(true),
+    /** Off since 1.5: sites block controlled browsers. Use the manual route or an API. */
+    ENABLE_BROWSER_PROVIDER: bool(false),
     BROWSER_PROFILE_DIR: z.string().optional(),
     /**
      * Default browser the workspace may control until an admin picks one under Browser-tools:

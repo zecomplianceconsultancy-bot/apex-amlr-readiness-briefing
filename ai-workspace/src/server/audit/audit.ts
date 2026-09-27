@@ -26,6 +26,8 @@ export type AuditAction =
   | "browser.site.check"
   | "browser.navigation.blocked"
   | "permission.update"
+  | "settings.api_key"
+  | "settings.budget"
   | "permission.approval";
 
 export interface RequestMeta {

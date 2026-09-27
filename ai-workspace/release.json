@@ -1,10 +1,11 @@
 {
-  "version": "1.4.1",
+  "version": "1.5.0",
   "date": "2026-09-27",
   "notes": [
-    "Vast adres http://127.0.0.1:3777 (onthouden), zodat de workspace niet botst met andere programma's op poort 3000, zoals Apex Academy.",
-    "Het zwarte venster toont het adres groot; staat automatisch openen uit, dan vraagt het bij elke start of het de browser nu mag openen.",
-    "Icoon 'AI Workspace' op je bureaublad en in je map 'Apex tools' (eenmalige vraag, of via snelkoppeling-maken.bat).",
-    "Na een update start meteen de nieuwe versie."
+    "Nieuw: API-koppelingen (in het menu). Koppel Claude en Perplexity in een paar minuten met een stappenplan: tegoed kopen, sleutel maken, plakken, automatisch testen.",
+    "Maandbudget per aanbieder (standaard $20): de workspace stopt vanzelf bij dat bedrag en laat zien wat je deze maand hebt besteed.",
+    "Sleutels worden versleuteld op je computer bewaard; alleen de laatste 4 tekens zijn zichtbaar.",
+    "Browserbesturing staat volledig uit: de sites blokkeren bestuurde browsers. Werk handmatig of via de API.",
+    "Vast adres http://127.0.0.1:3777, icoon op je bureaublad en in 'Apex tools'."
   ]
 }

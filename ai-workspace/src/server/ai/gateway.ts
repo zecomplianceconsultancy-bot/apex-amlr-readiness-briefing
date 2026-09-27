@@ -7,6 +7,8 @@ import { HttpError } from "@/server/http/errors";
 import { canonicalJson, sha256Hex } from "@/server/security/crypto";
 import { evaluateEgress, type Classification } from "@/server/security/data-policy";
 import { Redactor } from "@/server/security/redaction";
+import { isApiProvider } from "@/server/settings/api-keys";
+import { apiSpendThisMonth, assertWithinBudget } from "@/server/usage/api-spend";
 import { getProvider } from "./providers";
 import { findModel, type ModelDefinition } from "./registry";
 import type { RoutingDecision } from "./router";
@@ -65,6 +67,9 @@ export async function* streamInvocation(call: GatewayCall): AsyncGenerator<Gatew
   if (!model) throw new HttpError(400, "unknown_model", `Onbekend model: ${call.routing.modelId}`);
   const provider = getProvider(model.provider);
   if (!provider?.isConfigured()) throw new HttpError(409, "model_unavailable", `Provider ${model.provider} is niet geconfigureerd.`);
+  // Paid APIs stop at the monthly budget set under API-koppelingen.
+  const paidApi = model.transport === "api" && isApiProvider(model.provider) ? model.provider : null;
+  if (paidApi) await assertWithinBudget(paidApi);
 
   // --- (2) Egress policy, (3) redaction --------------------------------------------------
   const decision = evaluateEgress(call.project.classification, model.clearance);
@@ -161,6 +166,7 @@ export async function* streamInvocation(call: GatewayCall): AsyncGenerator<Gatew
         tx,
       );
     });
+    if (paidApi) void apiSpendThisMonth(paidApi).catch(() => undefined);
     return latencyMs;
   };
 

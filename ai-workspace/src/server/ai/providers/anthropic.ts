@@ -1,6 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
-import { env } from "@/server/config/env";
+import { apiKey } from "@/server/settings/api-keys";
 import {
   normalizeTurns,
   ProviderError,
@@ -45,11 +45,17 @@ export class AnthropicProvider implements AIProvider {
   private client: Anthropic | undefined;
 
   isConfigured(): boolean {
-    return Boolean(env().ANTHROPIC_API_KEY);
+    return Boolean(apiKey("anthropic"));
   }
 
+  private clientKey: string | undefined;
+
   private getClient(): Anthropic {
-    this.client ??= new Anthropic({ apiKey: env().ANTHROPIC_API_KEY, maxRetries: 2 });
+    const key = apiKey("anthropic");
+    if (!this.client || this.clientKey !== key) {
+      this.client = new Anthropic({ apiKey: key, maxRetries: 2 });
+      this.clientKey = key;
+    }
     return this.client;
   }
 

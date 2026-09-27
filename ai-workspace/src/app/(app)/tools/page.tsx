@@ -11,7 +11,7 @@ import { BrowserTools } from "./browser-tools";
 
 export default async function ToolsPage() {
   const user = await requirePageUser();
-  if (user.role !== "admin") notFound();
+  if (user.role !== "admin" || !env().ENABLE_BROWSER_PROVIDER) notFound();
   const statuses = siteStatuses();
   const installed = installedBrowsers();
   const e = env();

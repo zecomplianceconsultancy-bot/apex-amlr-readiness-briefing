@@ -1,7 +1,7 @@
 import "server-only";
 import OpenAI from "openai";
 import type { Response as OpenAIResponse } from "openai/resources/responses/responses";
-import { env } from "@/server/config/env";
+import { apiKey } from "@/server/settings/api-keys";
 import {
   normalizeTurns,
   ProviderError,
@@ -42,11 +42,17 @@ export class OpenAIProvider implements AIProvider {
   private client: OpenAI | undefined;
 
   isConfigured(): boolean {
-    return Boolean(env().OPENAI_API_KEY);
+    return Boolean(apiKey("openai"));
   }
 
+  private clientKey: string | undefined;
+
   private getClient(): OpenAI {
-    this.client ??= new OpenAI({ apiKey: env().OPENAI_API_KEY, maxRetries: 2 });
+    const key = apiKey("openai");
+    if (!this.client || this.clientKey !== key) {
+      this.client = new OpenAI({ apiKey: key, maxRetries: 2 });
+      this.clientKey = key;
+    }
     return this.client;
   }
 

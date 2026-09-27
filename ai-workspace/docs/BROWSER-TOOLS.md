@@ -1,3 +1,8 @@
+> **Vanaf versie 1.5 staat browserbesturing volledig uit.** Perplexity en claude.ai blokkeren
+> bestuurde browsers ("Verifieer dat u een mens bent"), en de workspace omzeilt dat bewust niet.
+> Gebruik de handmatige route of een API-koppeling (menu **API-koppelingen**). Gevorderden kunnen
+> het met `ENABLE_BROWSER_PROVIDER=true` in `.env` weer aanzetten; dan geldt alles hieronder.
+
 # Browser-tools: AI-tools bedienen zonder API
 
 > **Toestemming eerst.** Browserbesturing staat standaard **uit**. De workspace opent of bestuurt

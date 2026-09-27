@@ -1,4 +1,7 @@
 import "server-only";
+import { env } from "@/server/config/env";
+import { isApiProvider, monthlyBudget } from "@/server/settings/api-keys";
+import { cachedSpend } from "@/server/usage/api-spend";
 import { evaluateEgress, type Classification } from "@/server/security/data-policy";
 import { browserControlMode } from "@/server/settings/permissions";
 import { siteStatuses } from "./browser/session";
@@ -17,12 +20,15 @@ export function checkModel(modelId: string, classification: Classification): Mod
   if (!model) return undefined;
   const provider = getProvider(model.provider);
   if (!provider) return { model, available: false, reason: "Provider niet geregistreerd." };
-  if (!provider.isConfigured()) return { model, available: false, reason: `${provider.displayName} is niet geconfigureerd (API-key ontbreekt).` };
+  if (!provider.isConfigured()) return { model, available: false, reason: model.transport === "api" ? "nog niet gekoppeld (zie API-koppelingen)" : `${provider.displayName} is niet geconfigureerd.` };
   // Browser tools that failed their last check (not logged in / page changed) are not offered.
   if (model.transport === "browser") {
     if (browserControlMode() === "off") return { model, available: false, reason: "Browserbesturing staat uit (zet aan onder Browser-tools)." };
     const status = siteStatuses()[model.providerModel];
     if (status && status.state !== "ready") return { model, available: false, reason: `${model.label}: ${status.state === "login_required" ? "inloggen nodig" : status.state === "human_check" ? "menselijke controle nodig" : "fout bij laatste controle"} (zie Browser-tools).` };
+  }
+  if (model.transport === "api" && isApiProvider(model.provider) && cachedSpend(model.provider) >= monthlyBudget(model.provider)) {
+    return { model, available: false, reason: `maandbudget bereikt (zie API-koppelingen)` };
   }
   const decision = evaluateEgress(classification, model.clearance);
   if (!decision.allowed) return { model, available: false, reason: decision.reason };
@@ -30,7 +36,8 @@ export function checkModel(modelId: string, classification: Classification): Mod
 }
 
 export function listModelsFor(classification: Classification): ModelAvailability[] {
-  return MODEL_REGISTRY.map((m) => checkModel(m.id, classification)!);
+  // With browser control switched off, the "(browser)" engines are not offered at all.
+  return MODEL_REGISTRY.filter((m) => m.transport !== "browser" || env().ENABLE_BROWSER_PROVIDER).map((m) => checkModel(m.id, classification)!);
 }
 
 /** Public shape for the browser (no internal fields). */

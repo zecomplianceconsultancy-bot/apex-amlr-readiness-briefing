@@ -1,6 +1,6 @@
 import "server-only";
 import OpenAI from "openai";
-import { env } from "@/server/config/env";
+import { apiKey } from "@/server/settings/api-keys";
 import { normalizeTurns, ProviderError, type AIProvider, type ChatRequest, type Citation, type FinishReason, type ProviderEvent } from "../types";
 
 /**
@@ -58,11 +58,17 @@ export class PerplexityProvider implements AIProvider {
   constructor(private readonly fetchImpl?: typeof fetch) {}
 
   isConfigured(): boolean {
-    return Boolean(env().PERPLEXITY_API_KEY);
+    return Boolean(apiKey("perplexity"));
   }
 
+  private clientKey: string | undefined;
+
   private getClient(): OpenAI {
-    this.client ??= new OpenAI({ apiKey: env().PERPLEXITY_API_KEY, baseURL: "https://api.perplexity.ai", maxRetries: 2, fetch: this.fetchImpl });
+    const key = apiKey("perplexity");
+    if (!this.client || this.clientKey !== key) {
+      this.client = new OpenAI({ apiKey: key, baseURL: "https://api.perplexity.ai", maxRetries: 2, fetch: this.fetchImpl });
+      this.clientKey = key;
+    }
     return this.client;
   }
 

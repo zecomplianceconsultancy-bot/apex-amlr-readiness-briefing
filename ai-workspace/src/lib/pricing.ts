@@ -94,6 +94,28 @@ export const TOOL_PRICING: ToolPricing[] = [
   },
 ];
 
+/**
+ * Per-model API list prices (USD per million tokens, plus an estimated per-request search fee),
+ * used for the monthly budget. Perplexity's search fee depends on search depth: the highest
+ * tier is used, so the estimate errs on the safe side.
+ */
+export const MODEL_API_PRICES: Record<string, { input: number; output: number; perRequest?: number }> = {
+  "anthropic:claude-opus-5": { input: 5, output: 25 },
+  "anthropic:claude-sonnet-5": { input: 2, output: 10 },
+  "anthropic:claude-haiku-4-5": { input: 1, output: 5 },
+  "perplexity:sonar-pro": { input: 3, output: 15, perRequest: 0.014 },
+  "perplexity:sonar": { input: 1, output: 1, perRequest: 0.012 },
+  "openai:gpt-5.5": { input: 5, output: 30 },
+};
+/** Unknown models are priced like the provider's most expensive one (again: safe side). */
+export function modelApiPrice(modelId: string): { input: number; output: number; perRequest?: number } {
+  const known = MODEL_API_PRICES[modelId];
+  if (known) return known;
+  const provider = modelId.split(":")[0];
+  const same = Object.entries(MODEL_API_PRICES).filter(([id]) => id.startsWith(`${provider}:`)).map(([, p]) => p);
+  return same.sort((a, b) => b.output - a.output)[0] ?? { input: 5, output: 30 };
+}
+
 /** Rough token estimate from characters (≈ 4 characters per token). */
 export const tokensFromChars = (chars: number) => Math.ceil(chars / 4);
 

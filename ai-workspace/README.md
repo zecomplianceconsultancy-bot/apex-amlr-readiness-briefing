@@ -4,9 +4,11 @@ Eigen AI Master Workspace / Orchestrator: één webapp waarin je projecten behee
 je Perplexity, ChatGPT, Claude en Gemini aanstuurt, als verwisselbare engines. Provenance,
 audit trail en datapolicy zitten er vanaf dag één in.
 
-**Fase 1 werkt zonder API's.** De workspace bedient de tools via hun webinterface in een
-browservenster op je desktop ([docs/BROWSER-TOOLS.md](docs/BROWSER-TOOLS.md)). API-koppelingen
-voor Claude en OpenAI zijn al ingebouwd en worden actief zodra je een API-key invult.
+**Twee manieren om de tools te gebruiken:** de handmatige route (de workspace zet de vraag klaar,
+jij plakt het antwoord terug; geen kosten buiten je abonnementen) en **API-koppelingen**
+(volledig automatisch, betalen per vraag, met een maandbudget). Een API koppel je in de app onder
+**API-koppelingen**, met een stappenplan. Browserbesturing staat vanaf versie 1.5 uit: de sites
+blokkeren bestuurde browsers ([docs/BROWSER-TOOLS.md](docs/BROWSER-TOOLS.md)).
 
 Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
@@ -50,7 +52,10 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
   oordelen, bronnenlijst, verantwoording), af te drukken of op te slaan als PDF
 - **Kosten & gebruik**: abonnementen en API-prijzen per tool naast je eigen gebruik deze maand,
   met een schatting wat dat via een API zou kosten
-- Optioneel: Perplexity API (`PERPLEXITY_API_KEY`), naast de al ingebouwde Claude- en OpenAI-API
+- **API-koppelingen** (menu, beheerder): Claude, Perplexity en optioneel OpenAI koppelen met een
+  stappenplan (tegoed kopen, sleutel maken, plakken, automatisch testen). Sleutels worden
+  versleuteld opgeslagen; alleen de laatste 4 tekens worden getoond. **Maandbudget** per aanbieder
+  (standaard $20): de workspace stopt bij dat bedrag en toont wat je deze maand hebt besteed
 - API-providers: Anthropic (Claude), OpenAI (Responses API), plus een offline mock, allemaal via
   één AI Gateway
 - Projectcontext met versiebeheer, hergebruikt in elk gesprek
