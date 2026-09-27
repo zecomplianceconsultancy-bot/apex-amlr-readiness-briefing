@@ -92,12 +92,32 @@ function findChromeChannel() {
   return candidates.find(([, p]) => existsSync(p))?.[0];
 }
 
-function freePort(start) {
+/** Does anything answer on this port, over IPv4 or IPv6 ("localhost" may be either)? */
+function answers(port, host) {
+  return new Promise((resolve) => {
+    const s = net.connect({ port, host });
+    const done = (v) => {
+      s.destroy();
+      resolve(v);
+    };
+    s.setTimeout(400, () => done(false));
+    s.once("connect", () => done(true));
+    s.once("error", () => done(false));
+  });
+}
+function canBind(port) {
   return new Promise((resolve) => {
     const srv = net.createServer();
-    srv.once("error", () => resolve(freePort(start + 1)));
-    srv.listen(start, "127.0.0.1", () => srv.close(() => resolve(start)));
+    srv.once("error", () => resolve(false));
+    srv.listen(port, "127.0.0.1", () => srv.close(() => resolve(true)));
   });
+}
+/** First port from `start` that no other program uses (other local apps often sit on 3000). */
+async function freePort(start) {
+  for (let port = start; port < start + 50; port++) {
+    if ((await canBind(port)) && !(await answers(port, "127.0.0.1")) && !(await answers(port, "::1"))) return port;
+  }
+  fail(`Geen vrije poort gevonden vanaf ${start}.`);
 }
 
 // Opening the browser is also something we only do with the user's permission (asked once).
@@ -123,7 +143,9 @@ async function mayOpenBrowser(url) {
   return allowed;
 }
 async function offerBrowser(url) {
-  if (await mayOpenBrowser(url)) openBrowser(url);
+  if (await mayOpenBrowser(url)) return openBrowser(url);
+  // Not opened automatically: ask each time, so opening is always the user's own choice.
+  if (await ask(`[AI Workspace] Nu openen in je browser? (j/n) `)) openBrowser(url);
   else say(`Open zelf je browser op ${url}`);
 }
 
@@ -354,7 +376,12 @@ try {
 }
 
 // 5. Build when sources changed
-const port = await freePort(Number(userEnv.PORT) || 3000);
+// A fixed, uncommon port that is remembered, so the address (and a bookmark) stays the same.
+const DEFAULT_PORT = 3777;
+const wantedPort = Number(userEnv.PORT) || readPrefs().port || DEFAULT_PORT;
+const port = await freePort(wantedPort);
+if (port !== wantedPort) say(`Poort ${wantedPort} is in gebruik door een ander programma; de workspace gebruikt nu ${port}.`);
+if (!userEnv.PORT && readPrefs().port !== port) writeFileSync(prefsFile, JSON.stringify({ ...readPrefs(), port }, null, 2));
 const origin = `http://127.0.0.1:${port}`;
 extraEnv.APP_ORIGIN = userEnv.APP_ORIGIN ?? origin;
 const build = stamp("build");
@@ -424,7 +451,8 @@ for (let i = 0; i < 120; i++) {
   if (ok) break;
   await new Promise((r) => setTimeout(r, 500));
 }
-say(`AI Workspace draait: ${origin}`);
+const bar = "=".repeat(60);
+console.log(`\n\x1b[32m${bar}\n    AI Workspace staat klaar op:\n    \x1b[1m${origin}\x1b[22m\n    Typ precies dit adres in je browser (niet "localhost").\n${bar}\x1b[0m\n`);
 await offerBrowser(origin);
 say(`Je gegevens staan in: ${dataDir}  (automatische back-ups in data/backups)`);
 say("Laat dit venster open. Sluit het (of Ctrl+C) om te stoppen.");

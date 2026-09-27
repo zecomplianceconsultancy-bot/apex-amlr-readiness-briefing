@@ -75,8 +75,10 @@ AI-tools) staan in de map `data/` naast de app.
      klik met rechts → *Open* → *Open*.
 4. De eerste keer installeert het de benodigde onderdelen en bereidt het de app voor
    (enkele minuten, internet nodig). Daarna start het in enkele seconden.
-5. Het startbestand vraagt één keer of het je browser automatisch mag openen. Ga naar
-   **http://127.0.0.1:3000** en maak je account aan.
+5. Het startbestand vraagt één keer of het je browser automatisch mag openen (anders vraagt het
+   bij elke start of het nu mag). Ga naar **http://127.0.0.1:3777**, het adres dat in het zwarte
+   venster staat, en maak je account aan. Gebruik precies dat adres, niet "localhost:3000": daar
+   draait vaak een ander programma.
 6. Werk met de modellen "(handmatig)" (jij plakt) of met een API. Browserbesturing is optioneel
    en staat uit tot je hem zelf aanzet onder **Browser-tools**.
 
