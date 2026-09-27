@@ -6,8 +6,8 @@ import { LogoutButton } from "@/components/logout-button";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await requirePageUser();
   return (
-    <div className="flex h-full flex-col">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4">
+    <div className="flex h-full flex-col print:block print:h-auto">
+      <header className="flex h-12 shrink-0 print:hidden items-center justify-between border-b border-slate-200 bg-white px-4">
         <Link href="/projects" className="flex items-center gap-2 font-semibold">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white">AI</span>
           AI Workspace
@@ -21,6 +21,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           />
         </form>
         <div className="flex items-center gap-3 text-sm">
+          <Link href="/costs" className="text-slate-600 hover:text-slate-900">
+            Kosten
+          </Link>
           {user.role === "admin" && (
             <>
               <Link href="/tools" className="text-slate-600 hover:text-slate-900">
@@ -35,7 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <LogoutButton />
         </div>
       </header>
-      <div className="min-h-0 flex-1">{children}</div>
+      <div className="min-h-0 flex-1 print:h-auto">{children}</div>
     </div>
   );
 }

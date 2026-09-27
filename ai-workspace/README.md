@@ -37,6 +37,16 @@ Architectuur, datamodel, security en roadmap: **[docs/ARCHITECTURE.md](docs/ARCH
   verwerk*. Bronnen worden uit het antwoord gehaald; alles komt in provenance en audit trail.
   Diep onderzoek heeft snelkeuzes (Volledig 5 / Snel 3 / Minimaal 2 stappen) voor minder plakwerk.
   Afbeeldingen die je in een tool maakt, sla je op onder Bestanden.
+- **Tweede mening** onder elk antwoord: een andere tool, gekozen op sterke punten, beoordeelt het
+  kritisch en sluit af met een oordeel (akkoord / aanpassen / onbetrouwbaar), zichtbaar als badge
+- **Bewaar als kennis**: een goed antwoord wordt een projectdocument dat in volgende gesprekken
+  wordt meegenomen; zo groeit de kennis van een project mee
+- **Bronnenbibliotheek** per project: alle bronnen die de tools noemden, ontdubbeld, met hoe vaak
+  en in welke gesprekken; zoeken, filteren per website en kopiëren als bronnenlijst
+- **Rapport (PDF)**: een net rapport van een gesprek (vragen, antwoorden, controlestappen en
+  oordelen, bronnenlijst, verantwoording), af te drukken of op te slaan als PDF
+- **Kosten & gebruik**: abonnementen en API-prijzen per tool naast je eigen gebruik deze maand,
+  met een schatting wat dat via een API zou kosten
 - Optioneel: Perplexity API (`PERPLEXITY_API_KEY`), naast de al ingebouwde Claude- en OpenAI-API
 - API-providers: Anthropic (Claude), OpenAI (Responses API), plus een offline mock, allemaal via
   één AI Gateway
@@ -68,6 +78,10 @@ AI-tools) staan in de map `data/` naast de app.
    en staat uit tot je hem zelf aanzet onder **Browser-tools**.
 
 Laat het zwarte venster open terwijl je werkt; sluit het om te stoppen.
+
+**Bijwerken:** download de nieuwe ZIP (laat hem in Downloads staan) en start zoals altijd. Het
+startbestand ziet de nieuwere versie, vraagt of het mag bijwerken en behoudt je gegevens en login.
+Je kunt de ZIP ook op het startbestand slepen.
 **Back-up:** kopieer de map `data/`. Die bevat ook de encryptiesleutel; zonder die sleutel
 zijn opgeslagen bestanden niet te openen.
 

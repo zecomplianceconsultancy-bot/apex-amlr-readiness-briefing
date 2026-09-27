@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ClientModel } from "@/server/ai/catalog";
-import { readSse, toApiError } from "@/lib/api-client";
+import { api, readSse, toApiError } from "@/lib/api-client";
+import { bestFor } from "@/lib/strengths";
+import { parseVerdict } from "@/lib/verdict";
 import { Composer, type SendPayload } from "./composer";
 import { CopyButton } from "./copy-button";
 import { ApprovalCard, type UIApproval } from "./approval-card";
@@ -23,6 +25,15 @@ interface Props {
   models: ClientModel[];
   initialMessages: UIMessage[];
 }
+
+const SECOND_OPINION_PROMPT =
+  "🔍 Tweede mening: beoordeel het vorige antwoord kritisch. Klopt het feitelijk? Wat ontbreekt, is onzeker of te stellig? Geef concrete verbeterpunten. Sluit af met precies één regel: OORDEEL: AKKOORD, OORDEEL: AANPASSEN of OORDEEL: ONBETROUWBAAR.";
+
+const VERDICT_BADGES: Record<string, [string, string]> = {
+  AKKOORD: ["Tweede mening: akkoord", "bg-emerald-100 text-emerald-800"],
+  AANPASSEN: ["Tweede mening: aanpassen", "bg-amber-100 text-amber-900"],
+  ONBETROUWBAAR: ["Tweede mening: onbetrouwbaar", "bg-rose-100 text-rose-800"],
+};
 
 const FINISH_LABELS: Record<string, string> = {
   length: "Afgekapt: maximale lengte bereikt",
@@ -47,6 +58,19 @@ export function ChatView(props: Props) {
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const modelsById = useMemo(() => new Map(props.models.map((m) => [m.id, m])), [props.models]);
+  const rankable = useMemo(() => props.models.map((m) => ({ id: m.id, tags: m.tags, available: m.available })), [props.models]);
+
+  /** One click: a different engine, chosen on strengths, critically reviews the answer. */
+  const secondOpinion = (m: UIMessage) => {
+    const reviewer = bestFor("review", rankable, m.stats?.modelId ? [m.stats.modelId] : []);
+    void send({ mode: "chat", text: SECOND_OPINION_PROMPT, modelId: reviewer });
+  };
+  const saveKnowledge = async (m: UIMessage) => {
+    await api(`/api/v1/projects/${props.projectId}/knowledge`, {
+      method: "POST",
+      json: { title: props.title, content: m.content, source: `gesprek "${props.title}"` },
+    });
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
@@ -212,19 +236,34 @@ export function ChatView(props: Props) {
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-2">
           <h1 className="truncate text-sm font-medium">{props.title}</h1>
-          <a
-            href={`/api/v1/projects/${props.projectId}/conversations/${props.conversationId}/export`}
-            className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50"
-          >
-            Exporteren (.md)
-          </a>
+          <div className="flex shrink-0 gap-2">
+            <a
+              href={`/report/${props.projectId}/${props.conversationId}`}
+              className="rounded-md px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50"
+              title="Net rapport met vragen, antwoorden, controles en bronnen — af te drukken of op te slaan als PDF"
+            >
+              Rapport (PDF)
+            </a>
+            <a
+              href={`/api/v1/projects/${props.projectId}/conversations/${props.conversationId}/export`}
+              className="rounded-md px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50"
+            >
+              Exporteren (.md)
+            </a>
+          </div>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6">
           <div className="mx-auto max-w-5xl space-y-6">
             {messages.length === 0 && <EmptyState />}
             {messages.map((m) => (
-              <MessageBubble key={m.id} message={m} modelLabel={m.stats?.modelId ? modelsById.get(m.stats.modelId)?.label : undefined} onProvenance={setProvenanceId} />
+              <MessageBubble
+                key={m.id}
+                message={m}
+                modelLabel={m.stats?.modelId ? modelsById.get(m.stats.modelId)?.label : undefined}
+                onProvenance={setProvenanceId}
+                actions={props.canWrite && !busy ? { secondOpinion, saveKnowledge } : undefined}
+              />
             ))}
             <div ref={bottomRef} />
           </div>
@@ -275,7 +314,50 @@ function EmptyState() {
   );
 }
 
-function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMessage; modelLabel?: string; onProvenance: (id: string) => void }) {
+interface BubbleActions {
+  secondOpinion: (m: UIMessage) => void;
+  saveKnowledge: (m: UIMessage) => Promise<void>;
+}
+
+function AnswerActions({ message, actions }: { message: UIMessage; actions?: BubbleActions }) {
+  const [saved, setSaved] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  if (!actions || message.status !== "complete" || !message.content) return null;
+  return (
+    <>
+      <button onClick={() => actions.secondOpinion(message)} className="text-indigo-600 hover:underline" title="Laat een andere tool dit antwoord kritisch beoordelen">
+        🔍 Tweede mening
+      </button>
+      <button
+        disabled={saved !== "idle" && saved !== "error"}
+        onClick={async () => {
+          setSaved("saving");
+          try {
+            await actions.saveKnowledge(message);
+            setSaved("saved");
+          } catch {
+            setSaved("error");
+          }
+        }}
+        className="text-indigo-600 hover:underline disabled:text-emerald-700 disabled:no-underline"
+        title="Zet dit antwoord in de projectdocumenten, zodat het in volgende gesprekken wordt meegenomen"
+      >
+        {saved === "saved" ? "📌 Bewaard in projectkennis ✓" : saved === "saving" ? "Bewaren…" : saved === "error" ? "Bewaren mislukt — opnieuw" : "📌 Bewaar als kennis"}
+      </button>
+    </>
+  );
+}
+
+function MessageBubble({
+  message: m,
+  modelLabel,
+  onProvenance,
+  actions,
+}: {
+  message: UIMessage;
+  modelLabel?: string;
+  onProvenance: (id: string) => void;
+  actions?: BubbleActions;
+}) {
   if (m.role === "user") {
     return (
       <div className="flex justify-end">
@@ -294,13 +376,20 @@ function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMe
         {warnings}
         <RunCard run={m.run} content={m.content} onProvenance={onProvenance} />
         {m.status === "cancelled" && <p className="text-xs text-slate-500">— afgebroken</p>}
+        <div className="flex flex-wrap gap-x-3 px-1 text-xs">
+          <AnswerActions message={m} actions={actions} />
+        </div>
       </div>
     );
   }
   const s = m.stats;
+  const verdict = m.status === "complete" ? parseVerdict(m.content, "OORDEEL") : null;
   return (
     <div className="max-w-3xl space-y-1.5">
       {warnings}
+      {verdict && VERDICT_BADGES[verdict] && (
+        <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${VERDICT_BADGES[verdict][1]}`}>{VERDICT_BADGES[verdict][0]}</span>
+      )}
       <div className="rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-2 shadow-sm">
         {m.approval && !m.content && m.status === "streaming" ? (
           <ApprovalCard approval={m.approval} />
@@ -337,6 +426,7 @@ function MessageBubble({ message: m, modelLabel, onProvenance }: { message: UIMe
           <button onClick={() => onProvenance(s.invocationId)} className="text-indigo-600 hover:underline">
             Provenance
           </button>
+          <AnswerActions message={m} actions={actions} />
         </div>
       )}
     </div>

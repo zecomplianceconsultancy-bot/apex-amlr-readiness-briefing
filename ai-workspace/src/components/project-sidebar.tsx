@@ -17,6 +17,7 @@ export function ProjectSidebar({ project, role, conversations }: Props) {
   const nav = [
     { href: `${base}/context`, label: "Projectcontext" },
     { href: `${base}/files`, label: "Bestanden" },
+    { href: `${base}/sources`, label: "Bronnen" },
     { href: `${base}/settings`, label: "Instellingen" },
     ...(role === "owner" ? [{ href: `${base}/audit`, label: "Audit trail" }] : []),
   ];

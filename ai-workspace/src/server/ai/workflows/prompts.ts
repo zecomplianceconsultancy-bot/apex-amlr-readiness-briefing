@@ -38,8 +38,6 @@ ${quote(research)}
 </onderzoek>`;
 }
 
-export const REVIEW_VERDICTS = ["AKKOORD", "AANPASSEN", "ONBETROUWBAAR"] as const;
-
 export function reviewPrompt(question: string, research: string, draft: string): string {
   return `Je bent een onafhankelijke, kritische reviewer (tweede lijn). Beoordeel het conceptantwoord op:
 1. feitelijke juistheid, en of de claims door het onderzoek en de bronnen worden gedragen;
@@ -63,8 +61,6 @@ ${quote(research)}
 ${quote(draft)}
 </concept>`;
 }
-
-export const FACT_VERDICTS = ["CORRECT", "FOUTEN", "ONZEKER"] as const;
 
 export function factcheckPrompt(question: string, draft: string): string {
   return `Je bent een onafhankelijke feitencontroleur. Controleer de feitelijke claims in het conceptantwoord hieronder (data, cijfers, namen, wetsartikelen, termijnen, citaten) aan de hand van actuele, betrouwbare bronnen. Zoek zelf.
@@ -107,8 +103,6 @@ ${quote(factcheck)}
 </feitencheck>` : ""}`;
 }
 
-export const AGREEMENT_LEVELS = ["HOOG", "MIDDEL", "LAAG"] as const;
-
 export function judgePrompt(question: string, answers: { label: string; text: string }[]): string {
   const per = Math.floor(40_000 / Math.max(1, answers.length));
   return `Hieronder staan antwoorden van verschillende AI-modellen op dezelfde vraag. Vergelijk ze kritisch en gebruik precies deze koppen:
@@ -129,16 +123,4 @@ ${question}
 ${answers.map((a) => `<antwoord model="${a.label.replace(/"/g, "'")}">\n${quote(a.text, per)}\n</antwoord>`).join("\n\n")}`;
 }
 
-/** Reads the verdict line ("OORDEEL: …" / "OVEREENSTEMMING: …"); tolerant of markdown and case. */
-export type VerdictKey = "OORDEEL" | "OVEREENSTEMMING" | "FEITEN";
-
-export function parseVerdict(text: string, key: VerdictKey): string | null {
-  const allowed: readonly string[] = key === "OORDEEL" ? REVIEW_VERDICTS : key === "FEITEN" ? FACT_VERDICTS : AGREEMENT_LEVELS;
-  const re = new RegExp(`${key}\\s*\\**\\s*:\\s*\\**\\s*([A-Za-z]+)`, "gi");
-  let found: string | null = null;
-  for (const m of text.matchAll(re)) {
-    const v = m[1]!.toUpperCase();
-    if (allowed.includes(v)) found = v; // last valid occurrence wins
-  }
-  return found;
-}
+export { AGREEMENT_LEVELS, FACT_VERDICTS, parseVerdict, REVIEW_VERDICTS, type VerdictKey } from "@/lib/verdict";

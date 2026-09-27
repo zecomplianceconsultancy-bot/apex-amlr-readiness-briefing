@@ -284,7 +284,8 @@ if (update) {
 
 // 1. Dependencies
 const deps = stamp("deps");
-const depsHash = hashTree(["package-lock.json"]);
+// Content hash (not mtime): an update rewrites files, but dependencies only change with the lock file.
+const depsHash = createHash("sha256").update(readFileSync(path.join(root, "package-lock.json"))).digest("hex");
 if (!existsSync(path.join(root, "node_modules")) || deps.read() !== depsHash) {
   say("Onderdelen installeren (eenmalig, duurt enkele minuten)…");
   if (!run("npm", ["ci", "--no-audit", "--no-fund"]) && !run("npm", ["install", "--no-audit", "--no-fund"])) fail("Installeren mislukt. Controleer je internetverbinding en probeer opnieuw.");

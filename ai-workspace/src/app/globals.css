@@ -13,6 +13,17 @@ body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
 
+@media print {
+  @page {
+    margin: 16mm 18mm;
+  }
+  html,
+  body {
+    height: auto;
+    background: white;
+  }
+}
+
 .prose-chat p {
   @apply my-2;
 }
