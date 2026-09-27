@@ -122,16 +122,16 @@ function ResearchView({ run, content, onProvenance }: { run: UIRun; content: str
   const factcheck = run.steps.find((s) => s.role === "factcheck");
   const allSources = uniqueCitations(run.steps.map((s) => s.citations));
   const disagreement = (review?.verdict && review.verdict !== "AKKOORD") || factcheck?.verdict === "FOUTEN" || factcheck?.verdict === "ONZEKER";
-  const finalText = final?.text || content;
+  const finalText = final?.text || (run.status === "running" ? "" : content);
   return (
     <div className="space-y-3">
       <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Diep onderzoek · {run.steps.length} stappen</p>
       <ol className="space-y-2">
-        {steps.map((s, i) => (
+        {steps.map((s) => (
           <li key={s.id}>
             <details open={s.status === "running" || Boolean((s.handoff || s.approval) && !s.text)} className="rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
               <summary className="cursor-pointer list-none">
-                <StepHeader step={s} index={i + 1} />
+                <StepHeader step={s} index={s.position + 1} />
               </summary>
               <div className="mt-2 max-h-[32rem] overflow-y-auto border-t border-slate-100 pt-2">
                 <StepBody step={s} onProvenance={onProvenance} />
@@ -150,7 +150,15 @@ function ResearchView({ run, content, onProvenance }: { run: UIRun; content: str
             </p>
           )}
           <div className="mt-2">
-            {finalText ? <Markdown>{finalText}</Markdown> : final.status === "running" ? <p className="animate-pulse text-sm text-slate-400">Bezig…</p> : null}
+            {final.status === "running" && !final.text && final.approval ? (
+              <ApprovalCard approval={final.approval} />
+            ) : final.status === "running" && !final.text && final.handoff ? (
+              <HandoffCard handoff={final.handoff} />
+            ) : finalText ? (
+              <Markdown>{finalText}</Markdown>
+            ) : final.status === "running" ? (
+              <p className="animate-pulse text-sm text-slate-400">Bezig…</p>
+            ) : null}
             {final.error && <p className="text-xs text-rose-600">{final.error}</p>}
           </div>
           <div className="mt-2 space-y-2">
